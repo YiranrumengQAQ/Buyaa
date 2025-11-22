@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube 频道封面编辑器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --yt-red: #ff0000;
+            --yt-dark: #0f0f0f;
+            --yt-light-bg: #212121;
+            --yt-border: #3f3f3f;
+            --text-primary: #ffffff;
+            --text-secondary: #aaaaaa;
+            --hover-bg: #3f3f3f;
+            --success: #00c853;
+        }
+
+        body {
+            font-family: 'Roboto', 'YouTube Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--yt-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: var(--yt-light-bg);
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--yt-border);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--yt-red);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* Upload Section */
+        .upload-section {
+            background: var(--yt-light-bg);
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 24px;
+            border: 2px dashed var(--yt-border);
+            transition: all 0.3s ease;
+        }
+
+        .upload-section:hover {
+            border-color: var(--yt-red);
+            background: #262626;
+        }
+
+        .upload-area {
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .upload-icon {
+            font-size: 64px;
+            color: var(--yt-red);
+            margin-bottom: 16px;
+        }
+
+        .upload-text {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .upload-hint {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        #imageInput {
+            display: none;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 24px;
+        }
+
+        /* Editor Panel */
+        .editor-panel {
+            background: var(--yt-light-bg);
+            border-radius: 12px;
+            padding: 24px;
+            min-height: 600px;
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        #canvas {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Device Preview */
+        .preview-section {
+            margin-top: 24px;
+        }
+
+        .preview-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .preview-device {
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .preview-device canvas {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .device-label {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(0,0,0,0.7);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: var(--text-primary);
+        }
+
+        /* Control Panel */
+        .control-panel {
+            background: var(--yt-light-bg);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .control-section {
+            margin-bottom: 24px;
+        }
+
+        .control-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+        }
+
+        .control-group {
+            margin-bottom: 16px;
+        }
+
+        .control-label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .btn-primary {
+            background: var(--yt-red);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #cc0000;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255,0,0,0.3);
+        }
+
+        .btn-secondary {
+            background: var(--hover-bg);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: #4f4f4f;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #00a843;
+        }
+
+        /* Slider */
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            border-radius: 2px;
+            background: var(--yt-border);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--yt-red);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 0 8px rgba(255,0,0,0.1);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--yt-red);
+            cursor: pointer;
+            border: none;
+        }
+
+        /* Select */
+        select {
+            width: 100%;
+            padding: 10px;
+            background: var(--yt-dark);
+            color: var(--text-primary);
+            border: 1px solid var(--yt-border);
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select:hover, select:focus {
+            border-color: var(--yt-red);
+            outline: none;
+        }
+
+        /* Value Display */
+        .value-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .value-display span {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .value-number {
+            color: var(--yt-red);
+            font-weight: 600;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: rgba(255,0,0,0.1);
+            border-left: 3px solid var(--yt-red);
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .info-box-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        /* Filter Options */
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .filter-btn {
+            padding: 8px;
+            background: var(--yt-dark);
+            border: 1px solid var(--yt-border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+
+        .filter-btn:hover {
+            background: var(--hover-bg);
+            border-color: var(--yt-red);
+        }
+
+        .filter-btn.active {
+            background: var(--yt-red);
+            border-color: var(--yt-red);
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .control-panel {
+                max-width: 600px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
+            }
+
+            .header {
+                padding: 12px 16px;
+            }
+
+            .upload-section {
+                padding: 24px 16px;
+            }
+
+            .editor-panel, .control-panel {
+                padding: 16px;
+            }
+
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid var(--yt-border);
+            border-top: 3px solid var(--yt-red);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Safe Area Overlay */
+        .safe-area-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--yt-light-bg);
+            color: var(--text-primary);
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <div class="logo-icon">▶</div>
+            <span>YouTube 频道封面编辑器</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Upload Section -->
+        <div class="upload-section" id="uploadSection">
+            <div class="upload-area" onclick="document.getElementById('imageInput').click()">
+                <div class="upload-icon">📤</div>
+                <div class="upload-text">点击或拖拽上传图片</div>
+                <div class="upload-hint">推荐尺寸: 2560 x 1440 像素 | 支持 JPG、PNG 格式</div>
+            </div>
+            <input type="file" id="imageInput" accept="image/*">
+        </div>
+
+        <div class="main-content hidden" id="mainContent">
+            <!-- Editor Panel -->
+            <div class="editor-panel">
+                <div class="canvas-container">
+                    <canvas id="canvas"></canvas>
+                    <canvas id="safeAreaCanvas" class="safe-area-overlay"></canvas>
+                </div>
+
+                <!-- Device Previews -->
+                <div class="preview-section">
+                    <div class="preview-title">📱 设备预览</div>
+                    
+                    <div class="preview-device">
+                        <div class="device-label">📱 手机 (1546 x 423)</div>
+                        <canvas id="mobilePreview"></canvas>
+                    </div>
+
+                    <div class="preview-device">
+                        <div class="device-label">💻 电脑 (2560 x 423)</div>
+                        <canvas id="desktopPreview"></canvas>
+                    </div>
+
+                    <div class="preview-device">
+                        <div class="device-label">📺 电视 (2560 x 1440)</div>
+                        <canvas id="tvPreview"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Control Panel -->
+            <div class="control-panel">
+                <!-- Info -->
+                <div class="info-box">
+                    <div class="info-box-title">💡 设计提示</div>
+                    重要内容请放置在中央安全区域 (1546 x 423) 内，确保在所有设备上都能完整显示。
+                </div>
+
+                <!-- Size Controls -->
+                <div class="control-section">
+                    <div class="control-title">📐 尺寸调整</div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">输出尺寸</label>
+                        <select id="sizePreset">
+                            <option value="2560x1440">YouTube 标准 (2560 x 1440)</option>
+                            <option value="custom">自定义尺寸</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="value-display">
+                            <span>缩放</span>
+                            <span class="value-number" id="scaleValue">100%</span>
+                        </div>
+                        <input type="range" id="scaleSlider" min="10" max="200" value="100">
+                    </div>
+                </div>
+
+                <!-- Position Controls -->
+                <div class="control-section">
+                    <div class="control-title">📍 位置调整</div>
+                    
+                    <div class="control-group">
+                        <div class="value-display">
+                            <span>水平位置</span>
+                            <span class="value-number" id="posXValue">0</span>
+                        </div>
+                        <input type="range" id="posXSlider" min="-500" max="500" value="0">
+                    </div>
+
+                    <div class="control-group">
+                        <div class="value-display">
+                            <span>垂直位置</span>
+                            <span class="value-number" id="posYValue">0</span>
+                        </div>
+                        <input type="range" id="posYSlider" min="-500" max="500" value="0">
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="control-section">
+                    <div class="control-title">🎨 滤镜效果</div>
+                    
+                    <div class="filter-grid">
+                        <button class="filter-btn active" data-filter="none">原图</button>
+                        <button class="filter-btn" data-filter="grayscale">黑白</button>
+                        <button class="filter-btn" data-filter="sepia">复古</button>
+                        <button class="filter-btn" data-filter="saturate">饱和</button>
+                        <button class="filter-btn" data-filter="brightness">明亮</button>
+                        <button class="filter-btn" data-filter="contrast">对比</button>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="value-display">
+                            <span>亮度</span>
+                            <span class="value-number" id="brightnessValue">100%</span>
+                        </div>
+                        <input type="range" id="brightnessSlider" min="0" max="200" value="100">
+                    </div>
+
+                    <div class="control-group">
+                        <div class="value-display">
+                            <span>对比度</span>
+                            <span class="value-number" id="contrastValue">100%</span>
+                        </div>
+                        <input type="range" id="contrastSlider" min="0" max="200" value="100">
+                    </div>
+
+                    <div class="control-group">
+                        <div class="value-display">
+                            <span>饱和度</span>
+                            <span class="value-number" id="saturationValue">100%</span>
+                        </div>
+                        <input type="range" id="saturationSlider" min="0" max="200" value="100">
+                    </div>
+                </div>
+
+                <!-- Safe Area Toggle -->
+                <div class="control-section">
+                    <div class="control-title">🔒 辅助线</div>
+                    <button class="btn btn-secondary" id="safeAreaToggle">
+                        <span>显示安全区域</span>
+                    </button>
+                </div>
+
+                <!-- Actions -->
+                <div class="control-section">
+                    <button class="btn btn-secondary" id="resetBtn">
+                        <span>⟲</span>
+                        <span>重置</span>
+                    </button>
+                    <button class="btn btn-primary" id="downloadBtn">
+                        <span>⬇</span>
+                        <span>下载封面</span>
+                    </button>
+                    <button class="btn btn-success" id="newImageBtn">
+                        <span>+</span>
+                        <span>上传新图片</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let originalImage = null;
+        let canvas, ctx, safeAreaCanvas, safeAreaCtx;
+        let scale = 1;
+        let posX = 0;
+        let posY = 0;
+        let brightness = 100;
+        let contrast = 100;
+        let saturation = 100;
+        let currentFilter = 'none';
+        let showSafeArea = false;
+
+        // YouTube banner specifications
+        const BANNER_WIDTH = 2560;
+        const BANNER_HEIGHT = 1440;
+        const SAFE_AREA = { x: 507, y: 508.5, width: 1546, height: 423 };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            canvas = document.getElementById('canvas');
+            ctx = canvas.getContext('2d', { alpha: false });
+            safeAreaCanvas = document.getElementById('safeAreaCanvas');
+            safeAreaCtx = safeAreaCanvas.getContext('2d');
+
+            canvas.width = BANNER_WIDTH;
+            canvas.height = BANNER_HEIGHT;
+            safeAreaCanvas.width = BANNER_WIDTH;
+            safeAreaCanvas.height = BANNER_HEIGHT;
+
+            setupEventListeners();
+        });
+
+        // Event Listeners
+        function setupEventListeners() {
+            const imageInput = document.getElementById('imageInput');
+            const uploadSection = document.getElementById('uploadSection');
+
+            // File input
+            imageInput.addEventListener('change', handleImageUpload);
+
+            // Drag and drop
+            uploadSection.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadSection.style.borderColor = 'var(--yt-red)';
+            });
+
+            uploadSection.addEventListener('dragleave', () => {
+                uploadSection.style.borderColor = 'var(--yt-border)';
+            });
+
+            uplo
