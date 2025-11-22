@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="auto">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +11,20 @@
             box-sizing: border-box;
         }
 
-        :root {
+        :root[data-theme="light"] {
+            --yt-red: #ff0000;
+            --yt-dark: #ffffff;
+            --yt-light-bg: #f9f9f9;
+            --yt-border: #e0e0e0;
+            --text-primary: #0f0f0f;
+            --text-secondary: #606060;
+            --hover-bg: #f2f2f2;
+            --success: #00c853;
+            --canvas-bg: #f5f5f5;
+            --shadow: rgba(0,0,0,0.1);
+        }
+
+        :root[data-theme="dark"] {
             --yt-red: #ff0000;
             --yt-dark: #0f0f0f;
             --yt-light-bg: #212121;
@@ -20,6 +33,8 @@
             --text-secondary: #aaaaaa;
             --hover-bg: #3f3f3f;
             --success: #00c853;
+            --canvas-bg: #000000;
+            --shadow: rgba(0,0,0,0.3);
         }
 
         body {
@@ -28,6 +43,7 @@
             color: var(--text-primary);
             line-height: 1.6;
             overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         /* Header */
@@ -37,11 +53,19 @@
             border-bottom: 1px solid var(--yt-border);
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 16px;
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 8px var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
 
         .logo {
@@ -61,6 +85,33 @@
             align-items: center;
             justify-content: center;
             font-size: 18px;
+            color: white;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--hover-bg);
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--yt-border);
+        }
+
+        .theme-toggle:hover {
+            background: var(--yt-border);
+        }
+
+        .theme-icon {
+            font-size: 20px;
+        }
+
+        .theme-text {
+            font-size: 14px;
+            font-weight: 500;
         }
 
         /* Container */
@@ -82,7 +133,7 @@
 
         .upload-section:hover {
             border-color: var(--yt-red);
-            background: #262626;
+            background: var(--hover-bg);
         }
 
         .upload-area {
@@ -123,15 +174,17 @@
             border-radius: 12px;
             padding: 24px;
             min-height: 600px;
+            transition: background-color 0.3s ease;
         }
 
         .canvas-container {
             position: relative;
             width: 100%;
-            background: #000;
+            background: var(--canvas-bg);
             border-radius: 8px;
             overflow: hidden;
             margin-bottom: 20px;
+            border: 1px solid var(--yt-border);
         }
 
         #canvas {
@@ -153,11 +206,12 @@
         }
 
         .preview-device {
-            background: #000;
+            background: var(--canvas-bg);
             border-radius: 8px;
             overflow: hidden;
             margin-bottom: 16px;
             position: relative;
+            border: 1px solid var(--yt-border);
         }
 
         .preview-device canvas {
@@ -174,7 +228,7 @@
             padding: 4px 12px;
             border-radius: 4px;
             font-size: 12px;
-            color: var(--text-primary);
+            color: #ffffff;
         }
 
         /* Control Panel */
@@ -182,6 +236,7 @@
             background: var(--yt-light-bg);
             border-radius: 12px;
             padding: 24px;
+            transition: background-color 0.3s ease;
         }
 
         .control-section {
@@ -239,10 +294,11 @@
         .btn-secondary {
             background: var(--hover-bg);
             color: var(--text-primary);
+            border: 1px solid var(--yt-border);
         }
 
         .btn-secondary:hover {
-            background: #4f4f4f;
+            background: var(--yt-border);
         }
 
         .btn-success {
@@ -262,6 +318,7 @@
             background: var(--yt-border);
             outline: none;
             -webkit-appearance: none;
+            transition: background 0.3s ease;
         }
 
         input[type="range"]::-webkit-slider-thumb {
@@ -357,6 +414,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 12px;
+            color: var(--text-primary);
         }
 
         .filter-btn:hover {
@@ -402,6 +460,10 @@
             .filter-grid {
                 grid-template-columns: 1fr;
             }
+
+            .theme-text {
+                display: none;
+            }
         }
 
         /* Loading Spinner */
@@ -443,9 +505,10 @@
             color: var(--text-primary);
             padding: 16px 24px;
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 12px var(--shadow);
             z-index: 2000;
             animation: slideIn 0.3s ease;
+            border: 1px solid var(--yt-border);
         }
 
         @keyframes slideIn {
@@ -462,9 +525,15 @@
 </head>
 <body>
     <div class="header">
-        <div class="logo">
-            <div class="logo-icon">▶</div>
-            <span>YouTube 频道封面编辑器</span>
+        <div class="header-left">
+            <div class="logo">
+                <div class="logo-icon">▶</div>
+                <span>YouTube 频道封面编辑器</span>
+            </div>
+        </div>
+        <div class="theme-toggle" id="themeToggle">
+            <span class="theme-icon" id="themeIcon">🌓</span>
+            <span class="theme-text" id="themeText">自动</span>
         </div>
     </div>
 
@@ -476,7 +545,7 @@
                 <div class="upload-text">点击或拖拽上传图片</div>
                 <div class="upload-hint">推荐尺寸: 2560 x 1440 像素 | 支持 JPG、PNG 格式</div>
             </div>
-            <input type="file" id="imageInput" accept="image/*">
+            <input type="file" id="imageInput" accept="image/jpeg,image/png,image/jpg">
         </div>
 
         <div class="main-content hidden" id="mainContent">
@@ -624,6 +693,56 @@
     </div>
 
     <script>
+        // Theme Management
+        const ThemeManager = {
+            themes: ['auto', 'light', 'dark'],
+            currentThemeIndex: 0,
+
+            init() {
+                // Load saved theme preference or default to auto
+                const savedTheme = localStorage.getItem('theme') || 'auto';
+                this.currentThemeIndex = this.themes.indexOf(savedTheme);
+                this.applyTheme(savedTheme);
+                
+                // Listen for system theme changes
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                    if (this.themes[this.currentThemeIndex] === 'auto') {
+                        this.applyTheme('auto');
+                    }
+                });
+            },
+
+            applyTheme(theme) {
+                const html = document.documentElement;
+                
+                if (theme === 'auto') {
+                    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    html.setAttribute('data-theme', systemPrefersDark ? 'dark' : 'light');
+                    this.updateToggleUI('🌓', '自动');
+                } else if (theme === 'light') {
+                    html.setAttribute('data-theme', 'light');
+                    this.updateToggleUI('☀️', '亮色');
+                } else if (theme === 'dark') {
+                    html.setAttribute('data-theme', 'dark');
+                    this.updateToggleUI('🌙', '暗色');
+                }
+                
+                localStorage.setItem('theme', theme);
+            },
+
+            updateToggleUI(icon, text) {
+                document.getElementById('themeIcon').textContent = icon;
+                document.getElementById('themeText').textContent = text;
+            },
+
+            toggle() {
+                this.currentThemeIndex = (this.currentThemeIndex + 1) % this.themes.length;
+                const newTheme = this.themes[this.currentThemeIndex];
+                this.applyTheme(newTheme);
+                showToast(`主题切换为: ${newTheme === 'auto' ? '自动' : newTheme === 'light' ? '亮色' : '暗色'}`);
+            }
+        };
+
         // Global variables
         let originalImage = null;
         let canvas, ctx, safeAreaCanvas, safeAreaCtx;
@@ -644,7 +763,7 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             canvas = document.getElementById('canvas');
-            ctx = canvas.getContext('2d', { alpha: false });
+            ctx = canvas.getContext('2d', { alpha: false, willReadFrequently: false });
             safeAreaCanvas = document.getElementById('safeAreaCanvas');
             safeAreaCtx = safeAreaCanvas.getContext('2d');
 
@@ -653,6 +772,9 @@
             safeAreaCanvas.width = BANNER_WIDTH;
             safeAreaCanvas.height = BANNER_HEIGHT;
 
+            // Initialize theme
+            ThemeManager.init();
+
             setupEventListeners();
         });
 
@@ -660,6 +782,11 @@
         function setupEventListeners() {
             const imageInput = document.getElementById('imageInput');
             const uploadSection = document.getElementById('uploadSection');
+
+            // Theme toggle
+            document.getElementById('themeToggle').addEventListener('click', () => {
+                ThemeManager.toggle();
+            });
 
             // File input
             imageInput.addEventListener('change', handleImageUpload);
@@ -674,4 +801,304 @@
                 uploadSection.style.borderColor = 'var(--yt-border)';
             });
 
-            uplo
+            uploadSection.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadSection.style.borderColor = 'var(--yt-border)';
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.match(/^image\/(jpeg|png|jpg)$/)) {
+                    loadImage(file);
+                } else {
+                    showToast('请上传 JPG 或 PNG 格式的图片！');
+                }
+            });
+
+            // Controls
+            document.getElementById('scaleSlider').addEventListener('input', (e) => {
+                scale = e.target.value / 100;
+                document.getElementById('scaleValue').textContent = e.target.value + '%';
+                renderCanvas();
+            });
+
+            document.getElementById('posXSlider').addEventListener('input', (e) => {
+                posX = parseInt(e.target.value);
+                document.getElementById('posXValue').textContent = e.target.value;
+                renderCanvas();
+            });
+
+            document.getElementById('posYSlider').addEventListener('input', (e) => {
+                posY = parseInt(e.target.value);
+                document.getElementById('posYValue').textContent = e.target.value;
+                renderCanvas();
+            });
+
+            document.getElementById('brightnessSlider').addEventListener('input', (e) => {
+                brightness = parseInt(e.target.value);
+                document.getElementById('brightnessValue').textContent = e.target.value + '%';
+                renderCanvas();
+            });
+
+            document.getElementById('contrastSlider').addEventListener('input', (e) => {
+                contrast = parseInt(e.target.value);
+                document.getElementById('contrastValue').textContent = e.target.value + '%';
+                renderCanvas();
+            });
+
+            document.getElementById('saturationSlider').addEventListener('input', (e) => {
+                saturation = parseInt(e.target.value);
+                document.getElementById('saturationValue').textContent = e.target.value + '%';
+                renderCanvas();
+            });
+
+            // Filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    applyPresetFilter(currentFilter);
+                });
+            });
+
+            // Safe area toggle
+            document.getElementById('safeAreaToggle').addEventListener('click', () => {
+                showSafeArea = !showSafeArea;
+                document.getElementById('safeAreaToggle').innerHTML = 
+                    showSafeArea ? '<span>隐藏安全区域</span>' : '<span>显示安全区域</span>';
+                drawSafeArea();
+            });
+
+            // Reset button
+            document.getElementById('resetBtn').addEventListener('click', resetControls);
+
+            // Download button
+            document.getElementById('downloadBtn').addEventListener('click', downloadImage);
+
+            // New image button
+            document.getElementById('newImageBtn').addEventListener('click', () => {
+                document.getElementById('imageInput').click();
+            });
+        }
+
+        // Handle image upload
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.type.match(/^image\/(jpeg|png|jpg)$/)) {
+                    loadImage(file);
+                } else {
+                    showToast('请上传 JPG 或 PNG 格式的图片！');
+                }
+            }
+        }
+
+        // Load image - FIXED VERSION
+        function loadImage(file) {
+            const reader = new FileReader();
+            
+            reader.onerror = function() {
+                showToast('图片读取失败，请重试！');
+            };
+            
+            reader.onload = function(e) {
+                const img = new Image();
+                
+                img.onerror = function() {
+                    showToast('图片加载失败，请确保文件格式正确！');
+                };
+                
+                img.onload = function() {
+                    originalImage = img;
+                    document.getElementById('uploadSection').classList.add('hidden');
+                    document.getElementById('mainContent').classList.remove('hidden');
+                    resetControls();
+                    showToast('✅ 图片加载成功！');
+                };
+                
+                // Set image source
+                img.src = e.target.result;
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        // Render canvas
+        function renderCanvas() {
+            if (!originalImage) return;
+
+            // Clear canvas with background
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, BANNER_WIDTH, BANNER_HEIGHT);
+
+            // Save context
+            ctx.save();
+
+            // Apply filters
+            ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`;
+
+            // Calculate dimensions
+            const imgWidth = originalImage.width * scale;
+            const imgHeight = originalImage.height * scale;
+            const x = (BANNER_WIDTH - imgWidth) / 2 + posX;
+            const y = (BANNER_HEIGHT - imgHeight) / 2 + posY;
+
+            // Draw image
+            try {
+                ctx.drawImage(originalImage, x, y, imgWidth, imgHeight);
+            } catch(e) {
+                console.error('Canvas draw error:', e);
+            }
+
+            // Restore context
+            ctx.restore();
+
+            // Update previews
+            updatePreviews();
+        }
+
+        // Update device previews
+        function updatePreviews() {
+            // Mobile preview (1546 x 423)
+            const mobileCanvas = document.getElementById('mobilePreview');
+            const mobileCtx = mobileCanvas.getContext('2d');
+            mobileCanvas.width = 1546;
+            mobileCanvas.height = 423;
+            mobileCtx.drawImage(canvas, SAFE_AREA.x, SAFE_AREA.y, SAFE_AREA.width, SAFE_AREA.height, 
+                               0, 0, 1546, 423);
+
+            // Desktop preview (2560 x 423)
+            const desktopCanvas = document.getElementById('desktopPreview');
+            const desktopCtx = desktopCanvas.getContext('2d');
+            desktopCanvas.width = 2560;
+            desktopCanvas.height = 423;
+            desktopCtx.drawImage(canvas, 0, SAFE_AREA.y, BANNER_WIDTH, SAFE_AREA.height, 
+                                0, 0, 2560, 423);
+
+            // TV preview (2560 x 1440)
+            const tvCanvas = document.getElementById('tvPreview');
+            const tvCtx = tvCanvas.getContext('2d');
+            tvCanvas.width = 2560;
+            tvCanvas.height = 1440;
+            tvCtx.drawImage(canvas, 0, 0);
+        }
+
+        // Draw safe area
+        function drawSafeArea() {
+            safeAreaCtx.clearRect(0, 0, BANNER_WIDTH, BANNER_HEIGHT);
+            
+            if (showSafeArea) {
+                // Darken outer area
+                safeAreaCtx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                safeAreaCtx.fillRect(0, 0, BANNER_WIDTH, BANNER_HEIGHT);
+                
+                // Clear safe area
+                safeAreaCtx.clearRect(SAFE_AREA.x, SAFE_AREA.y, SAFE_AREA.width, SAFE_AREA.height);
+                
+                // Draw border
+                safeAreaCtx.strokeStyle = '#ff0000';
+                safeAreaCtx.lineWidth = 3;
+                safeAreaCtx.strokeRect(SAFE_AREA.x, SAFE_AREA.y, SAFE_AREA.width, SAFE_AREA.height);
+                
+                // Draw label
+                safeAreaCtx.fillStyle = 'rgba(255, 0, 0, 0.9)';
+                safeAreaCtx.fillRect(SAFE_AREA.x, SAFE_AREA.y - 30, 200, 30);
+                safeAreaCtx.fillStyle = '#fff';
+                safeAreaCtx.font = '14px Roboto';
+                safeAreaCtx.fillText('安全区域 (1546 x 423)', SAFE_AREA.x + 10, SAFE_AREA.y - 10);
+            }
+        }
+
+        // Apply preset filters
+        function applyPresetFilter(filter) {
+            switch(filter) {
+                case 'none':
+                    brightness = 100;
+                    contrast = 100;
+                    saturation = 100;
+                    break;
+                case 'grayscale':
+                    saturation = 0;
+                    break;
+                case 'sepia':
+                    brightness = 110;
+                    contrast = 90;
+                    saturation = 80;
+                    break;
+                case 'saturate':
+                    saturation = 150;
+                    break;
+                case 'brightness':
+                    brightness = 130;
+                    break;
+                case 'contrast':
+                    contrast = 130;
+                    break;
+            }
+            
+            updateSliderValues();
+            renderCanvas();
+        }
+
+        // Update slider values
+        function updateSliderValues() {
+            document.getElementById('brightnessSlider').value = brightness;
+            document.getElementById('brightnessValue').textContent = brightness + '%';
+            document.getElementById('contrastSlider').value = contrast;
+            document.getElementById('contrastValue').textContent = contrast + '%';
+            document.getElementById('saturationSlider').value = saturation;
+            document.getElementById('saturationValue').textContent = saturation + '%';
+        }
+
+        // Reset controls
+        function resetControls() {
+            scale = 1;
+            posX = 0;
+            posY = 0;
+            brightness = 100;
+            contrast = 100;
+            saturation = 100;
+            currentFilter = 'none';
+
+            document.getElementById('scaleSlider').value = 100;
+            document.getElementById('scaleValue').textContent = '100%';
+            document.getElementById('posXSlider').value = 0;
+            document.getElementById('posXValue').textContent = '0';
+            document.getElementById('posYSlider').value = 0;
+            document.getElementById('posYValue').textContent = '0';
+            
+            updateSliderValues();
+
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('[data-filter="none"]').classList.add('active');
+
+            renderCanvas();
+        }
+
+        // Download image
+        function downloadImage() {
+            try {
+                const link = document.createElement('a');
+                link.download = 'youtube-banner-2560x1440.png';
+                link.href = canvas.toDataURL('image/png', 1.0);
+                link.click();
+                showToast('✅ 封面下载成功！');
+            } catch(e) {
+                showToast('❌ 下载失败，请重试！');
+                console.error('Download error:', e);
+            }
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
