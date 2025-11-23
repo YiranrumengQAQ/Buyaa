@@ -1027,6 +1027,20 @@
                     <span>反馈设置</span>
                 </div>
                 <div class="switch-row">
+                    <span class="switch-label">启用震动反馈</span>
+                    <label class="switch">
+                        <input type="checkbox" id="vibrateEnabled" checked>
+                        <span class="switch-slider"></span>
+                    </label>
+                </div>
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>震动间隔 (秒)</span>
+                        <span class="slider-value" id="vibrateIntervalValue">2.0</span>
+                    </div>
+                    <input type="range" class="slider" id="vibrateInterval" min="0.5" max="5" step="0.5" value="2">
+                </div>
+                <div class="switch-row">
                     <span class="switch-label">启用音频提示</span>
                     <label class="switch">
                         <input type="checkbox" id="audioEnabled" checked>
@@ -1039,13 +1053,6 @@
                         <span class="slider-value" id="volumeValue">50%</span>
                     </div>
                     <input type="range" class="slider" id="volume" min="0" max="100" value="50">
-                </div>
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>震动间隔 (秒)</span>
-                        <span class="slider-value" id="vibrateIntervalValue">2.0</span>
-                    </div>
-                    <input type="range" class="slider" id="vibrateInterval" min="0.5" max="5" step="0.5" value="2">
                 </div>
                 <div class="slider-group">
                     <div class="slider-label">
@@ -1234,6 +1241,7 @@
         // 配置参数
         let config = {
             detectionArea: 60,
+            vibrateEnabled: true,
             vibrateThreshold: 50,
             notificationThreshold: 60,
             sensitivity: 50,
@@ -1458,12 +1466,19 @@
 
             // 快速操作
             document.getElementById('quickVibrate').addEventListener('click', () => {
+                if (!config.vibrateEnabled) {
+                    showToast('⚠️ 震动反馈已禁用，请在设置中启用');
+                    addLog('warning', '震动测试失败', '震动功能已被禁用');
+                    return;
+                }
+                
                 if ('vibrate' in navigator) {
                     navigator.vibrate(200);
                     showToast('📳 震动测试完成');
                     addLog('info', '执行震动测试');
                 } else {
                     showToast('⚠️ 设备不支持震动');
+                    addLog('error', '震动测试失败', '设备不支持震动API');
                 }
             });
 
@@ -1495,6 +1510,17 @@
             });
 
             // 开关
+            document.getElementById('vibrateEnabled').addEventListener('change', (e) => {
+                config.vibrateEnabled = e.target.checked;
+                saveSettings();
+                addLog('info', `震动反馈${e.target.checked ? '启用' : '禁用'}`);
+                if (e.target.checked) {
+                    showToast('✅ 震动反馈已启用');
+                } else {
+                    showToast('🔇 震动反馈已禁用');
+                }
+            });
+
             document.getElementById('audioEnabled').addEventListener('change', (e) => {
                 config.audioEnabled = e.target.checked;
                 saveSettings();
@@ -1838,6 +1864,8 @@
 
         // ============ 反馈功能 ============
         function triggerVibration() {
+            if (!config.vibrateEnabled) return;
+            
             if ('vibrate' in navigator) {
                 navigator.vibrate(200);
                 stats.vibrations++;
