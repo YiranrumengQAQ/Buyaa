@@ -323,7 +323,6 @@
             cursor: not-allowed;
         }
 
-        /* 预设配置卡片 */
         .presets-card {
             background: var(--md-surface);
             margin: 16px;
@@ -849,7 +848,7 @@
             <div class="presets-card">
                 <div class="presets-title">快速预设</div>
                 <div class="presets-grid">
-                    <div class="preset-button" data-preset="balanced">
+                    <div class="preset-button active" data-preset="balanced">
                         <div class="preset-icon">⚖️</div>
                         <div class="preset-name">平衡模式</div>
                         <div class="preset-desc">适合日常监控使用</div>
@@ -874,7 +873,7 @@
                         <div class="preset-name">静音模式</div>
                         <div class="preset-desc">无声音震动提醒</div>
                     </div>
-                    <div class="preset-button active" data-preset="custom">
+                    <div class="preset-button" data-preset="custom">
                         <div class="preset-icon">⚙️</div>
                         <div class="preset-name">自定义</div>
                         <div class="preset-desc">手动调节所有参数</div>
@@ -1237,7 +1236,6 @@
     <canvas id="canvas"></canvas>
 
     <script>
-        // 预设配置
         const PRESETS = {
             balanced: {
                 name: '平衡模式',
@@ -1248,7 +1246,8 @@
                 screenshotThreshold: 80,
                 notificationThreshold: 70,
                 fps: 10,
-                frameSize: 70
+                frameSize: 70,
+                showAdvanced: false
             },
             sensitive: {
                 name: '高灵敏度',
@@ -1259,7 +1258,8 @@
                 screenshotThreshold: 60,
                 notificationThreshold: 50,
                 fps: 15,
-                frameSize: 90
+                frameSize: 90,
+                showAdvanced: false
             },
             'power-save': {
                 name: '省电模式',
@@ -1270,7 +1270,8 @@
                 screenshotThreshold: 90,
                 notificationThreshold: 80,
                 fps: 5,
-                frameSize: 50
+                frameSize: 50,
+                showAdvanced: false
             },
             security: {
                 name: '安防模式',
@@ -1281,18 +1282,24 @@
                 screenshotThreshold: 45,
                 notificationThreshold: 40,
                 fps: 20,
-                frameSize: 100
+                frameSize: 100,
+                showAdvanced: false
             },
             silent: {
                 name: '静音模式',
                 sensitivity: 60,
                 pixelThreshold: 25,
                 detectionThreshold: 45,
-                vibrationThreshold: 100,  // 禁用震动
+                vibrationThreshold: 100,
                 screenshotThreshold: 70,
-                notificationThreshold: 100,  // 禁用通知
+                notificationThreshold: 100,
                 fps: 10,
-                frameSize: 70
+                frameSize: 70,
+                showAdvanced: false
+            },
+            custom: {
+                name: '自定义',
+                showAdvanced: true
             }
         };
 
@@ -1315,7 +1322,6 @@
             const startBtn = document.getElementById('startBtn');
             const switchCameraBtn = document.getElementById('switchCameraBtn');
             const detectionFrame = document.getElementById('detectionFrame');
-            const statusIndicator = document.getElementById('statusIndicator');
             const statusText = document.getElementById('statusText');
             const intensityChip = document.getElementById('intensityChip');
             const currentIntensity = document.getElementById('currentIntensity');
@@ -1328,28 +1334,12 @@
             const clearScreenshots = document.getElementById('clearScreenshots');
 
             const wakeLockToggle = document.getElementById('wakeLockToggle');
-            const wakeLockSubtitle = document.getElementById('wakeLockSubtitle');
             const powerSaveToggle = document.getElementById('powerSaveToggle');
             const powerSaveOverlay = document.getElementById('powerSaveOverlay');
             const powerSaveIndicator = document.getElementById('powerSaveIndicator');
-            const powerSaveSubtitle = document.getElementById('powerSaveSubtitle');
-            const powerSaveDelaySlider = document.getElementById('powerSaveDelaySlider');
-            const powerSaveDelayValue = document.getElementById('powerSaveDelayValue');
-            const powerSaveDimSlider = document.getElementById('powerSaveDimSlider');
-            const powerSaveDimValue = document.getElementById('powerSaveDimValue');
-
             const notificationToggle = document.getElementById('notificationToggle');
-            const notificationSubtitle = document.getElementById('notificationSubtitle');
             const soundToggle = document.getElementById('soundToggle');
-            const soundSubtitle = document.getElementById('soundSubtitle');
-            const notificationThreshold = document.getElementById('notificationThreshold');
-            const notificationThresholdValue = document.getElementById('notificationThresholdValue');
-            const notificationCooldownSlider = document.getElementById('notificationCooldownSlider');
-            const notificationCooldownValue = document.getElementById('notificationCooldownValue');
-            const volumeSlider = document.getElementById('volumeSlider');
-            const volumeValue = document.getElementById('volumeValue');
 
-            const batteryStatusBar = document.getElementById('batteryStatusBar');
             const batteryIcon = document.getElementById('batteryIcon');
             const batteryLevelBar = document.getElementById('batteryLevelBar');
             const batteryPercentage = document.getElementById('batteryPercentage');
@@ -1376,23 +1366,18 @@
             const screenshotThresholdValue = document.getElementById('screenshotThresholdValue');
             const detectionThreshold = document.getElementById('detectionThreshold');
             const detectionThresholdValue = document.getElementById('detectionThresholdValue');
+            const notificationThreshold = document.getElementById('notificationThreshold');
+            const notificationThresholdValue = document.getElementById('notificationThresholdValue');
             const sensitivitySlider = document.getElementById('sensitivity');
             const sensitivityValue = document.getElementById('sensitivityValue');
             const pixelThreshold = document.getElementById('pixelThreshold');
             const pixelThresholdValue = document.getElementById('pixelThresholdValue');
             const fpsSlider = document.getElementById('fpsSlider');
             const fpsValue = document.getElementById('fpsValue');
-            const durationSlider = document.getElementById('durationSlider');
-            const durationValue = document.getElementById('durationValue');
-            const cooldownSlider = document.getElementById('cooldownSlider');
-            const cooldownValue = document.getElementById('cooldownValue');
-            const vibrationCooldownSlider = document.getElementById('vibrationCooldownSlider');
-            const vibrationCooldownValue = document.getElementById('vibrationCooldownValue');
-            const stepSlider = document.getElementById('stepSlider');
-            const stepValue = document.getElementById('stepValue');
+            const volumeSlider = document.getElementById('volumeSlider');
+            const volumeValue = document.getElementById('volumeValue');
 
             const motionDetectionToggle = document.getElementById('motionDetectionToggle');
-            const continuousMode = document.getElementById('continuousMode');
             const showIntensity = document.getElementById('showIntensity');
 
             let stream = null;
@@ -1410,14 +1395,8 @@
             let isInMotion = false;
             let screenshots = [];
             let wakeLock = null;
-            let isWakeLockSupported = false;
             let notificationPermission = false;
             let audioContext = null;
-
-            let powerSaveDelay = 30000;
-            let powerSaveDimLevel = 70;
-            let idleTimer = null;
-            let isPowerSaveActive = false;
 
             let frameSize = 70;
             let vibrationThresholdPercent = 60;
@@ -1427,7 +1406,6 @@
             let sensitivity = 50;
             let pixelThresholdVal = 30;
             let detectionFps = 10;
-            let minDuration = 300;
             let cooldownTime = 2000;
             let vibrationCooldownTime = 1000;
             let notificationCooldownTime = 5000;
@@ -1435,10 +1413,7 @@
             let stepSize = 4;
 
             let battery = null;
-            let previousBatteryLevel = null;
             let batteryLevelHistory = [];
-            let chargingStartTime = null;
-            let chargingStartLevel = null;
 
             // ========== 预设配置功能 ==========
             const presetButtons = document.querySelectorAll('.preset-button');
@@ -1446,10 +1421,20 @@
             presetButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     const presetName = button.dataset.preset;
-                    
-                    // 更新激活状态
                     presetButtons.forEach(btn => btn.classList.remove('active'));
                     button.classList.add('active');
+                    
+                    const preset = PRESETS[presetName];
+                    if (preset.showAdvanced !== undefined) {
+                        // 控制高级设置的显示/隐藏
+                        if (preset.showAdvanced) {
+                            advancedContent.classList.add('expanded');
+                            advancedIcon.classList.add('expanded');
+                        } else {
+                            advancedContent.classList.remove('expanded');
+                            advancedIcon.classList.remove('expanded');
+                        }
+                    }
                     
                     if (presetName !== 'custom') {
                         applyPreset(presetName);
@@ -1461,7 +1446,6 @@
                 const preset = PRESETS[presetName];
                 if (!preset) return;
                 
-                // 应用预设值
                 sensitivity = preset.sensitivity;
                 sensitivitySlider.value = sensitivity;
                 sensitivityValue.textContent = sensitivity;
@@ -1503,58 +1487,46 @@
              screenshotThreshold, notificationThreshold, fpsSlider, frameSizeSlider].forEach(slider => {
                 slider.addEventListener('input', () => {
                     presetButtons.forEach(btn => btn.classList.remove('active'));
-                    document.querySelector('[data-preset="custom"]').classList.add('active');
+                    const customBtn = document.querySelector('[data-preset="custom"]');
+                    customBtn.classList.add('active');
+                    // 切换到自定义时自动展开高级设置
+                    advancedContent.classList.add('expanded');
+                    advancedIcon.classList.add('expanded');
                 });
             });
 
-            // ========== 通知和声音功能 ==========
+            // ========== 通知和声音 ==========
             async function requestNotificationPermission() {
                 if ('Notification' in window) {
                     const permission = await Notification.requestPermission();
-                    if (permission === 'granted') {
-                        notificationPermission = true;
-                        notificationSubtitle.textContent = '已授权，检测到运动时发送通知';
-                        console.log('✅ 通知权限已授予');
-                    } else {
-                        notificationPermission = false;
+                    notificationPermission = (permission === 'granted');
+                    if (!notificationPermission) {
                         notificationToggle.checked = false;
-                        notificationSubtitle.textContent = '权限被拒绝';
-                        console.log('❌ 通知权限被拒绝');
                     }
                 } else {
                     notificationToggle.disabled = true;
-                    notificationSubtitle.textContent = '浏览器不支持通知';
-                    console.log('❌ 浏览器不支持通知');
                 }
             }
 
             function sendNotification(intensity) {
                 if (!notificationToggle.checked || !notificationPermission) return;
-                
                 const now = Date.now();
                 if (now - lastNotificationTime < notificationCooldownTime) return;
                 
                 try {
                     const notification = new Notification('🔔 检测到运动!', {
                         body: `运动强度: ${intensity}%\n时间: ${new Date().toLocaleTimeString('zh-CN')}`,
-                        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="0.9em" font-size="90">📸</text></svg>',
                         tag: 'motion-detection',
-                        requireInteraction: false,
-                        silent: false
+                        requireInteraction: false
                     });
-                    
                     notification.onclick = function() {
                         window.focus();
                         this.close();
                     };
-                    
                     setTimeout(() => notification.close(), 5000);
-                    
                     notificationCount++;
                     notificationCountEl.textContent = notificationCount;
                     lastNotificationTime = now;
-                    
-                    console.log('📢 通知已发送');
                 } catch (error) {
                     console.error('发送通知失败:', error);
                 }
@@ -1562,31 +1534,20 @@
 
             function playSound() {
                 if (!soundToggle.checked) return;
-                
                 try {
                     if (!audioContext) {
                         audioContext = new (window.AudioContext || window.webkitAudioContext)();
                     }
-                    
                     const oscillator = audioContext.createOscillator();
                     const gainNode = audioContext.createGain();
-                    
                     oscillator.connect(gainNode);
                     gainNode.connect(audioContext.destination);
-                    
                     gainNode.gain.value = soundVolume;
                     oscillator.frequency.value = 800;
                     oscillator.type = 'sine';
-                    
                     oscillator.start(audioContext.currentTime);
                     oscillator.stop(audioContext.currentTime + 0.2);
-                    
-                    gainNode.gain.exponentialRampToValueAtTime(
-                        0.01,
-                        audioContext.currentTime + 0.2
-                    );
-                    
-                    console.log('🔊 提示音已播放');
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
                 } catch (error) {
                     console.error('播放提示音失败:', error);
                 }
@@ -1595,9 +1556,6 @@
             notificationToggle.addEventListener('change', async (e) => {
                 if (e.target.checked) {
                     await requestNotificationPermission();
-                    if (!notificationPermission) {
-                        e.target.checked = false;
-                    }
                 }
             });
 
@@ -1606,17 +1564,7 @@
                 volumeValue.textContent = e.target.value + '%';
             });
 
-            notificationThreshold.addEventListener('input', (e) => {
-                notificationThresholdPercent = parseInt(e.target.value);
-                notificationThresholdValue.textContent = notificationThresholdPercent + '%';
-            });
-
-            notificationCooldownSlider.addEventListener('input', (e) => {
-                notificationCooldownTime = parseInt(e.target.value) * 1000;
-                notificationCooldownValue.textContent = e.target.value;
-            });
-
-            // ========== 电池状态监控 ==========
+            // ========== 电池监控 ==========
             async function initBattery() {
                 if ('getBattery' in navigator) {
                     try {
@@ -1624,12 +1572,7 @@
                         updateBatteryStatus();
                         battery.addEventListener('chargingchange', updateBatteryStatus);
                         battery.addEventListener('levelchange', updateBatteryStatus);
-                        battery.addEventListener('chargingtimechange', updateBatteryStatus);
-                        battery.addEventListener('dischargingtimechange', updateBatteryStatus);
-                        setInterval(calculateChargingSpeed, 30000);
-                        console.log('✅ 电池监控已启动');
                     } catch (error) {
-                        console.error('电池API不可用:', error);
                         showBatteryNotSupported();
                     }
                 } else {
@@ -1646,251 +1589,39 @@
                     batteryIcon.innerHTML = '<span class="charging-icon">⚡</span>';
                     batteryIcon.style.color = '#4caf50';
                 } else {
-                    if (level > 80) {
-                        batteryIcon.textContent = '🔋';
-                        batteryIcon.style.color = '#4caf50';
-                    } else if (level > 20) {
-                        batteryIcon.textContent = '🔋';
-                        batteryIcon.style.color = '#ff9800';
-                    } else {
-                        batteryIcon.textContent = '🪫';
-                        batteryIcon.style.color = '#f44336';
-                    }
+                    batteryIcon.textContent = level > 20 ? '🔋' : '🪫';
+                    batteryIcon.style.color = level > 20 ? '#4caf50' : '#f44336';
                 }
                 batteryPercentage.textContent = level + '%';
                 batteryProgressBar.style.width = level + '%';
-                if (isCharging) {
-                    chargingStatus.textContent = '⚡ 充电中';
-                    if (!chargingStartTime) {
-                        chargingStartTime = Date.now();
-                        chargingStartLevel = level;
-                    }
-                } else {
-                    chargingStatus.textContent = '🔌 未充电';
-                    chargingStartTime = null;
-                    chargingStartLevel = null;
-                }
-                if (isCharging) {
-                    if (battery.chargingTime && battery.chargingTime !== Infinity) {
-                        timeToFull.textContent = formatTime(battery.chargingTime);
-                    } else {
-                        timeToFull.textContent = '计算中...';
-                    }
-                } else {
-                    timeToFull.textContent = '--';
-                }
-                if (!isCharging) {
-                    if (battery.dischargingTime && battery.dischargingTime !== Infinity) {
-                        timeRemaining.textContent = formatTime(battery.dischargingTime);
-                    } else {
-                        timeRemaining.textContent = '计算中...';
-                    }
-                } else {
-                    timeRemaining.textContent = '--';
-                }
-                batteryLevelHistory.push({
-                    time: Date.now(),
-                    level: level,
-                    charging: isCharging
-                });
-                const tenMinutesAgo = Date.now() - 600000;
-                batteryLevelHistory = batteryLevelHistory.filter(h => h.time > tenMinutesAgo);
-                previousBatteryLevel = level;
-            }
-
-            function calculateChargingSpeed() {
-                if (!battery || !battery.charging || batteryLevelHistory.length < 2) {
-                    chargingSpeed.textContent = '--';
-                    return;
-                }
-                const fiveMinutesAgo = Date.now() - 300000;
-                const recentHistory = batteryLevelHistory.filter(h => h.time > fiveMinutesAgo && h.charging);
-                if (recentHistory.length < 2) {
-                    chargingSpeed.textContent = '计算中...';
-                    return;
-                }
-                const oldestRecord = recentHistory[0];
-                const newestRecord = recentHistory[recentHistory.length - 1];
-                const levelDiff = newestRecord.level - oldestRecord.level;
-                const timeDiff = (newestRecord.time - oldestRecord.time) / 1000;
-                if (timeDiff > 0 && levelDiff > 0) {
-                    const speedPerHour = (levelDiff / timeDiff) * 3600;
-                    chargingSpeed.textContent = speedPerHour.toFixed(1) + '%/时';
-                    if (battery.charging) {
-                        const remaining = 100 - newestRecord.level;
-                        const hoursToFull = remaining / speedPerHour;
-                        const secondsToFull = hoursToFull * 3600;
-                        if (secondsToFull > 0 && secondsToFull < 86400) {
-                            timeToFull.textContent = formatTime(secondsToFull);
-                        }
-                    }
-                } else {
-                    chargingSpeed.textContent = '0%/时';
-                }
-            }
-
-            function formatTime(seconds) {
-                if (!seconds || seconds === Infinity || seconds < 0) return '--';
-                const hours = Math.floor(seconds / 3600);
-                const minutes = Math.floor((seconds % 3600) / 60);
-                if (hours > 0) {
-                    return `${hours}小时${minutes}分钟`;
-                } else {
-                    return `${minutes}分钟`;
-                }
+                chargingStatus.textContent = isCharging ? '⚡ 充电中' : '🔌 未充电';
             }
 
             function showBatteryNotSupported() {
                 batteryLevelBar.textContent = 'N/A';
                 batteryPercentage.textContent = '--';
                 chargingStatus.textContent = '不支持';
-                chargingSpeed.textContent = '--';
-                timeToFull.textContent = '--';
-                timeRemaining.textContent = '--';
             }
 
             initBattery();
 
             // ========== Wake Lock ==========
             if ('wakeLock' in navigator) {
-                isWakeLockSupported = true;
+                wakeLockToggle.addEventListener('change', async (e) => {
+                    if (e.target.checked && isDetecting) {
+                        try {
+                            wakeLock = await navigator.wakeLock.request('screen');
+                        } catch (err) {
+                            console.error('Wake Lock错误:', err);
+                        }
+                    } else if (wakeLock) {
+                        await wakeLock.release();
+                        wakeLock = null;
+                    }
+                });
             } else {
                 wakeLockToggle.disabled = true;
-                wakeLockToggle.checked = false;
-                wakeLockSubtitle.textContent = '您的浏览器不支持此功能';
             }
-
-            async function requestWakeLock() {
-                if (!isWakeLockSupported || !wakeLockToggle.checked) return;
-                try {
-                    wakeLock = await navigator.wakeLock.request('screen');
-                    console.log('✅ 屏幕保持常亮已启用');
-                    wakeLock.addEventListener('release', () => {
-                        console.log('屏幕保持常亮已释放');
-                    });
-                } catch (err) {
-                    console.error(`Wake Lock错误: ${err.name}, ${err.message}`);
-                }
-            }
-
-            async function releaseWakeLock() {
-                if (wakeLock !== null) {
-                    await wakeLock.release();
-                    wakeLock = null;
-                }
-            }
-
-            wakeLockToggle.addEventListener('change', async (e) => {
-                if (e.target.checked && isDetecting) {
-                    await requestWakeLock();
-                } else {
-                    await releaseWakeLock();
-                }
-            });
-
-            // ========== 省电模式 ==========
-            function updatePowerSaveOverlay() {
-                const opacity = powerSaveDimLevel / 100;
-                powerSaveOverlay.style.background = `rgba(0, 0, 0, ${opacity})`;
-            }
-
-            function activatePowerSave() {
-                if (!powerSaveToggle.checked || !isDetecting) return;
-                isPowerSaveActive = true;
-                powerSaveOverlay.classList.add('active');
-                updatePowerSaveOverlay();
-                powerSaveIndicator.classList.add('show');
-                setTimeout(() => {
-                    powerSaveIndicator.classList.remove('show');
-                }, 3000);
-                console.log('🔋 省电模式已启动');
-            }
-
-            function deactivatePowerSave() {
-                if (!isPowerSaveActive) return;
-                isPowerSaveActive = false;
-                powerSaveOverlay.classList.remove('active');
-                powerSaveOverlay.style.background = 'rgba(0, 0, 0, 0)';
-                powerSaveIndicator.classList.remove('show');
-            }
-
-            function resetIdleTimer() {
-                if (!powerSaveToggle.checked || !isDetecting) return;
-                if (isPowerSaveActive) {
-                    deactivatePowerSave();
-                }
-                if (idleTimer) {
-                    clearTimeout(idleTimer);
-                }
-                idleTimer = setTimeout(activatePowerSave, powerSaveDelay);
-            }
-
-            const userActivityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'touchmove', 'click'];
-
-            function initPowerSaveMode() {
-                userActivityEvents.forEach(event => {
-                    document.addEventListener(event, resetIdleTimer, { passive: true });
-                });
-                if (powerSaveToggle.checked && isDetecting) {
-                    resetIdleTimer();
-                }
-            }
-
-            function destroyPowerSaveMode() {
-                userActivityEvents.forEach(event => {
-                    document.removeEventListener(event, resetIdleTimer);
-                });
-                if (idleTimer) {
-                    clearTimeout(idleTimer);
-                    idleTimer = null;
-                }
-                deactivatePowerSave();
-            }
-
-            function updatePowerSaveSubtitle() {
-                powerSaveSubtitle.textContent = `${powerSaveDelay / 1000}秒后降低${powerSaveDimLevel}%亮度`;
-            }
-
-            powerSaveDelaySlider.addEventListener('input', (e) => {
-                powerSaveDelay = parseInt(e.target.value) * 1000;
-                powerSaveDelayValue.textContent = e.target.value;
-                updatePowerSaveSubtitle();
-            });
-
-            powerSaveDimSlider.addEventListener('input', (e) => {
-                powerSaveDimLevel = parseInt(e.target.value);
-                powerSaveDimValue.textContent = e.target.value + '%';
-                updatePowerSaveSubtitle();
-                if (isPowerSaveActive) {
-                    updatePowerSaveOverlay();
-                }
-            });
-
-            powerSaveToggle.addEventListener('change', (e) => {
-                if (e.target.checked && isDetecting) {
-                    initPowerSaveMode();
-                } else {
-                    destroyPowerSaveMode();
-                }
-            });
-
-            document.addEventListener('visibilitychange', async () => {
-                if (document.hidden) {
-                    if (isDetecting) {
-                        destroyPowerSaveMode();
-                        localStorage.setItem('lastHiddenTime', Date.now());
-                    }
-                } else {
-                    if (isDetecting) {
-                        if (wakeLockToggle.checked) {
-                            await requestWakeLock();
-                        }
-                        if (powerSaveToggle.checked) {
-                            initPowerSaveMode();
-                        }
-                    }
-                }
-            });
 
             // ========== 检测框和滑块 ==========
             function updateFrameSize() {
@@ -1926,6 +1657,11 @@
                 detectionThresholdValue.textContent = detectionThresholdPercent + '%';
             });
 
+            notificationThreshold.addEventListener('input', (e) => {
+                notificationThresholdPercent = parseInt(e.target.value);
+                notificationThresholdValue.textContent = notificationThresholdPercent + '%';
+            });
+
             sensitivitySlider.addEventListener('input', (e) => {
                 sensitivity = parseInt(e.target.value);
                 sensitivityValue.textContent = sensitivity;
@@ -1941,32 +1677,11 @@
                 fpsValue.textContent = detectionFps;
             });
 
-            durationSlider.addEventListener('input', (e) => {
-                minDuration = parseInt(e.target.value);
-                durationValue.textContent = minDuration;
-            });
-
-            cooldownSlider.addEventListener('input', (e) => {
-                cooldownTime = parseInt(e.target.value) * 1000;
-                cooldownValue.textContent = e.target.value;
-            });
-
-            vibrationCooldownSlider.addEventListener('input', (e) => {
-                vibrationCooldownTime = parseFloat(e.target.value) * 1000;
-                vibrationCooldownValue.textContent = e.target.value;
-            });
-
-            stepSlider.addEventListener('input', (e) => {
-                stepSize = parseInt(e.target.value);
-                stepValue.textContent = stepSize;
-            });
-
             showIntensity.addEventListener('change', (e) => {
                 intensityChip.style.display = e.target.checked ? 'flex' : 'none';
             });
 
             updateFrameSize();
-            updatePowerSaveSubtitle();
 
             // ========== 摄像头控制 ==========
             startBtn.addEventListener('click', async () => {
@@ -2013,7 +1728,7 @@
                     video.addEventListener('loadedmetadata', () => {
                         canvas.width = video.videoWidth;
                         canvas.height = video.videoHeight;
-                        console.log(`Canvas尺寸: ${canvas.width}x${canvas.height}`);
+                        console.log(`Canvas: ${canvas.width}x${canvas.height}`);
                     });
 
                     video.addEventListener('play', async () => {
@@ -2024,11 +1739,9 @@
                         switchCameraBtn.disabled = false;
                         
                         if (wakeLockToggle.checked) {
-                            await requestWakeLock();
-                        }
-                        
-                        if (powerSaveToggle.checked) {
-                            initPowerSaveMode();
+                            try {
+                                wakeLock = await navigator.wakeLock.request('screen');
+                            } catch(e) {}
                         }
                         
                         detectMotion();
@@ -2053,8 +1766,11 @@
                 statusText.textContent = '已停止';
                 detectionFrame.classList.remove('motion-active');
                 switchCameraBtn.disabled = true;
-                await releaseWakeLock();
-                destroyPowerSaveMode();
+                
+                if (wakeLock) {
+                    await wakeLock.release();
+                    wakeLock = null;
+                }
             }
 
             // ========== 运动检测（修复版）==========
@@ -2064,20 +1780,24 @@
                 const interval = 1000 / detectionFps;
 
                 setTimeout(() => {
-                    if (!video.paused && !video.ended && video.readyState === video.HAVE_ENOUGH_DATA) {
+                    if (video.readyState === video.HAVE_ENOUGH_DATA) {
                         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                         const currentFrame = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
                         if (previousFrame && motionDetectionToggle.checked) {
                             const motionPixels = calculateMotion(currentFrame, previousFrame);
-                            const maxPixels = Math.floor((canvas.width * canvas.height) / (stepSize * stepSize));
-                            const intensityPercent = Math.min(100, Math.round((motionPixels / (maxPixels * (100 - sensitivity) / 100)) * 100));
+                            const frameRect = getDetectionFrameRect();
+                            const totalPixels = Math.floor((frameRect.right - frameRect.left) * (frameRect.bottom - frameRect.top) / (stepSize * stepSize));
+                            
+                            // 修复后的强度计算：直接用运动像素占总像素的百分比，再乘以灵敏度系数
+                            let intensityPercent = Math.min(100, Math.round((motionPixels / totalPixels) * 100 * (sensitivity / 50)));
                             
                             currentIntensity.textContent = intensityPercent;
                             currentIntensityStat.textContent = intensityPercent + '%';
 
                             const now = Date.now();
 
+                            // 检测计数
                             if (intensityPercent >= detectionThresholdPercent) {
                                 if (!isInMotion) {
                                     motionStartTime = now;
@@ -2086,7 +1806,7 @@
 
                                 const motionDuration = now - motionStartTime;
                                 
-                                if (motionDuration >= minDuration) {
+                                if (motionDuration >= 300) {
                                     detectionFrame.classList.add('motion-active');
                                     statusText.textContent = '检测到运动';
                                     detectionCount++;
@@ -2100,9 +1820,9 @@
                                 statusText.textContent = '监测中';
                             }
 
+                            // 震动
                             if (intensityPercent >= vibrationThresholdPercent) {
-                                const timeSinceLastVibration = now - lastVibrationTime;
-                                if (timeSinceLastVibration >= vibrationCooldownTime) {
+                                if (now - lastVibrationTime >= vibrationCooldownTime) {
                                     if ('vibrate' in navigator) {
                                         navigator.vibrate(50);
                                     }
@@ -2112,14 +1832,15 @@
                                 }
                             }
 
+                            // 截图
                             if (intensityPercent >= screenshotThresholdPercent) {
-                                const timeSinceLastShot = now - lastScreenshotTime;
-                                if (timeSinceLastShot >= cooldownTime || continuousMode.checked) {
+                                if (now - lastScreenshotTime >= cooldownTime) {
                                     takeScreenshot(intensityPercent);
                                     lastScreenshotTime = now;
                                 }
                             }
 
+                            // 通知和声音
                             if (intensityPercent >= notificationThresholdPercent) {
                                 sendNotification(intensityPercent);
                                 playSound();
