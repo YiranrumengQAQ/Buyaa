@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>智能运动检测系统</title>
+    <title>智能运动检测系统 Pro</title>
     <style>
         * {
             margin: 0;
@@ -13,9 +13,22 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary-color: #667eea;
+            --primary-dark: #5568d3;
+            --secondary-color: #764ba2;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+            --info-color: #2196f3;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            --card-shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.12);
+        }
+
         body {
             font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg-gradient);
             color: #333;
             overflow-x: hidden;
         }
@@ -28,7 +41,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg-gradient);
             z-index: 10000;
             justify-content: center;
             align-items: center;
@@ -41,74 +54,171 @@
         .desktop-warning h1 {
             font-size: 72px;
             margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite;
         }
 
-        .desktop-warning p {
-            font-size: 24px;
-            opacity: 0.9;
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
 
-        /* 顶部状态栏 */
-        .status-bar {
+        /* 顶部导航栏 - 优化版 */
+        .nav-bar {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            color: white;
-            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
             z-index: 1000;
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
 
-        .status-item {
+        .nav-title {
+            font-size: 18px;
+            font-weight: 700;
+            background: var(--bg-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-status {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 14px;
+            gap: 12px;
         }
 
-        .battery-icon {
-            font-size: 20px;
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #f5f5f5;
+        }
+
+        .status-badge.active {
+            background: linear-gradient(135deg, #4caf5020 0%, #8bc34a20 100%);
+            color: var(--success-color);
+        }
+
+        .battery-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* 标签页导航 */
+        .tab-nav {
+            display: flex;
+            padding: 0 16px;
+            background: white;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .tab-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            flex-shrink: 0;
+            padding: 14px 20px;
+            border: none;
+            background: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .tab-btn.active {
+            color: var(--primary-color);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--bg-gradient);
+            border-radius: 3px 3px 0 0;
         }
 
         /* 主容器 */
         .container {
-            padding: 70px 16px 16px;
+            padding: 120px 16px 80px;
             max-width: 600px;
             margin: 0 auto;
         }
 
-        /* 卡片样式 */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 卡片样式 - 优化版 */
         .card {
             background: white;
             border-radius: 16px;
             padding: 20px;
             margin-bottom: 16px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--card-shadow);
+            transition: box-shadow 0.3s;
+        }
+
+        .card:active {
+            box-shadow: var(--card-shadow-hover);
         }
 
         .card-title {
-            font-size: 18px;
-            font-weight: 600;
+            font-size: 16px;
+            font-weight: 700;
             margin-bottom: 16px;
-            color: #667eea;
+            color: #333;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        /* 视频预览 */
+        .card-title .icon {
+            font-size: 20px;
+        }
+
+        /* 视频预览 - 优化版 */
         .video-container {
             position: relative;
             border-radius: 12px;
             overflow: hidden;
             background: #000;
             margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
 
         #video {
@@ -122,69 +232,60 @@
 
         .detection-box {
             position: absolute;
-            border: 3px solid #4caf50;
+            border: 3px solid var(--success-color);
             box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
-            transition: border-color 0.2s, box-shadow 0.2s;
+            transition: all 0.2s;
             pointer-events: none;
         }
 
         .detection-box.active {
-            border-color: #f44336;
+            border-color: var(--danger-color);
             box-shadow: 0 0 30px rgba(244, 67, 54, 0.8);
         }
 
-        .detection-box::before,
-        .detection-box::after,
-        .corner-br::before,
-        .corner-br::after {
-            content: '';
+        .detection-info {
             position: absolute;
-            width: 20px;
-            height: 20px;
-            border: 3px solid currentColor;
-        }
-
-        .detection-box::before {
-            top: -3px;
-            left: -3px;
-            border-right: none;
-            border-bottom: none;
-        }
-
-        .detection-box::after {
-            top: -3px;
-            right: -3px;
-            border-left: none;
-            border-bottom: none;
-        }
-
-        .corner-br::before {
-            bottom: -3px;
-            left: -3px;
-            border-right: none;
-            border-top: none;
-        }
-
-        .corner-br::after {
-            bottom: -3px;
-            right: -3px;
-            border-left: none;
-            border-top: none;
-        }
-
-        /* 控制按钮 */
-        .controls {
+            top: 12px;
+            left: 12px;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
             display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .intensity-bar {
+            width: 100px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .intensity-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success-color), var(--danger-color));
+            transition: width 0.2s;
+        }
+
+        /* 控制按钮 - 优化版 */
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
             gap: 12px;
             margin-bottom: 16px;
         }
 
         .btn {
-            flex: 1;
-            padding: 14px;
+            padding: 14px 20px;
             border: none;
             border-radius: 12px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
@@ -192,25 +293,29 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: var(--card-shadow);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg-gradient);
             color: white;
         }
 
         .btn-primary:active {
-            transform: scale(0.95);
+            transform: scale(0.96);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
 
         .btn-secondary {
-            background: #f5f5f5;
+            background: white;
             color: #333;
+            border: 2px solid #e0e0e0;
         }
 
-        .btn-secondary:active {
-            background: #e0e0e0;
+        .btn-icon {
+            width: 48px;
+            height: 48px;
+            padding: 0;
         }
 
         .btn:disabled {
@@ -218,162 +323,391 @@
             cursor: not-allowed;
         }
 
-        /* 预设模式选择器 */
+        /* 预设模式 - 优化版 */
         .preset-modes {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 10px;
-            margin-bottom: 16px;
         }
 
         .preset-btn {
-            padding: 12px;
-            border: 2px solid #e0e0e0;
+            padding: 16px 12px;
+            border: 2px solid #e8e8e8;
             border-radius: 12px;
             background: white;
             cursor: pointer;
             transition: all 0.3s;
-            font-size: 14px;
+            font-size: 13px;
             text-align: center;
-        }
-
-        .preset-btn.active {
-            border-color: #667eea;
-            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-            color: #667eea;
             font-weight: 600;
         }
 
-        /* 滑块控制 */
+        .preset-btn:active {
+            transform: scale(0.96);
+        }
+
+        .preset-btn.active {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%);
+            color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* 滑块控制 - 优化版 */
         .slider-group {
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
 
         .slider-label {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .slider-value {
+            color: var(--primary-color);
             font-size: 14px;
-            color: #666;
         }
 
         .slider {
             width: 100%;
             height: 6px;
             border-radius: 3px;
-            background: #e0e0e0;
+            background: linear-gradient(90deg, #e0e0e0, #f5f5f5);
             outline: none;
             -webkit-appearance: none;
         }
 
         .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
-            background: #667eea;
+            background: var(--bg-gradient);
             cursor: pointer;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+
+        .slider::-webkit-slider-thumb:active {
+            transform: scale(1.2);
         }
 
         .slider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
-            background: #667eea;
+            background: var(--bg-gradient);
             cursor: pointer;
             border: none;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
-        /* 高级设置面板 */
+        /* 高级设置 */
         .advanced-settings {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.3s ease;
+            transition: max-height 0.4s ease;
         }
 
         .advanced-settings.show {
-            max-height: 1500px;
+            max-height: 2000px;
         }
 
-        /* 统计信息 */
+        /* 统计卡片 - 优化版 */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
         }
 
-        .stat-item {
-            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-            padding: 16px;
+        .stat-card {
+            background: linear-gradient(135deg, #667eea08 0%, #764ba208 100%);
+            padding: 20px;
             border-radius: 12px;
             text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .stat-card:active {
+            border-color: var(--primary-color);
+            transform: scale(0.96);
+        }
+
+        .stat-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
         }
 
         .stat-value {
             font-size: 28px;
             font-weight: 700;
-            color: #667eea;
+            background: var(--bg-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             display: block;
+            margin-bottom: 4px;
         }
 
         .stat-label {
             font-size: 12px;
             color: #666;
-            margin-top: 4px;
+            font-weight: 500;
         }
 
-        /* 电池信息 */
-        .battery-info {
+        /* 电池信息 - 优化版 */
+        .battery-card {
             display: flex;
             align-items: center;
-            gap: 16px;
-            padding: 16px;
-            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            gap: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%);
             border-radius: 12px;
             margin-bottom: 16px;
         }
 
-        .battery-percent {
-            font-size: 42px;
-            font-weight: 700;
-            color: #667eea;
+        .battery-icon-large {
+            font-size: 48px;
         }
 
         .battery-details {
             flex: 1;
         }
 
+        .battery-percent {
+            font-size: 36px;
+            font-weight: 700;
+            background: var(--bg-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
         .battery-bar {
             height: 8px;
-            background: #e0e0e0;
+            background: rgba(0, 0, 0, 0.1);
             border-radius: 4px;
             overflow: hidden;
-            margin: 8px 0;
+            margin-bottom: 8px;
         }
 
         .battery-fill {
             height: 100%;
-            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            background: linear-gradient(90deg, var(--success-color), #8bc34a);
             transition: width 0.3s;
         }
 
         .battery-fill.low {
-            background: linear-gradient(90deg, #f44336, #ff9800);
+            background: linear-gradient(90deg, var(--danger-color), var(--warning-color));
         }
 
         .battery-text {
             font-size: 12px;
             color: #666;
+            font-weight: 500;
         }
 
-        /* 截图画廊 */
+        /* 日志系统 - 全新设计 */
+        .log-container {
+            background: #1e1e1e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+
+        .log-header {
+            background: #2d2d2d;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #3d3d3d;
+        }
+
+        .log-title {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .log-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .log-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .log-btn:active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .log-filters {
+            background: #252525;
+            padding: 12px 16px;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            border-bottom: 1px solid #3d3d3d;
+        }
+
+        .log-filters::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .log-filters::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 2px;
+        }
+
+        .filter-chip {
+            flex-shrink: 0;
+            padding: 6px 12px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #aaa;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .filter-chip.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .filter-chip.info { border-color: var(--info-color); }
+        .filter-chip.success { border-color: var(--success-color); }
+        .filter-chip.warning { border-color: var(--warning-color); }
+        .filter-chip.error { border-color: var(--danger-color); }
+
+        .log-content {
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            font-size: 11px;
+            line-height: 1.6;
+            padding: 12px;
+            background: #1e1e1e;
+        }
+
+        .log-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .log-content::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 3px;
+        }
+
+        .log-entry {
+            display: flex;
+            gap: 8px;
+            padding: 6px 8px;
+            border-radius: 4px;
+            margin-bottom: 2px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .log-entry:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .log-time {
+            color: #666;
+            flex-shrink: 0;
+            width: 70px;
+        }
+
+        .log-level {
+            flex-shrink: 0;
+            width: 60px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .log-level.info { color: var(--info-color); }
+        .log-level.success { color: var(--success-color); }
+        .log-level.warning { color: var(--warning-color); }
+        .log-level.error { color: var(--danger-color); }
+
+        .log-message {
+            color: #ddd;
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .log-detail {
+            color: #888;
+            font-size: 10px;
+        }
+
+        .log-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .log-stats {
+            background: #252525;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid #3d3d3d;
+        }
+
+        .log-stat-item {
+            text-align: center;
+        }
+
+        .log-stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .log-stat-label {
+            font-size: 10px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        /* 截图画廊 - 优化版 */
         .screenshots-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-top: 16px;
+            gap: 10px;
         }
 
         .screenshot-item {
@@ -382,6 +716,12 @@
             overflow: hidden;
             cursor: pointer;
             aspect-ratio: 1;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s;
+        }
+
+        .screenshot-item:active {
+            transform: scale(0.95);
         }
 
         .screenshot-item img {
@@ -390,16 +730,16 @@
             object-fit: cover;
         }
 
-        .screenshot-info {
+        .screenshot-overlay {
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0, 0, 0, 0.7);
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
             color: white;
-            padding: 4px;
+            padding: 8px;
             font-size: 10px;
-            text-align: center;
+            font-weight: 600;
         }
 
         /* 全屏查看 */
@@ -411,16 +751,18 @@
             right: 0;
             bottom: 0;
             background: rgba(0, 0, 0, 0.95);
-            z-index: 2000;
+            z-index: 3000;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            animation: fadeIn 0.3s ease;
         }
 
         .fullscreen-viewer img {
             max-width: 100%;
             max-height: 100%;
             border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
         }
 
         .close-fullscreen {
@@ -430,27 +772,37 @@
             background: white;
             border: none;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             font-size: 24px;
             cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s;
+        }
+
+        .close-fullscreen:active {
+            transform: scale(0.9);
         }
 
         /* 提示信息 */
         .toast {
             position: fixed;
-            bottom: 80px;
+            bottom: 90px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             color: white;
             padding: 12px 24px;
             border-radius: 24px;
-            font-size: 14px;
+            font-size: 13px;
+            font-weight: 600;
             z-index: 3000;
             opacity: 0;
             transition: opacity 0.3s;
             pointer-events: none;
+            max-width: 90%;
+            text-align: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
         }
 
         .toast.show {
@@ -472,17 +824,28 @@
         }
 
         /* 开关按钮 */
-        .switch-container {
+        .switch-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .switch-row:last-child {
+            border-bottom: none;
+        }
+
+        .switch-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #555;
         }
 
         .switch {
             position: relative;
             width: 48px;
-            height: 26px;
+            height: 28px;
         }
 
         .switch input {
@@ -498,44 +861,66 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #ccc;
+            background-color: #ddd;
             transition: 0.4s;
-            border-radius: 26px;
+            border-radius: 28px;
         }
 
         .switch-slider:before {
             position: absolute;
             content: "";
-            height: 20px;
-            width: 20px;
+            height: 22px;
+            width: 22px;
             left: 3px;
             bottom: 3px;
             background-color: white;
             transition: 0.4s;
             border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         input:checked + .switch-slider {
-            background-color: #667eea;
+            background: var(--bg-gradient);
         }
 
         input:checked + .switch-slider:before {
-            transform: translateX(22px);
+            transform: translateX(20px);
         }
 
-        /* 加载动画 */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
+        /* 底部操作栏 */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            padding: 12px 16px;
+            box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .quick-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .quick-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            color: var(--primary-color);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quick-btn:active {
+            transform: scale(0.95);
+            background: linear-gradient(135deg, #667eea25 0%, #764ba225 100%);
         }
 
         /* 响应式 */
@@ -544,11 +929,7 @@
                 display: flex !important;
             }
 
-            .container {
-                display: none;
-            }
-
-            .status-bar {
+            .container, .nav-bar, .bottom-bar {
                 display: none;
             }
         }
@@ -562,15 +943,27 @@
         <p style="margin-top: 20px; font-size: 18px;">请使用手机或平板设备扫描二维码访问</p>
     </div>
 
-    <!-- 顶部状态栏 -->
-    <div class="status-bar">
-        <div class="status-item">
-            <span>🎥</span>
-            <span id="status-text">就绪</span>
+    <!-- 顶部导航栏 -->
+    <div class="nav-bar">
+        <div class="nav-header">
+            <div class="nav-title">🎯 智能检测系统 Pro</div>
+            <div class="nav-status">
+                <div class="status-badge" id="statusBadge">
+                    <span id="statusIcon">⏸️</span>
+                    <span id="statusText">就绪</span>
+                </div>
+                <div class="battery-indicator">
+                    <span id="batteryIcon">🔋</span>
+                    <span id="batteryStatus">--</span>
+                </div>
+            </div>
         </div>
-        <div class="status-item">
-            <span class="battery-icon" id="battery-icon">🔋</span>
-            <span id="battery-status">--</span>
+        <div class="tab-nav">
+            <button class="tab-btn active" data-tab="monitor">📹 监控</button>
+            <button class="tab-btn" data-tab="settings">⚙️ 设置</button>
+            <button class="tab-btn" data-tab="logs">📝 日志</button>
+            <button class="tab-btn" data-tab="stats">📊 统计</button>
+            <button class="tab-btn" data-tab="gallery">📸 相册</button>
         </div>
     </div>
 
@@ -579,240 +972,357 @@
 
     <!-- 主容器 -->
     <div class="container">
-        <!-- 视频预览卡片 -->
-        <div class="card">
-            <div class="card-title">📹 实时监控</div>
-            <div class="video-container" id="videoContainer">
-                <video id="video" autoplay playsinline muted></video>
-                <div class="detection-box corner-br" id="detectionBox"></div>
-            </div>
-            <div class="controls">
-                <button class="btn btn-primary" id="startBtn">
-                    <span>▶️</span>
-                    <span>开始检测</span>
-                </button>
-                <button class="btn btn-secondary" id="switchCameraBtn">
-                    <span>🔄</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- 预设模式 -->
-        <div class="card">
-            <div class="card-title">⚙️ 预设模式</div>
-            <div class="preset-modes">
-                <button class="preset-btn active" data-preset="balanced">⚖️ 平衡模式</button>
-                <button class="preset-btn" data-preset="sensitive">🔍 高灵敏度</button>
-                <button class="preset-btn" data-preset="eco">🔋 省电模式</button>
-                <button class="preset-btn" data-preset="security">🔒 安防模式</button>
-                <button class="preset-btn" data-preset="silent">🔇 静音模式</button>
-                <button class="preset-btn" data-preset="custom">⚙️ 自定义</button>
-            </div>
-        </div>
-
-        <!-- 检测设置 -->
-        <div class="card">
-            <div class="card-title">🎛️ 检测设置</div>
-
-            <div class="slider-group">
-                <div class="slider-label">
-                    <span>检测区域大小</span>
-                    <span id="detectionAreaValue">60%</span>
+        <!-- 监控标签页 -->
+        <div class="tab-content active" data-tab="monitor">
+            <!-- 视频预览 -->
+            <div class="card">
+                <div class="video-container">
+                    <video id="video" autoplay playsinline muted></video>
+                    <div class="detection-box" id="detectionBox"></div>
+                    <div class="detection-info" id="detectionInfo">
+                        <span>运动强度: <span id="intensityText">0%</span></span>
+                        <div class="intensity-bar">
+                            <div class="intensity-fill" id="intensityFill" style="width: 0%"></div>
+                        </div>
+                    </div>
                 </div>
-                <input type="range" class="slider" id="detectionArea" min="30" max="100" value="60">
-            </div>
-
-            <div class="slider-group">
-                <div class="slider-label">
-                    <span>震动触发阈值</span>
-                    <span id="vibrateThresholdValue">50%</span>
+                <div class="controls">
+                    <button class="btn btn-primary" id="startBtn">
+                        <span>▶️</span>
+                        <span>开始检测</span>
+                    </button>
+                    <button class="btn btn-secondary" id="pauseBtn" disabled>
+                        <span>⏸️</span>
+                        <span>暂停</span>
+                    </button>
+                    <button class="btn btn-icon btn-secondary" id="switchCameraBtn">
+                        <span>🔄</span>
+                    </button>
                 </div>
-                <input type="range" class="slider" id="vibrateThreshold" min="10" max="100" value="50">
             </div>
 
-            <div class="slider-group">
-                <div class="slider-label">
-                    <span>截图触发阈值</span>
-                    <span id="screenshotThresholdValue">70%</span>
+            <!-- 预设模式 -->
+            <div class="card">
+                <div class="card-title">
+                    <span class="icon">⚡</span>
+                    <span>快速模式</span>
                 </div>
-                <input type="range" class="slider" id="screenshotThreshold" min="10" max="100" value="70">
-            </div>
-
-            <div class="slider-group">
-                <div class="slider-label">
-                    <span>通知触发阈值</span>
-                    <span id="notificationThresholdValue">60%</span>
+                <div class="preset-modes">
+                    <button class="preset-btn active" data-preset="balanced">⚖️ 平衡模式</button>
+                    <button class="preset-btn" data-preset="sensitive">🔍 高灵敏度</button>
+                    <button class="preset-btn" data-preset="eco">🔋 省电模式</button>
+                    <button class="preset-btn" data-preset="security">🔒 安防模式</button>
+                    <button class="preset-btn" data-preset="silent">🔇 静音模式</button>
+                    <button class="preset-btn" data-preset="custom">⚙️ 自定义</button>
                 </div>
-                <input type="range" class="slider" id="notificationThreshold" min="10" max="100" value="60">
             </div>
 
-            <!-- 高级设置 -->
-            <div class="advanced-settings" id="advancedSettings">
-                <hr style="margin: 20px 0; border: none; border-top: 1px solid #e0e0e0;">
-
+            <!-- 快速调节 -->
+            <div class="card">
+                <div class="card-title">
+                    <span class="icon">🎛️</span>
+                    <span>快速调节</span>
+                </div>
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>检测区域大小</span>
+                        <span class="slider-value" id="detectionAreaValue">60%</span>
+                    </div>
+                    <input type="range" class="slider" id="detectionArea" min="30" max="100" value="60">
+                </div>
                 <div class="slider-group">
                     <div class="slider-label">
                         <span>检测灵敏度</span>
-                        <span id="sensitivityValue">50</span>
+                        <span class="slider-value" id="sensitivityValue">50</span>
                     </div>
                     <input type="range" class="slider" id="sensitivity" min="10" max="90" value="50">
                 </div>
+            </div>
+        </div>
 
+        <!-- 设置标签页 -->
+        <div class="tab-content" data-tab="settings">
+            <!-- 检测参数 -->
+            <div class="card">
+                <div class="card-title">
+                    <span class="icon">🎯</span>
+                    <span>检测参数</span>
+                </div>
                 <div class="slider-group">
                     <div class="slider-label">
-                        <span>像素变化阈值</span>
-                        <span id="pixelThresholdValue">40</span>
+                        <span>震动触发阈值</span>
+                        <span class="slider-value" id="vibrateThresholdValue">50%</span>
                     </div>
-                    <input type="range" class="slider" id="pixelThreshold" min="10" max="100" value="40">
+                    <input type="range" class="slider" id="vibrateThreshold" min="10" max="100" value="50">
                 </div>
-
                 <div class="slider-group">
                     <div class="slider-label">
-                        <span>检测频率 (帧/秒)</span>
-                        <span id="frameRateValue">15</span>
+                        <span>截图触发阈值</span>
+                        <span class="slider-value" id="screenshotThresholdValue">70%</span>
                     </div>
-                    <input type="range" class="slider" id="frameRate" min="5" max="30" value="15">
+                    <input type="range" class="slider" id="screenshotThreshold" min="10" max="100" value="70">
                 </div>
-
                 <div class="slider-group">
                     <div class="slider-label">
-                        <span>最小持续时间 (ms)</span>
-                        <span id="minDurationValue">500</span>
+                        <span>通知触发阈值</span>
+                        <span class="slider-value" id="notificationThresholdValue">60%</span>
                     </div>
-                    <input type="range" class="slider" id="minDuration" min="100" max="2000" step="100" value="500">
+                    <input type="range" class="slider" id="notificationThreshold" min="10" max="100" value="60">
                 </div>
+            </div>
 
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>采样步进 (像素)</span>
-                        <span id="sampleStepValue">4</span>
+            <!-- 高级参数 -->
+            <div class="card">
+                <div class="card-title">
+                    <span class="icon">⚙️</span>
+                    <span>高级参数</span>
+                </div>
+                <div class="advanced-settings" id="advancedSettings">
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>像素变化阈值</span>
+                            <span class="slider-value" id="pixelThresholdValue">40</span>
+                        </div>
+                        <input type="range" class="slider" id="pixelThreshold" min="10" max="100" value="40">
                     </div>
-                    <input type="range" class="slider" id="sampleStep" min="2" max="10" value="4">
-                </div>
-
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>音量</span>
-                        <span id="volumeValue">50%</span>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>检测频率 (帧/秒)</span>
+                            <span class="slider-value" id="frameRateValue">15</span>
+                        </div>
+                        <input type="range" class="slider" id="frameRate" min="5" max="30" value="15">
                     </div>
-                    <input type="range" class="slider" id="volume" min="0" max="100" value="50">
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>最小持续时间 (ms)</span>
+                            <span class="slider-value" id="minDurationValue">500</span>
+                        </div>
+                        <input type="range" class="slider" id="minDuration" min="100" max="2000" step="100" value="500">
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>采样步进 (像素)</span>
+                            <span class="slider-value" id="sampleStepValue">4</span>
+                        </div>
+                        <input type="range" class="slider" id="sampleStep" min="2" max="10" value="4">
+                    </div>
                 </div>
+            </div>
 
-                <div class="switch-container">
-                    <span>启用音频提示</span>
+            <!-- 反馈设置 -->
+            <div class="card">
+                <div class="card-title">
+                    <span class="icon">🔔</span>
+                    <span>反馈设置</span>
+                </div>
+                <div class="switch-row">
+                    <span class="switch-label">启用音频提示</span>
                     <label class="switch">
                         <input type="checkbox" id="audioEnabled" checked>
                         <span class="switch-slider"></span>
                     </label>
                 </div>
-
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>音量</span>
+                        <span class="slider-value" id="volumeValue">50%</span>
+                    </div>
+                    <input type="range" class="slider" id="volume" min="0" max="100" value="50">
+                </div>
                 <div class="slider-group">
                     <div class="slider-label">
                         <span>震动间隔 (秒)</span>
-                        <span id="vibrateIntervalValue">2.0</span>
+                        <span class="slider-value" id="vibrateIntervalValue">2.0</span>
                     </div>
                     <input type="range" class="slider" id="vibrateInterval" min="0.5" max="5" step="0.5" value="2">
                 </div>
-
                 <div class="slider-group">
                     <div class="slider-label">
                         <span>截图间隔 (秒)</span>
-                        <span id="screenshotIntervalValue">3</span>
+                        <span class="slider-value" id="screenshotIntervalValue">3</span>
                     </div>
                     <input type="range" class="slider" id="screenshotInterval" min="1" max="10" value="3">
                 </div>
-
                 <div class="slider-group">
                     <div class="slider-label">
                         <span>通知间隔 (秒)</span>
-                        <span id="notificationIntervalValue">10</span>
+                        <span class="slider-value" id="notificationIntervalValue">10</span>
                     </div>
                     <input type="range" class="slider" id="notificationInterval" min="3" max="30" value="10">
                 </div>
-
-                <div class="switch-container">
-                    <span>持续监控模式</span>
+                <div class="switch-row">
+                    <span class="switch-label">持续监控模式</span>
                     <label class="switch">
                         <input type="checkbox" id="continuousMode" checked>
                         <span class="switch-slider"></span>
                     </label>
                 </div>
             </div>
-        </div>
 
-        <!-- 电池信息 -->
-        <div class="card">
-            <div class="card-title">🔋 电池状态</div>
-            <div class="battery-info">
-                <div class="battery-percent" id="batteryPercent">--</div>
-                <div class="battery-details">
-                    <div class="battery-text" id="batteryCharging">检测中...</div>
-                    <div class="battery-bar">
-                        <div class="battery-fill" id="batteryFill" style="width: 0%"></div>
+            <!-- 电源管理 -->
+            <div class="card">
+                <div class="card-title">
+                    <span class="icon">🔋</span>
+                    <span>电源管理</span>
+                </div>
+                <div class="battery-card">
+                    <span class="battery-icon-large" id="batteryIconLarge">🔋</span>
+                    <div class="battery-details">
+                        <div class="battery-percent" id="batteryPercent">--</div>
+                        <div class="battery-bar">
+                            <div class="battery-fill" id="batteryFill" style="width: 0%"></div>
+                        </div>
+                        <div class="battery-text" id="batteryCharging">检测中...</div>
+                        <div class="battery-text" id="batteryTime">--</div>
                     </div>
-                    <div class="battery-text" id="batteryTime">--</div>
                 </div>
-            </div>
-
-            <div class="switch-container">
-                <span>自动变暗 (省电)</span>
-                <label class="switch">
-                    <input type="checkbox" id="autoDimEnabled" checked>
-                    <span class="switch-slider"></span>
-                </label>
-            </div>
-
-            <div class="slider-group">
-                <div class="slider-label">
-                    <span>变暗触发时间 (秒)</span>
-                    <span id="dimTimeoutValue">30</span>
+                <div class="switch-row">
+                    <span class="switch-label">自动变暗 (省电)</span>
+                    <label class="switch">
+                        <input type="checkbox" id="autoDimEnabled" checked>
+                        <span class="switch-slider"></span>
+                    </label>
                 </div>
-                <input type="range" class="slider" id="dimTimeout" min="10" max="120" step="10" value="30">
-            </div>
-
-            <div class="slider-group">
-                <div class="slider-label">
-                    <span>亮度降低程度</span>
-                    <span id="dimLevelValue">70%</span>
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>变暗触发时间 (秒)</span>
+                        <span class="slider-value" id="dimTimeoutValue">30</span>
+                    </div>
+                    <input type="range" class="slider" id="dimTimeout" min="10" max="120" step="10" value="30">
                 </div>
-                <input type="range" class="slider" id="dimLevel" min="30" max="90" value="70">
-            </div>
-        </div>
-
-        <!-- 统计信息 -->
-        <div class="card">
-            <div class="card-title">📊 统计数据</div>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <span class="stat-value" id="detectionCount">0</span>
-                    <span class="stat-label">检测次数</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value" id="vibrateCount">0</span>
-                    <span class="stat-label">震动次数</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value" id="screenshotCount">0</span>
-                    <span class="stat-label">截图数量</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value" id="notificationCount">0</span>
-                    <span class="stat-label">通知次数</span>
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>亮度降低程度</span>
+                        <span class="slider-value" id="dimLevelValue">70%</span>
+                    </div>
+                    <input type="range" class="slider" id="dimLevel" min="30" max="90" value="70">
                 </div>
             </div>
         </div>
 
-        <!-- 截图画廊 -->
-        <div class="card">
-            <div class="card-title">
-                📸 截图记录
-                <button class="btn btn-secondary" id="clearScreenshots" style="margin-left: auto; padding: 8px 16px; font-size: 12px;">清除全部</button>
-            </div>
-            <div class="screenshots-grid" id="screenshotsGrid">
-                <div style="grid-column: 1/-1; text-align: center; color: #999; padding: 20px;">
-                    暂无截图
+        <!-- 日志标签页 -->
+        <div class="tab-content" data-tab="logs">
+            <div class="card" style="padding: 0; overflow: hidden;">
+                <div class="log-container">
+                    <div class="log-header">
+                        <div class="log-title">
+                            <span>📝</span>
+                            <span>实时日志</span>
+                            <span style="margin-left: 8px; color: #666; font-size: 12px;" id="logCount">(0)</span>
+                        </div>
+                        <div class="log-actions">
+                            <button class="log-btn" id="clearLogsBtn">清空</button>
+                            <button class="log-btn" id="exportLogsBtn">导出CSV</button>
+                        </div>
+                    </div>
+                    <div class="log-filters">
+                        <div class="filter-chip active" data-filter="all">全部</div>
+                        <div class="filter-chip info" data-filter="info">ℹ️ 信息</div>
+                        <div class="filter-chip success" data-filter="success">✅ 成功</div>
+                        <div class="filter-chip warning" data-filter="warning">⚠️ 警告</div>
+                        <div class="filter-chip error" data-filter="error">❌ 错误</div>
+                    </div>
+                    <div class="log-content" id="logContent">
+                        <div class="log-empty">📝 暂无日志记录</div>
+                    </div>
+                    <div class="log-stats">
+                        <div class="log-stat-item">
+                            <div class="log-stat-value" id="logInfoCount">0</div>
+                            <div class="log-stat-label">信息</div>
+                        </div>
+                        <div class="log-stat-item">
+                            <div class="log-stat-value" id="logSuccessCount">0</div>
+                            <div class="log-stat-label">成功</div>
+                        </div>
+                        <div class="log-stat-item">
+                            <div class="log-stat-value" id="logWarningCount">0</div>
+                            <div class="log-stat-label">警告</div>
+                        </div>
+                        <div class="log-stat-item">
+                            <div class="log-stat-value" id="logErrorCount">0</div>
+                            <div class="log-stat-label">错误</div>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
+
+        <!-- 统计标签页 -->
+        <div class="tab-content" data-tab="stats">
+            <div class="card">
+                <div class="card-title">
+                    <span class="icon">📊</span>
+                    <span>运行统计</span>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">🎯</div>
+                        <span class="stat-value" id="detectionCount">0</span>
+                        <span class="stat-label">检测次数</span>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📳</div>
+                        <span class="stat-value" id="vibrateCount">0</span>
+                        <span class="stat-label">震动次数</span>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📸</div>
+                        <span class="stat-value" id="screenshotCount">0</span>
+                        <span class="stat-label">截图数量</span>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔔</div>
+                        <span class="stat-value" id="notificationCount">0</span>
+                        <span class="stat-label">通知次数</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <span class="icon">⏱️</span>
+                    <span>运行时间</span>
+                </div>
+                <div style="text-align: center; padding: 20px;">
+                    <div style="font-size: 48px; font-weight: 700; background: var(--bg-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" id="runningTime">00:00:00</div>
+                    <div style="color: #666; margin-top: 8px; font-size: 14px;">累计运行时长</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <button class="btn btn-secondary" id="resetStatsBtn" style="width: 100%;">
+                    <span>🔄</span>
+                    <span>重置统计数据</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 相册标签页 -->
+        <div class="tab-content" data-tab="gallery">
+            <div class="card">
+                <div class="card-title">
+                    <span class="icon">📸</span>
+                    <span>截图相册</span>
+                    <button class="btn btn-secondary" id="clearScreenshots" style="margin-left: auto; padding: 8px 16px; font-size: 12px;">
+                        <span>🗑️</span>
+                        <span>清空</span>
+                    </button>
+                </div>
+                <div class="screenshots-grid" id="screenshotsGrid">
+                    <div style="grid-column: 1/-1; text-align: center; color: #999; padding: 40px 20px;">
+                        📷 暂无截图
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部操作栏 -->
+    <div class="bottom-bar">
+        <div class="quick-actions">
+            <button class="quick-btn" id="quickScreenshot">📸 截图</button>
+            <button class="quick-btn" id="quickVibrate">📳 测试震动</button>
+            <button class="quick-btn" id="quickNotify">🔔 测试通知</button>
         </div>
     </div>
 
@@ -833,11 +1343,14 @@
         // ============ 全局变量 ============
         let video, canvas, ctx, bufferCanvas, bufferCtx;
         let isDetecting = false;
+        let isPaused = false;
         let previousImageData = null;
         let currentCamera = 'user';
         let wakeLock = null;
         let detectionInterval = null;
         let audioContext = null;
+        let runningStartTime = null;
+        let runningTimeInterval = null;
 
         // 统计数据
         let stats = {
@@ -875,10 +1388,17 @@
         let lastNotificationTime = 0;
         let motionStartTime = 0;
         let isInMotion = false;
+        let currentIntensity = 0;
 
         // 截图存储
         let screenshots = [];
         const MAX_SCREENSHOTS = 50;
+
+        // 日志系统
+        let logs = [];
+        let currentLogFilter = 'all';
+        const MAX_LOGS = 500;
+        let logStats = { info: 0, success: 0, warning: 0, error: 0 };
 
         // 预设配置
         const presets = {
@@ -907,10 +1427,128 @@
         // 省电模式
         let dimTimer = null;
         let isDimmed = false;
-        let userActivityTimer = null;
 
         // 电池监控
         let batteryChargeHistory = [];
+
+        // ============ 日志系统函数 ============
+        function addLog(level, message, detail = '') {
+            const timestamp = new Date();
+            const timeStr = timestamp.toLocaleTimeString('zh-CN');
+
+            const log = {
+                id: Date.now() + Math.random(),
+                time: timeStr,
+                timestamp: timestamp.getTime(),
+                level: level,
+                message: message,
+                detail: detail
+            };
+
+            logs.unshift(log);
+            logStats[level]++;
+
+            // 限制日志数量
+            if (logs.length > MAX_LOGS) {
+                const removed = logs.pop();
+                logStats[removed.level]--;
+            }
+
+            updateLogDisplay();
+            updateLogStats();
+        }
+
+        function updateLogDisplay() {
+            const logContent = document.getElementById('logContent');
+            const filteredLogs = currentLogFilter === 'all' 
+                ? logs 
+                : logs.filter(log => log.level === currentLogFilter);
+
+            if (filteredLogs.length === 0) {
+                logContent.innerHTML = '<div class="log-empty">📝 暂无日志记录</div>';
+                return;
+            }
+
+            logContent.innerHTML = filteredLogs.map(log => `
+                <div class="log-entry">
+                    <span class="log-time">${log.time}</span>
+                    <span class="log-level ${log.level}">${log.level}</span>
+                    <span class="log-message">
+                        ${log.message}
+                        ${log.detail ? `<div class="log-detail">${log.detail}</div>` : ''}
+                    </span>
+                </div>
+            `).join('');
+
+            document.getElementById('logCount').textContent = `(${logs.length})`;
+
+            // 自动滚动到顶部
+            logContent.scrollTop = 0;
+        }
+
+        function updateLogStats() {
+            document.getElementById('logInfoCount').textContent = logStats.info;
+            document.getElementById('logSuccessCount').textContent = logStats.success;
+            document.getElementById('logWarningCount').textContent = logStats.warning;
+            document.getElementById('logErrorCount').textContent = logStats.error;
+        }
+
+        function clearLogs() {
+            if (logs.length === 0) return;
+
+            if (confirm('确定要清空所有日志吗?')) {
+                logs = [];
+                logStats = { info: 0, success: 0, warning: 0, error: 0 };
+                updateLogDisplay();
+                updateLogStats();
+                showToast('🗑️ 已清空所有日志');
+            }
+        }
+
+        function exportLogs() {
+            if (logs.length === 0) {
+                showToast('⚠️ 没有可导出的日志');
+                return;
+            }
+
+            // 创建CSV内容
+            const headers = ['时间戳', '时间', '级别', '消息', '详细信息'];
+            const csvRows = [headers.join(',')];
+
+            // 反转日志顺序,按时间正序导出
+            const sortedLogs = [...logs].reverse();
+
+            sortedLogs.forEach(log => {
+                const row = [
+                    log.timestamp,
+                    `"${log.time}"`,
+                    log.level.toUpperCase(),
+                    `"${log.message.replace(/"/g, '""')}"`,
+                    `"${log.detail.replace(/"/g, '""')}"`
+                ];
+                csvRows.push(row.join(','));
+            });
+
+            const csv = csvRows.join('\n');
+
+            // 添加BOM以支持中文
+            const BOM = '\uFEFF';
+            const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+            const filename = `motion-detector-logs-${timestamp}.csv`;
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+
+            URL.revokeObjectURL(url);
+
+            addLog('success', '日志导出成功', `文件名: ${filename}, 共 ${logs.length} 条记录`);
+            showToast('✅ 日志已导出为CSV文件');
+        }
 
         // ============ 初始化 ============
         document.addEventListener('DOMContentLoaded', () => {
@@ -922,6 +1560,8 @@
             requestNotificationPermission();
             showWelcomeToast();
             initUserActivityTracking();
+
+            addLog('info', '系统初始化完成', '运动检测系统已就绪');
         });
 
         function initElements() {
@@ -933,10 +1573,57 @@
         }
 
         function initEventListeners() {
+            // 标签页切换
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const targetTab = e.target.dataset.tab;
+                    switchTab(targetTab);
+                });
+            });
+
             // 控制按钮
             document.getElementById('startBtn').addEventListener('click', toggleDetection);
+            document.getElementById('pauseBtn').addEventListener('click', togglePause);
             document.getElementById('switchCameraBtn').addEventListener('click', switchCamera);
             document.getElementById('clearScreenshots').addEventListener('click', clearAllScreenshots);
+            document.getElementById('resetStatsBtn').addEventListener('click', resetStats);
+
+            // 日志按钮
+            document.getElementById('clearLogsBtn').addEventListener('click', clearLogs);
+            document.getElementById('exportLogsBtn').addEventListener('click', exportLogs);
+
+            // 日志过滤
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.addEventListener('click', (e) => {
+                    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                    e.target.classList.add('active');
+                    currentLogFilter = e.target.dataset.filter;
+                    updateLogDisplay();
+                });
+            });
+
+            // 快速操作
+            document.getElementById('quickScreenshot').addEventListener('click', () => {
+                if (isDetecting) {
+                    takeScreenshot(currentIntensity);
+                    showToast('📸 已手动截图');
+                }
+            });
+
+            document.getElementById('quickVibrate').addEventListener('click', () => {
+                if ('vibrate' in navigator) {
+                    navigator.vibrate(200);
+                    showToast('📳 震动测试完成');
+                    addLog('info', '执行震动测试');
+                } else {
+                    showToast('⚠️ 设备不支持震动');
+                }
+            });
+
+            document.getElementById('quickNotify').addEventListener('click', () => {
+                sendNotification(75);
+                addLog('info', '发送测试通知');
+            });
 
             // 预设模式
             document.querySelectorAll('.preset-btn').forEach(btn => {
@@ -965,11 +1652,13 @@
             document.getElementById('audioEnabled').addEventListener('change', (e) => {
                 config.audioEnabled = e.target.checked;
                 saveSettings();
+                addLog('info', `音频提示${e.target.checked ? '启用' : '禁用'}`);
             });
 
             document.getElementById('continuousMode').addEventListener('change', (e) => {
                 config.continuousMode = e.target.checked;
                 saveSettings();
+                addLog('info', `持续监控模式${e.target.checked ? '启用' : '禁用'}`);
             });
 
             document.getElementById('autoDimEnabled').addEventListener('change', (e) => {
@@ -981,12 +1670,7 @@
                 } else if (isDetecting) {
                     startDimTimer();
                 }
-            });
-
-            // 全屏查看
-            document.getElementById('closeFullscreen').addEventListener('click', closeFullscreen);
-            document.getElementById('fullscreenViewer').addEventListener('click', (e) => {
-                if (e.target.id === 'fullscreenViewer') closeFullscreen();
+                addLog('info', `自动变暗${e.target.checked ? '启用' : '禁用'}`);
             });
 
             // 检测区域变化
@@ -994,6 +1678,26 @@
 
             // 页面可见性
             document.addEventListener('visibilitychange', handleVisibilityChange);
+
+            // 全屏查看
+            document.getElementById('closeFullscreen').addEventListener('click', closeFullscreen);
+            document.getElementById('fullscreenViewer').addEventListener('click', (e) => {
+                if (e.target.id === 'fullscreenViewer') closeFullscreen();
+            });
+        }
+
+        function switchTab(tabName) {
+            // 切换标签按钮状态
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tab === tabName);
+            });
+
+            // 切换内容显示
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.toggle('active', content.dataset.tab === tabName);
+            });
+
+            addLog('info', `切换到${tabName}标签页`);
         }
 
         function updateSliderValue(id, value) {
@@ -1008,10 +1712,6 @@
             } else if (id.includes('Interval') || id.includes('Timeout')) {
                 suffix = '秒';
                 if (id === 'vibrateInterval') displayValue = numValue.toFixed(1);
-            } else if (id === 'frameRate') {
-                suffix = '';
-            } else if (id === 'minDuration') {
-                suffix = 'ms';
             } else if (id === 'volume') {
                 suffix = '%';
             }
@@ -1032,6 +1732,7 @@
         function applyPreset(presetName) {
             if (presetName === 'custom') {
                 document.getElementById('advancedSettings').classList.add('show');
+                addLog('info', '切换到自定义模式');
             } else {
                 document.getElementById('advancedSettings').classList.remove('show');
                 const preset = presets[presetName];
@@ -1044,6 +1745,7 @@
                             updateSliderValue(key, preset[key]);
                         }
                     });
+                    addLog('success', `应用预设: ${presetName}模式`);
                 }
             }
             saveSettings();
@@ -1052,6 +1754,8 @@
         // ============ 摄像头控制 ============
         async function startCamera() {
             try {
+                addLog('info', '正在请求摄像头权限...');
+
                 const constraints = {
                     video: {
                         facingMode: currentCamera,
@@ -1069,11 +1773,13 @@
                     bufferCanvas.width = video.videoWidth;
                     bufferCanvas.height = video.videoHeight;
                     updateDetectionBox();
+                    addLog('success', '摄像头启动成功', `分辨率: ${video.videoWidth}x${video.videoHeight}`);
                 };
 
                 return true;
             } catch (error) {
                 showToast('❌ 摄像头访问失败: ' + error.message);
+                addLog('error', '摄像头访问失败', error.message);
                 return false;
             }
         }
@@ -1082,11 +1788,14 @@
             if (video.srcObject) {
                 video.srcObject.getTracks().forEach(track => track.stop());
                 video.srcObject = null;
+                addLog('info', '摄像头已关闭');
             }
         }
 
         async function switchCamera() {
             currentCamera = currentCamera === 'user' ? 'environment' : 'user';
+            addLog('info', `切换到${currentCamera === 'user' ? '前置' : '后置'}摄像头`);
+
             if (isDetecting) {
                 stopDetection();
                 await startCamera();
@@ -1103,13 +1812,38 @@
             }
         }
 
+        function togglePause() {
+            isPaused = !isPaused;
+            const pauseBtn = document.getElementById('pauseBtn');
+
+            if (isPaused) {
+                pauseBtn.innerHTML = '<span>▶️</span><span>继续</span>';
+                document.getElementById('statusText').textContent = '已暂停';
+                document.getElementById('statusIcon').textContent = '⏸️';
+                addLog('warning', '检测已暂停');
+                showToast('⏸️ 检测已暂停');
+            } else {
+                pauseBtn.innerHTML = '<span>⏸️</span><span>暂停</span>';
+                document.getElementById('statusText').textContent = '运行中';
+                document.getElementById('statusIcon').textContent = '▶️';
+                addLog('success', '检测已继续');
+                showToast('▶️ 检测已继续');
+            }
+        }
+
         async function startDetection() {
             const cameraStarted = await startCamera();
             if (!cameraStarted) return;
 
             isDetecting = true;
-            document.getElementById('startBtn').innerHTML = '<span>⏸️</span><span>停止检测</span>';
-            document.getElementById('status-text').textContent = '运行中';
+            isPaused = false;
+            runningStartTime = Date.now();
+
+            document.getElementById('startBtn').innerHTML = '<span>⏹️</span><span>停止检测</span>';
+            document.getElementById('pauseBtn').disabled = false;
+            document.getElementById('statusBadge').classList.add('active');
+            document.getElementById('statusText').textContent = '运行中';
+            document.getElementById('statusIcon').textContent = '▶️';
 
             await requestWakeLock();
 
@@ -1117,28 +1851,44 @@
             const interval = 1000 / config.frameRate;
             detectionInterval = setInterval(detectMotion, interval);
 
+            // 启动运行时间计时器
+            runningTimeInterval = setInterval(updateRunningTime, 1000);
+
             if (config.autoDimEnabled) {
                 startDimTimer();
             }
 
+            addLog('success', '检测已启动', `帧率: ${config.frameRate}fps, 灵敏度: ${config.sensitivity}`);
             showToast('✅ 检测已启动');
 
             // 5秒后显示锁屏提示
             setTimeout(() => {
                 if (isDetecting) {
                     showToast('⚠️ 请勿锁屏,否则检测将暂停', 5000);
+                    addLog('warning', '锁屏提示', '请保持屏幕常亮以继续检测');
                 }
             }, 5000);
         }
 
         function stopDetection() {
             isDetecting = false;
+            isPaused = false;
+
             document.getElementById('startBtn').innerHTML = '<span>▶️</span><span>开始检测</span>';
-            document.getElementById('status-text').textContent = '已停止';
+            document.getElementById('pauseBtn').innerHTML = '<span>⏸️</span><span>暂停</span>';
+            document.getElementById('pauseBtn').disabled = true;
+            document.getElementById('statusBadge').classList.remove('active');
+            document.getElementById('statusText').textContent = '已停止';
+            document.getElementById('statusIcon').textContent = '⏸️';
 
             if (detectionInterval) {
                 clearInterval(detectionInterval);
                 detectionInterval = null;
+            }
+
+            if (runningTimeInterval) {
+                clearInterval(runningTimeInterval);
+                runningTimeInterval = null;
             }
 
             releaseWakeLock();
@@ -1147,19 +1897,24 @@
             restoreBrightness();
 
             document.getElementById('detectionBox').classList.remove('active');
+            document.getElementById('intensityText').textContent = '0%';
+            document.getElementById('intensityFill').style.width = '0%';
 
+            const runTime = formatRunningTime(Date.now() - runningStartTime);
+            addLog('info', '检测已停止', `本次运行时长: ${runTime}`);
             showToast('⏹️ 检测已停止');
         }
 
         function restartDetection() {
             if (isDetecting) {
+                addLog('info', '重启检测中...');
                 stopDetection();
                 setTimeout(() => startDetection(), 100);
             }
         }
 
         function detectMotion() {
-            if (!video.readyState === video.HAVE_ENOUGH_DATA) return;
+            if (!video.readyState === video.HAVE_ENOUGH_DATA || isPaused) return;
 
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
@@ -1173,6 +1928,11 @@
 
             if (previousImageData) {
                 const motionIntensity = compareFrames(currentImageData, previousImageData);
+                currentIntensity = motionIntensity;
+
+                // 更新强度显示
+                document.getElementById('intensityText').textContent = motionIntensity.toFixed(1) + '%';
+                document.getElementById('intensityFill').style.width = Math.min(motionIntensity, 100) + '%';
 
                 if (motionIntensity > config.sensitivity) {
                     handleMotionDetected(motionIntensity);
@@ -1210,6 +1970,7 @@
             if (!isInMotion) {
                 isInMotion = true;
                 motionStartTime = now;
+                addLog('info', '检测到运动', `强度: ${intensity.toFixed(1)}%`);
             }
 
             const motionDuration = now - motionStartTime;
@@ -1248,9 +2009,11 @@
         }
 
         function handleNoMotion() {
-            isInMotion = false;
-            motionStartTime = 0;
-            document.getElementById('detectionBox').classList.remove('active');
+            if (isInMotion) {
+                isInMotion = false;
+                motionStartTime = 0;
+                document.getElementById('detectionBox').classList.remove('active');
+            }
         }
 
         // ============ 反馈功能 ============
@@ -1259,6 +2022,7 @@
                 navigator.vibrate(200);
                 stats.vibrations++;
                 document.getElementById('vibrateCount').textContent = stats.vibrations;
+                addLog('success', '触发震动反馈');
             }
         }
 
@@ -1278,20 +2042,21 @@
             document.getElementById('screenshotCount').textContent = stats.screenshots;
 
             updateScreenshotsGrid();
+            addLog('success', '自动截图', `强度: ${intensity.toFixed(1)}%, 时间: ${timestamp}`);
         }
 
         function updateScreenshotsGrid() {
             const grid = document.getElementById('screenshotsGrid');
 
             if (screenshots.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #999; padding: 20px;">暂无截图</div>';
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #999; padding: 40px 20px;">📷 暂无截图</div>';
                 return;
             }
 
             grid.innerHTML = screenshots.map((shot, index) => `
                 <div class="screenshot-item" onclick="viewScreenshot(${index})">
                     <img src="${shot.url}" alt="截图">
-                    <div class="screenshot-info">
+                    <div class="screenshot-overlay">
                         ${shot.time.split(' ')[1]}<br>强度: ${shot.intensity}%
                     </div>
                 </div>
@@ -1301,6 +2066,7 @@
         function viewScreenshot(index) {
             document.getElementById('fullscreenImage').src = screenshots[index].url;
             document.getElementById('fullscreenViewer').style.display = 'flex';
+            addLog('info', '查看截图', `序号: ${index + 1}`);
         }
 
         function closeFullscreen() {
@@ -1311,10 +2077,12 @@
             if (screenshots.length === 0) return;
 
             if (confirm('确定要清除所有截图吗?')) {
+                const count = screenshots.length;
                 screenshots = [];
                 stats.screenshots = 0;
                 document.getElementById('screenshotCount').textContent = '0';
                 updateScreenshotsGrid();
+                addLog('warning', '清空截图', `已删除 ${count} 张截图`);
                 showToast('🗑️ 已清除所有截图');
             }
         }
@@ -1322,8 +2090,7 @@
         async function sendNotification(intensity) {
             if ('Notification' in window && Notification.permission === 'granted') {
                 new Notification('🚨 检测到运动!', {
-                    body: `运动强度: ${intensity.toFixed(1)}%
-时间: ${new Date().toLocaleTimeString('zh-CN')}`,
+                    body: `运动强度: ${intensity.toFixed(1)}%\n时间: ${new Date().toLocaleTimeString('zh-CN')}`,
                     icon: '/icon.png',
                     badge: '/badge.png',
                     vibrate: [200, 100, 200]
@@ -1331,6 +2098,7 @@
 
                 stats.notifications++;
                 document.getElementById('notificationCount').textContent = stats.notifications;
+                addLog('success', '发送通知', `强度: ${intensity.toFixed(1)}%`);
             }
         }
 
@@ -1362,11 +2130,12 @@
                 if ('wakeLock' in navigator) {
                     wakeLock = await navigator.wakeLock.request('screen');
                     wakeLock.addEventListener('release', () => {
-                        console.log('Wake Lock 已释放');
+                        addLog('warning', 'Wake Lock已释放');
                     });
+                    addLog('success', 'Wake Lock已激活', '屏幕将保持常亮');
                 }
             } catch (err) {
-                console.error('Wake Lock 请求失败:', err);
+                addLog('error', 'Wake Lock请求失败', err.message);
             }
         }
 
@@ -1398,6 +2167,7 @@
             overlay.style.opacity = config.dimLevel / 100;
             overlay.style.display = 'block';
             isDimmed = true;
+            addLog('info', '进入省电模式', `亮度降低 ${config.dimLevel}%`);
             showToast('💤 已进入省电模式', 3000);
         }
 
@@ -1414,6 +2184,7 @@
                 document.addEventListener(event, () => {
                     if (isDimmed) {
                         restoreBrightness();
+                        addLog('info', '恢复正常亮度', '检测到用户活动');
                     }
 
                     if (isDetecting && config.autoDimEnabled) {
@@ -1426,11 +2197,11 @@
         function handleVisibilityChange() {
             if (document.hidden) {
                 if (isDetecting) {
-                    // 页面隐藏时暂停
-                    console.log('页面隐藏,暂停检测');
+                    addLog('warning', '页面已隐藏', '检测可能暂停');
                 }
                 clearDimTimer();
             } else {
+                addLog('info', '页面已显示');
                 if (isDetecting && config.autoDimEnabled) {
                     startDimTimer();
                 }
@@ -1448,38 +2219,38 @@
                     battery.addEventListener('chargingchange', () => updateBatteryInfo(battery));
                     battery.addEventListener('chargingtimechange', () => updateBatteryInfo(battery));
                     battery.addEventListener('dischargingtimechange', () => updateBatteryInfo(battery));
+
+                    addLog('success', '电池监控已启动');
                 } else {
                     document.getElementById('batteryPercent').textContent = 'N/A';
                     document.getElementById('batteryCharging').textContent = '不支持电池API';
+                    addLog('warning', '设备不支持电池API');
                 }
             } catch (error) {
-                console.error('电池API错误:', error);
+                addLog('error', '电池API初始化失败', error.message);
             }
         }
 
         function updateBatteryInfo(battery) {
             const level = Math.round(battery.level * 100);
 
-            // 更新显示
             document.getElementById('batteryPercent').textContent = level + '%';
-            document.getElementById('battery-status').textContent = level + '%';
+            document.getElementById('batteryStatus').textContent = level + '%';
             document.getElementById('batteryFill').style.width = level + '%';
 
-            // 更新电池图标
             let icon = '🔋';
             if (battery.charging) {
                 icon = '⚡';
             } else if (level <= 20) {
                 icon = '🪫';
             }
-            document.getElementById('battery-icon').textContent = icon;
+            document.getElementById('batteryIcon').textContent = icon;
+            document.getElementById('batteryIconLarge').textContent = icon;
 
-            // 更新充电状态
             if (battery.charging) {
                 document.getElementById('batteryCharging').textContent = '⚡ 充电中';
                 document.getElementById('batteryFill').classList.remove('low');
 
-                // 计算充电速度
                 recordBatteryLevel(level, true);
                 const chargeSpeed = calculateChargeSpeed();
 
@@ -1499,6 +2270,9 @@
 
                 if (level <= 20) {
                     document.getElementById('batteryFill').classList.add('low');
+                    if (level <= 10 && isDetecting) {
+                        addLog('warning', '电量严重不足', `当前电量: ${level}%`);
+                    }
                 }
 
                 if (battery.dischargingTime && battery.dischargingTime !== Infinity) {
@@ -1514,7 +2288,6 @@
             const now = Date.now();
             batteryChargeHistory.push({ level, time: now, charging });
 
-            // 只保留5分钟内的数据
             const fiveMinutesAgo = now - 5 * 60 * 1000;
             batteryChargeHistory = batteryChargeHistory.filter(record => record.time > fiveMinutesAgo);
         }
@@ -1525,11 +2298,11 @@
             const first = batteryChargeHistory[0];
             const last = batteryChargeHistory[batteryChargeHistory.length - 1];
 
-            const timeDiff = (last.time - first.time) / 1000 / 3600; // 小时
+            const timeDiff = (last.time - first.time) / 1000 / 3600;
             const levelDiff = last.level - first.level;
 
             if (timeDiff > 0 && levelDiff > 0) {
-                return levelDiff / timeDiff; // %/小时
+                return levelDiff / timeDiff;
             }
 
             return 0;
@@ -1545,16 +2318,56 @@
             }
         }
 
+        // ============ 运行时间 ============
+        function updateRunningTime() {
+            if (!runningStartTime) return;
+
+            const elapsed = Date.now() - runningStartTime;
+            const formatted = formatRunningTime(elapsed);
+            document.getElementById('runningTime').textContent = formatted;
+        }
+
+        function formatRunningTime(ms) {
+            const seconds = Math.floor(ms / 1000);
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = seconds % 60;
+
+            return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
         // ============ UI 更新 ============
         function updateDetectionBox() {
             const box = document.getElementById('detectionBox');
-            const container = document.getElementById('videoContainer');
-
             const size = config.detectionArea;
             box.style.width = size + '%';
             box.style.height = size + '%';
             box.style.left = ((100 - size) / 2) + '%';
             box.style.top = ((100 - size) / 2) + '%';
+        }
+
+        // ============ 统计功能 ============
+        function resetStats() {
+            if (confirm('确定要重置所有统计数据吗?')) {
+                stats = {
+                    detections: 0,
+                    vibrations: 0,
+                    screenshots: 0,
+                    notifications: 0
+                };
+
+                document.getElementById('detectionCount').textContent = '0';
+                document.getElementById('vibrateCount').textContent = '0';
+                document.getElementById('screenshotCount').textContent = '0';
+                document.getElementById('notificationCount').textContent = '0';
+                document.getElementById('runningTime').textContent = '00:00:00';
+
+                runningStartTime = null;
+
+                addLog('warning', '统计数据已重置');
+                showToast('🔄 统计数据已重置');
+                saveSettings();
+            }
         }
 
         // ============ 通知权限 ============
@@ -1564,6 +2377,9 @@
                     const permission = await Notification.requestPermission();
                     if (permission === 'granted') {
                         showToast('✅ 通知权限已授予');
+                        addLog('success', '通知权限已授予');
+                    } else {
+                        addLog('warning', '通知权限被拒绝');
                     }
                 }, 2000);
             }
@@ -1575,6 +2391,9 @@
 
             if (!isMobile) {
                 document.querySelector('.desktop-warning').style.display = 'flex';
+                addLog('error', '检测到PC端访问', '本应用仅支持移动设备');
+            } else {
+                addLog('info', '设备类型检测通过', navigator.userAgent);
             }
         }
 
@@ -1591,7 +2410,7 @@
 
         function showWelcomeToast() {
             setTimeout(() => {
-                showToast('👋 欢迎使用智能运动检测系统', 5000);
+                showToast('👋 欢迎使用智能运动检测系统 Pro', 5000);
             }, 500);
         }
 
@@ -1608,7 +2427,6 @@
             if (savedConfig) {
                 config = { ...config, ...JSON.parse(savedConfig) };
 
-                // 恢复UI状态
                 Object.keys(config).forEach(key => {
                     const element = document.getElementById(key);
                     if (element) {
@@ -1620,6 +2438,8 @@
                         }
                     }
                 });
+
+                addLog('info', '配置已加载', '从本地存储恢复设置');
             }
 
             if (savedStats) {
