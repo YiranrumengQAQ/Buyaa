@@ -1,167 +1,698 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>3D伪光追&光锥场景展示</title>
-  <style>
-    html, body {height: 100%; margin: 0;}
-    body {
-      background: #111;
-      overflow: hidden;
-      font-family: 'Arial', 'Microsoft YaHei', sans-serif;
-    }
-    #ui-panel {
-      position: absolute;
-      right: 0; top: 0;
-      background: rgba(20,20,20, 0.8);
-      color: #fff;
-      padding: 24px 16px 24px 16px;
-      box-shadow: -2px 2px 16px #0008;
-      border-bottom-left-radius: 24px;
-      z-index: 2;
-      min-width:180px;
-      max-width:240px;
-      transition: opacity 0.4s;
-    }
-    .row {margin:12px 8px;}
-    label {font-size:15px;}
-    input[type=range] {width:98%;}
-    canvas {display:block; width:100vw; height:100vh;}
-    .color-inp {width:48px; height:22px;}
-    @media (max-width:560px) {
-      #ui-panel {min-width:120px;max-width:150px;}
-      .row {margin:7px 2px;}
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D光线追踪 - 黑屋灯光场景</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            overflow: hidden;
+            background: #000;
+            color: #fff;
+        }
+
+        .container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+        }
+
+        canvas:active {
+            cursor: grabbing;
+        }
+
+        .controls-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(15, 15, 20, 0.92);
+            backdrop-filter: blur(12px);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            min-width: 280px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .panel-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .control-group {
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .control-group:last-child {
+            border-bottom: none;
+        }
+
+        .control-label {
+            display: block;
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .control-value {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.5);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.5);
+        }
+
+        input[type="color"] {
+            width: 100%;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        .preset-colors {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .preset-color {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .preset-color:hover {
+            transform: scale(1.1);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .info-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(15, 15, 20, 0.92);
+            backdrop-filter: blur(12px);
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        @media (max-width: 768px) {
+            .controls-panel {
+                top: 10px;
+                right: 10px;
+                min-width: 240px;
+                padding: 15px;
+                max-height: 85vh;
+            }
+
+            .info-panel {
+                bottom: 10px;
+                left: 10px;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
 </head>
 <body>
-<div id="ui-panel">
-  <div class="row"><label>灯光颜色: <input id="color" class="color-inp" type="color" value="#ffdd55"></label></div>
-  <div class="row"><label>亮度: <input id="intensity" type="range" min="0" max="2" step="0.01" value="1"></label></div>
-  <div class="row"><label>光锥角度: <input id="cone" type="range" min="10" max="90" value="30"></label></div>
-  <div class="row"><label>反射强度: <input id="mirror" type="range" min="0" max="1" step="0.01" value="0.78"></label></div>
-  <div class="row"><label>地板粗糙: <input id="roughness" type="range" min="0" max="1" step="0.01" value="0.12"></label></div>
-</div>
-<canvas id="cvs"></canvas>
-<script>
-const canvas = document.getElementById('cvs'), ctx = canvas.getContext('2d');
-let W=window.innerWidth,H=window.innerHeight;canvas.width=W;canvas.height=H;
-window.onresize=()=>{W=window.innerWidth;H=window.innerHeight;canvas.width=W;canvas.height=H;}
+    <div class="container">
+        <canvas id="canvas3d"></canvas>
 
-function hex2rgb(hex) {
-  hex=hex.replace('#','');
-  const num = parseInt(hex, 16);
-  return [num>>16, (num>>8)&255, num&255];
-}
+        <div class="controls-panel">
+            <div class="panel-title">🎛️ 光照控制台</div>
 
-// 参数
-let params = {
-  color: [255,221,85],
-  intensity: 1.0,
-  cone: 30,
-  mirror: 0.78,
-  roughness: 0.12
-};
-document.getElementById('color').oninput = e => params.color = hex2rgb(e.target.value);
-document.getElementById('intensity').oninput = e => params.intensity = +e.target.value;
-document.getElementById('cone').oninput = e => params.cone = +e.target.value;
-document.getElementById('mirror').oninput = e => params.mirror = +e.target.value;
-document.getElementById('roughness').oninput= e=>params.roughness = +e.target.value;
+            <div class="control-group">
+                <label class="control-label">
+                    <span>灯光颜色</span>
+                </label>
+                <input type="color" id="lightColor" value="#ffdd66">
+                <div class="preset-colors">
+                    <div class="preset-color" style="background:#ffdd66" data-color="#ffdd66"></div>
+                    <div class="preset-color" style="background:#ff6666" data-color="#ff6666"></div>
+                    <div class="preset-color" style="background:#66ff66" data-color="#66ff66"></div>
+                    <div class="preset-color" style="background:#6666ff" data-color="#6666ff"></div>
+                    <div class="preset-color" style="background:#ff66ff" data-color="#ff66ff"></div>
+                </div>
+            </div>
 
-// 3D伪光追&场景简化
-function renderScene() {
-  ctx.clearRect(0,0,W,H);
+            <div class="control-group">
+                <label class="control-label">
+                    <span>灯光强度</span>
+                    <span class="control-value" id="intensityValue">1.5</span>
+                </label>
+                <input type="range" id="lightIntensity" min="0" max="3" step="0.1" value="1.5">
+            </div>
 
-  // 参数
-  const floorY = H*0.68;
-  const roomColor = "#17171d";
-  ctx.fillStyle = roomColor;
-  ctx.fillRect(0,0,W,H);
+            <div class="control-group">
+                <label class="control-label">
+                    <span>光锥角度</span>
+                    <span class="control-value" id="coneValue">45°</span>
+                </label>
+                <input type="range" id="coneAngle" min="15" max="90" step="1" value="45">
+            </div>
 
-  // 地板反射
-  ctx.save();
-  ctx.translate(0, 2*floorY);
-  ctx.scale(1, -1);
+            <div class="control-group">
+                <label class="control-label">
+                    <span>地板反射率</span>
+                    <span class="control-value" id="reflectionValue">0.70</span>
+                </label>
+                <input type="range" id="floorReflection" min="0" max="1" step="0.01" value="0.70">
+            </div>
 
-  // 光锥反射fake
-  drawVolumetricLight(W/2, floorY-128, params.cone, 240, params.color, params.intensity*params.mirror*0.75, true);
-  ctx.globalAlpha=0.6*(1-params.roughness);
-  ctx.fillStyle="#22252a";
-  ctx.fillRect(W*0.12, floorY-1, W*0.76, H-floorY+1);
-  ctx.globalAlpha=1.0;
-  ctx.restore();
+            <div class="control-group">
+                <label class="control-label">
+                    <span>光锥密度</span>
+                    <span class="control-value" id="volumetricValue">0.40</span>
+                </label>
+                <input type="range" id="volumetricDensity" min="0" max="1" step="0.01" value="0.40">
+            </div>
 
-  // 地板自身
-  ctx.fillStyle = "#212227";
-  ctx.fillRect(W*0.12, floorY, W*0.76, H-floorY);
+            <div class="control-group">
+                <label class="control-label">
+                    <span>环境光</span>
+                    <span class="control-value" id="ambientValue">0.05</span>
+                </label>
+                <input type="range" id="ambientLight" min="0" max="0.3" step="0.01" value="0.05">
+            </div>
 
-  // 黑色房间简化
-  ctx.strokeStyle="#333";
-  ctx.lineWidth=7;
-  ctx.strokeRect(W*0.12,floorY-H*0.46,W*0.76,H*0.46+H*0.001);
+            <div class="control-group">
+                <label class="control-label">
+                    <span>相机距离</span>
+                    <span class="control-value" id="distanceValue">20</span>
+                </label>
+                <input type="range" id="cameraDistance" min="10" max="40" step="1" value="20">
+            </div>
+        </div>
 
-  // 光锥
-  drawVolumetricLight(W/2, floorY-128, params.cone, 240, params.color, params.intensity, false);
+        <div class="info-panel">
+            🖱️ 拖拽旋转视角 | FPS: <span id="fps">60</span>
+        </div>
+    </div>
 
-  // 灯光源
-  drawLamp(W/2,floorY-128,params.color);
+    <script>
+        const canvas = document.getElementById('canvas3d');
+        const ctx = canvas.getContext('2d');
 
-  // 地板反射高光
-  let grad = ctx.createRadialGradient(W/2,floorY+12,8,W/2,floorY+45,300);
-  grad.addColorStop(0,`rgba(${params.color[0]},${params.color[1]},${params.color[2]},${0.22*params.intensity})`);
-  grad.addColorStop(1,"rgba(34,34,38,0)");
-  ctx.beginPath();
-  ctx.arc(W/2,floorY+12,240,0,Math.PI,true);
-  ctx.closePath();
-  ctx.fillStyle = grad;
-  ctx.fill();
-}
+        // 响应式设置
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
 
-function drawVolumetricLight(x,y,angleDeg,len,color,intensity,mirror) {
-  const a = Math.PI*angleDeg/180;
-  ctx.save();
-  ctx.globalAlpha = 0.28*intensity*(mirror?0.75:1);
-  let g = ctx.createRadialGradient(x,y,12,x,y,len*0.95);
-  g.addColorStop(0,`rgba(${color[0]},${color[1]},${color[2]},0.28)`);
-  g.addColorStop(0.35,`rgba(${color[0]},${color[1]},${color[2]},0.13)`);
-  g.addColorStop(1,`rgba(${color[0]},${color[1]},${color[2]},0.01)`);
-  ctx.fillStyle = g;
-  ctx.beginPath();
-  ctx.moveTo(x,y);
-  ctx.arc(x,y,len,-a/2,a/2,false);
-  ctx.closePath();
-  ctx.fill();
-  ctx.restore();
-}
+        // 3D向量类
+        class Vec3 {
+            constructor(x = 0, y = 0, z = 0) {
+                this.x = x;
+                this.y = y;
+                this.z = z;
+            }
 
-function drawLamp(x,y,color) {
-  let c=`rgb(${color[0]},${color[1]},${color[2]})`;  
-  ctx.save();
-  // 外圈光晕
-  let g=ctx.createRadialGradient(x,y,6,x,y,45);
-  g.addColorStop(0,`rgba(${color[0]},${color[1]},${color[2]},0.65)`);
-  g.addColorStop(1,"rgba(40,40,50,0)");
-  ctx.beginPath();ctx.arc(x,y,45,0,2*Math.PI);ctx.closePath();
-  ctx.fillStyle=g;ctx.fill();
-  // 灯体
-  ctx.beginPath();
-  ctx.arc(x,y,14,0,2*Math.PI);
-  ctx.closePath();
-  ctx.fillStyle =c;ctx.fill();
-  ctx.strokeStyle="#fff9";ctx.lineWidth=2;ctx.stroke();
-  // 灯座
-  ctx.fillStyle="#444";
-  ctx.fillRect(x-9,y+13,18,12);
-  ctx.restore();
-}
+            add(v) {
+                return new Vec3(this.x + v.x, this.y + v.y, this.z + v.z);
+            }
 
-function animate() {
-  renderScene();
-  requestAnimationFrame(animate);
-}
-animate();
+            sub(v) {
+                return new Vec3(this.x - v.x, this.y - v.y, this.z - v.z);
+            }
 
-</script>
+            mul(s) {
+                return new Vec3(this.x * s, this.y * s, this.z * s);
+            }
+
+            dot(v) {
+                return this.x * v.x + this.y * v.y + this.z * v.z;
+            }
+
+            length() {
+                return Math.sqrt(this.dot(this));
+            }
+
+            normalize() {
+                const len = this.length();
+                return len > 0 ? this.mul(1 / len) : new Vec3();
+            }
+
+            reflect(n) {
+                return this.sub(n.mul(2 * this.dot(n)));
+            }
+        }
+
+        // 场景参数
+        let params = {
+            lightColor: [255, 221, 102],
+            lightIntensity: 1.5,
+            coneAngle: 45,
+            floorReflection: 0.70,
+            volumetricDensity: 0.40,
+            ambientLight: 0.05,
+            cameraDistance: 20,
+            cameraAngleX: 0.3,
+            cameraAngleY: 0
+        };
+
+        // 光源位置（相对于房间中心）
+        const lightPos = new Vec3(0, 3, 0);
+
+        // 控制面板事件
+        document.getElementById('lightColor').addEventListener('input', (e) => {
+            const hex = e.target.value.substring(1);
+            params.lightColor = [
+                parseInt(hex.substr(0, 2), 16),
+                parseInt(hex.substr(2, 2), 16),
+                parseInt(hex.substr(4, 2), 16)
+            ];
+        });
+
+        document.querySelectorAll('.preset-color').forEach(el => {
+            el.addEventListener('click', () => {
+                const color = el.dataset.color;
+                document.getElementById('lightColor').value = color;
+                const hex = color.substring(1);
+                params.lightColor = [
+                    parseInt(hex.substr(0, 2), 16),
+                    parseInt(hex.substr(2, 2), 16),
+                    parseInt(hex.substr(4, 2), 16)
+                ];
+            });
+        });
+
+        document.getElementById('lightIntensity').addEventListener('input', (e) => {
+            params.lightIntensity = parseFloat(e.target.value);
+            document.getElementById('intensityValue').textContent = e.target.value;
+        });
+
+        document.getElementById('coneAngle').addEventListener('input', (e) => {
+            params.coneAngle = parseFloat(e.target.value);
+            document.getElementById('coneValue').textContent = e.target.value + '°';
+        });
+
+        document.getElementById('floorReflection').addEventListener('input', (e) => {
+            params.floorReflection = parseFloat(e.target.value);
+            document.getElementById('reflectionValue').textContent = e.target.value;
+        });
+
+        document.getElementById('volumetricDensity').addEventListener('input', (e) => {
+            params.volumetricDensity = parseFloat(e.target.value);
+            document.getElementById('volumetricValue').textContent = e.target.value;
+        });
+
+        document.getElementById('ambientLight').addEventListener('input', (e) => {
+            params.ambientLight = parseFloat(e.target.value);
+            document.getElementById('ambientValue').textContent = e.target.value;
+        });
+
+        document.getElementById('cameraDistance').addEventListener('input', (e) => {
+            params.cameraDistance = parseFloat(e.target.value);
+            document.getElementById('distanceValue').textContent = e.target.value;
+        });
+
+        // 鼠标拖拽控制
+        let isDragging = false;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const deltaX = e.clientX - lastMouseX;
+                const deltaY = e.clientY - lastMouseY;
+                params.cameraAngleY += deltaX * 0.005;
+                params.cameraAngleX += deltaY * 0.005;
+                params.cameraAngleX = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, params.cameraAngleX));
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            isDragging = false;
+        });
+
+        // 触摸支持
+        canvas.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            lastMouseX = e.touches[0].clientX;
+            lastMouseY = e.touches[0].clientY;
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (isDragging) {
+                const deltaX = e.touches[0].clientX - lastMouseX;
+                const deltaY = e.touches[0].clientY - lastMouseY;
+                params.cameraAngleY += deltaX * 0.005;
+                params.cameraAngleX += deltaY * 0.005;
+                params.cameraAngleX = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, params.cameraAngleX));
+                lastMouseX = e.touches[0].clientX;
+                lastMouseY = e.touches[0].clientY;
+            }
+        });
+
+        canvas.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+
+        // 相机变换
+        function getCameraPosition() {
+            const dist = params.cameraDistance;
+            const x = dist * Math.cos(params.cameraAngleX) * Math.sin(params.cameraAngleY);
+            const y = dist * Math.sin(params.cameraAngleX);
+            const z = dist * Math.cos(params.cameraAngleX) * Math.cos(params.cameraAngleY);
+            return new Vec3(x, y, z);
+        }
+
+        // 射线-平面相交
+        function rayPlaneIntersect(origin, dir, planeY) {
+            if (Math.abs(dir.y) < 0.001) return null;
+            const t = (planeY - origin.y) / dir.y;
+            if (t < 0) return null;
+            return origin.add(dir.mul(t));
+        }
+
+        // 射线-球体相交
+        function raySphereIntersect(origin, dir, center, radius) {
+            const oc = origin.sub(center);
+            const a = dir.dot(dir);
+            const b = 2 * oc.dot(dir);
+            const c = oc.dot(oc) - radius * radius;
+            const discriminant = b * b - 4 * a * c;
+
+            if (discriminant < 0) return null;
+
+            const t = (-b - Math.sqrt(discriminant)) / (2 * a);
+            if (t > 0.001) {
+                const point = origin.add(dir.mul(t));
+                const normal = point.sub(center).normalize();
+                return { t, point, normal };
+            }
+            return null;
+        }
+
+        // 光锥检测
+        function isInLightCone(point) {
+            const toPoint = point.sub(lightPos).normalize();
+            const lightDir = new Vec3(0, -1, 0);
+            const angle = Math.acos(toPoint.dot(lightDir));
+            const maxAngle = (params.coneAngle * Math.PI) / 180;
+            return angle < maxAngle;
+        }
+
+        // 光照计算
+        function computeLighting(point, normal, viewDir) {
+            let color = [0, 0, 0];
+
+            // 环境光
+            for (let i = 0; i < 3; i++) {
+                color[i] = params.lightColor[i] * params.ambientLight;
+            }
+
+            // 检查是否在光锥内
+            if (!isInLightCone(point)) {
+                return color;
+            }
+
+            // 计算光照
+            const lightDir = lightPos.sub(point).normalize();
+            const distance = lightPos.sub(point).length();
+            const attenuation = 1 / (1 + 0.05 * distance + 0.01 * distance * distance);
+
+            // 漫反射
+            const diffuse = Math.max(0, normal.dot(lightDir));
+
+            // 镜面反射
+            const reflectDir = lightDir.reflect(normal);
+            const specular = Math.pow(Math.max(0, viewDir.dot(reflectDir)), 64);
+
+            for (let i = 0; i < 3; i++) {
+                color[i] += params.lightColor[i] * params.lightIntensity * attenuation * 
+                           (diffuse * 0.7 + specular * 0.3);
+            }
+
+            return color;
+        }
+
+        // 光线追踪
+        function traceRay(origin, dir, depth = 0) {
+            if (depth > 2) return [10, 10, 15];
+
+            let closestT = Infinity;
+            let closestColor = null;
+
+            // 地板
+            const floorHit = rayPlaneIntersect(origin, dir, -2);
+            if (floorHit && Math.abs(floorHit.x) < 8 && Math.abs(floorHit.z) < 8) {
+                const t = floorHit.sub(origin).length();
+                if (t < closestT) {
+                    closestT = t;
+                    const normal = new Vec3(0, 1, 0);
+                    const viewDir = origin.sub(floorHit).normalize();
+                    let color = computeLighting(floorHit, normal, viewDir);
+
+                    // 地板反射
+                    if (params.floorReflection > 0 && depth < 1) {
+                        const reflectDir = dir.reflect(normal);
+                        const reflectColor = traceRay(floorHit, reflectDir, depth + 1);
+                        for (let i = 0; i < 3; i++) {
+                            color[i] = color[i] * (1 - params.floorReflection) + 
+                                      reflectColor[i] * params.floorReflection;
+                        }
+                    }
+
+                    // 地板棋盘格
+                    const checker = (Math.floor(floorHit.x) + Math.floor(floorHit.z)) % 2;
+                    const checkerFactor = checker === 0 ? 0.4 : 0.3;
+                    for (let i = 0; i < 3; i++) {
+                        color[i] *= checkerFactor;
+                    }
+
+                    closestColor = color;
+                }
+            }
+
+            // 灯泡
+            const lampHit = raySphereIntersect(origin, dir, lightPos, 0.4);
+            if (lampHit && lampHit.t < closestT) {
+                closestT = lampHit.t;
+                closestColor = params.lightColor.map(c => c * params.lightIntensity * 0.8);
+            }
+
+            // 墙壁
+            const walls = [
+                { plane: 'x', value: -8, color: [15, 15, 20] },
+                { plane: 'x', value: 8, color: [15, 15, 20] },
+                { plane: 'z', value: -8, color: [20, 15, 15] },
+                { plane: 'z', value: 8, color: [15, 20, 15] },
+                { plane: 'y', value: 8, color: [15, 15, 25] }
+            ];
+
+            for (const wall of walls) {
+                let hit = null;
+                let normal = null;
+
+                if (wall.plane === 'x') {
+                    if (Math.abs(dir.x) > 0.001) {
+                        const t = (wall.value - origin.x) / dir.x;
+                        if (t > 0.001) {
+                            const point = origin.add(dir.mul(t));
+                            if (Math.abs(point.y) < 10 && Math.abs(point.z) < 8) {
+                                hit = point;
+                                normal = new Vec3(wall.value > 0 ? -1 : 1, 0, 0);
+                            }
+                        }
+                    }
+                } else if (wall.plane === 'y') {
+                    if (Math.abs(dir.y) > 0.001) {
+                        const t = (wall.value - origin.y) / dir.y;
+                        if (t > 0.001) {
+                            const point = origin.add(dir.mul(t));
+                            if (Math.abs(point.x) < 8 && Math.abs(point.z) < 8) {
+                                hit = point;
+                                normal = new Vec3(0, -1, 0);
+                            }
+                        }
+                    }
+                } else if (wall.plane === 'z') {
+                    if (Math.abs(dir.z) > 0.001) {
+                        const t = (wall.value - origin.z) / dir.z;
+                        if (t > 0.001) {
+                            const point = origin.add(dir.mul(t));
+                            if (Math.abs(point.x) < 8 && Math.abs(point.y) < 10) {
+                                hit = point;
+                                normal = new Vec3(0, 0, wall.value > 0 ? -1 : 1);
+                            }
+                        }
+                    }
+                }
+
+                if (hit) {
+                    const t = hit.sub(origin).length();
+                    if (t < closestT) {
+                        closestT = t;
+                        const viewDir = origin.sub(hit).normalize();
+                        let color = computeLighting(hit, normal, viewDir);
+                        for (let i = 0; i < 3; i++) {
+                            color[i] = Math.max(color[i], wall.color[i] * params.ambientLight);
+                        }
+                        closestColor = color;
+                    }
+                }
+            }
+
+            // 体积光（光锥雾效）
+            if (closestT < Infinity && params.volumetricDensity > 0) {
+                const steps = 20;
+                let volumetric = 0;
+                for (let i = 0; i < steps; i++) {
+                    const t = (closestT * i) / steps;
+                    const samplePoint = origin.add(dir.mul(t));
+                    if (isInLightCone(samplePoint)) {
+                        const dist = samplePoint.sub(lightPos).length();
+                        volumetric += params.volumetricDensity / (1 + dist * dist * 0.05);
+                    }
+                }
+                volumetric /= steps;
+                for (let i = 0; i < 3; i++) {
+                    closestColor[i] += params.lightColor[i] * volumetric * params.lightIntensity * 15;
+                }
+            }
+
+            return closestColor || [10, 10, 15];
+        }
+
+        // 渲染
+        function render() {
+            const width = canvas.width;
+            const height = canvas.height;
+            const imageData = ctx.createImageData(width, height);
+            const data = imageData.data;
+
+            const cameraPos = getCameraPosition();
+            const lookAt = new Vec3(0, 0, 0);
+            const forward = lookAt.sub(cameraPos).normalize();
+            const right = new Vec3(forward.z, 0, -forward.x).normalize();
+            const up = right.sub(new Vec3(forward.x, 0, forward.z)).mul(forward.y).add(new Vec3(0, 1, 0)).normalize();
+
+            const fov = Math.PI / 3;
+            const aspectRatio = width / height;
+            const scale = Math.tan(fov / 2);
+
+            // 自适应像素大小
+            const pixelSize = Math.max(1, Math.floor(Math.min(width, height) / 300));
+
+            for (let y = 0; y < height; y += pixelSize) {
+                for (let x = 0; x < width; x += pixelSize) {
+                    const ndcX = (2 * (x + 0.5) / width - 1) * aspectRatio * scale;
+                    const ndcY = (1 - 2 * (y + 0.5) / height) * scale;
+
+                    const dir = forward.add(right.mul(ndcX)).add(up.mul(ndcY)).normalize();
+                    const color = traceRay(cameraPos, dir);
+
+                    // 填充像素块
+                    for (let dy = 0; dy < pixelSize && y + dy < height; dy++) {
+                        for (let dx = 0; dx < pixelSize && x + dx < width; dx++) {
+                            const index = ((y + dy) * width + (x + dx)) * 4;
+                            data[index] = Math.min(255, color[0]);
+                            data[index + 1] = Math.min(255, color[1]);
+                            data[index + 2] = Math.min(255, color[2]);
+                            data[index + 3] = 255;
+                        }
+                    }
+                }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        // FPS计数
+        let frameCount = 0;
+        let lastTime = Date.now();
+
+        function animate() {
+            render();
+
+            frameCount++;
+            const currentTime = Date.now();
+            if (currentTime - lastTime >= 1000) {
+                document.getElementById('fps').textContent = frameCount;
+                frameCount = 0;
+                lastTime = currentTime;
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
 </body>
 </html>
