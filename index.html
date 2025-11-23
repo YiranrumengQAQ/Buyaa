@@ -11,57 +11,80 @@
             box-sizing: border-box;
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            min-height: 100vh;
-            overflow: hidden;
+        :root {
+            --md-primary: #1976d2;
+            --md-primary-dark: #1565c0;
+            --md-primary-light: #42a5f5;
+            --md-secondary: #00bcd4;
+            --md-error: #d32f2f;
+            --md-success: #388e3c;
+            --md-background: #f5f5f5;
+            --md-surface: #ffffff;
+            --md-text-primary: rgba(0, 0, 0, 0.87);
+            --md-text-secondary: rgba(0, 0, 0, 0.6);
+            --md-divider: rgba(0, 0, 0, 0.12);
         }
 
-        /* ========== 移动端摄像头应用样式 ========== */
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: var(--md-background);
+            min-height: 100vh;
+            color: var(--md-text-primary);
+        }
+
+        /* ========== Material Design 顶部应用栏 ========== */
+        .app-bar {
+            background: var(--md-primary);
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .app-bar-content {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .app-bar h1 {
+            font-size: 20px;
+            font-weight: 500;
+            letter-spacing: 0.15px;
+        }
+
+        /* ========== Material 内容区域 ========== */
         #mobileApp {
             display: none;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+            padding-top: 56px;
         }
 
         #mobileApp.active {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: block;
         }
 
-        .container {
-            background: white;
-            border-radius: 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        .content-container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        /* ========== Material Card 视频容器 ========== */
+        .video-card {
+            background: var(--md-surface);
+            margin: 16px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.1);
             overflow: hidden;
-            max-width: 500px;
-            width: 100%;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 25px;
-            text-align: center;
-            color: white;
-        }
-
-        .header h1 {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .header p {
-            font-size: 14px;
-            opacity: 0.9;
         }
 
         .video-container {
             position: relative;
             background: #000;
-            aspect-ratio: 4/3;
+            aspect-ratio: 16/9;
             overflow: hidden;
         }
 
@@ -71,32 +94,81 @@
             object-fit: cover;
         }
 
-        .motion-indicator {
+        /* ========== Material FAB 控制按钮 ========== */
+        .fab-container {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 12px 20px;
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 25px;
+            bottom: 16px;
+            right: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            z-index: 10;
+        }
+
+        .fab {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--md-primary);
             color: white;
-            font-size: 14px;
-            font-weight: 600;
+            border: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .fab:active {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+            transform: scale(0.96);
+        }
+
+        .fab.secondary {
+            width: 48px;
+            height: 48px;
+            background: var(--md-secondary);
+            font-size: 20px;
+        }
+
+        .fab.capturing {
+            background: var(--md-error);
+            animation: pulse-fab 1s infinite;
+        }
+
+        @keyframes pulse-fab {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* ========== 状态指示器 ========== */
+        .status-chip {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            padding: 6px 12px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border-radius: 16px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             backdrop-filter: blur(10px);
         }
 
-        .motion-dot {
-            width: 12px;
-            height: 12px;
+        .status-indicator {
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            background: #10b981;
+            background: var(--md-success);
             animation: pulse 2s infinite;
         }
 
-        .motion-dot.detecting {
-            background: #ef4444;
+        .status-indicator.motion {
+            background: var(--md-error);
             animation: pulse-fast 0.5s infinite;
         }
 
@@ -110,113 +182,317 @@
             50% { opacity: 0.7; transform: scale(1.2); }
         }
 
-        .controls {
-            padding: 25px;
-        }
-
-        .btn {
-            width: 100%;
+        /* ========== Material 按钮 ========== */
+        .button-container {
             padding: 16px;
-            border: none;
-            border-radius: 15px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: 12px;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .md-button {
+            width: 100%;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 1.25px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .md-button.primary {
+            background: var(--md-primary);
             color: white;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        .md-button.primary:hover {
+            background: var(--md-primary-dark);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
 
-        .btn-primary:disabled {
-            opacity: 0.6;
+        .md-button:active {
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+
+        .md-button:disabled {
+            background: rgba(0,0,0,0.12);
+            color: rgba(0,0,0,0.38);
+            box-shadow: none;
             cursor: not-allowed;
-            transform: none;
         }
 
-        .stats {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 15px;
+        /* ========== Material 列表项 ========== */
+        .detection-settings {
+            background: var(--md-surface);
+            margin: 16px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .stat-row {
+        .settings-header {
+            padding: 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--md-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .list-item {
+            padding: 16px;
+            border-top: 1px solid var(--md-divider);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #e9ecef;
+            transition: background 0.2s;
         }
 
-        .stat-row:last-child {
-            border-bottom: none;
+        .list-item:hover {
+            background: rgba(0,0,0,0.04);
         }
 
-        .stat-label {
-            color: #6c757d;
-            font-size: 14px;
+        .list-item-text {
+            flex: 1;
         }
 
-        .stat-value {
-            color: #212529;
+        .list-item-title {
             font-size: 16px;
-            font-weight: 600;
+            line-height: 24px;
         }
 
-        .sensitivity-control {
-            margin-top: 15px;
+        .list-item-subtitle {
+            font-size: 14px;
+            color: var(--md-text-secondary);
+            line-height: 20px;
+            margin-top: 4px;
         }
 
-        .sensitivity-label {
+        /* ========== Material Switch ========== */
+        .md-switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 32px;
+        }
+
+        .md-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .switch-track {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.38);
+            border-radius: 16px;
+            transition: .2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .switch-thumb {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 6px;
+            bottom: 6px;
+            background-color: white;
+            border-radius: 50%;
+            transition: .2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        input:checked + .switch-track {
+            background-color: var(--md-primary-light);
+        }
+
+        input:checked + .switch-track .switch-thumb {
+            transform: translateX(20px);
+            background-color: var(--md-primary);
+        }
+
+        /* ========== Material Slider ========== */
+        .slider-container {
+            padding: 16px;
+            border-top: 1px solid var(--md-divider);
+        }
+
+        .slider-label {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 14px;
-            color: #6c757d;
+            margin-bottom: 12px;
         }
 
-        input[type="range"] {
+        .slider-title {
+            font-size: 16px;
+        }
+
+        .slider-value {
+            font-size: 16px;
+            color: var(--md-primary);
+            font-weight: 500;
+        }
+
+        .md-slider {
             width: 100%;
-            height: 6px;
-            border-radius: 3px;
-            background: #e9ecef;
+            height: 2px;
+            border-radius: 1px;
+            background: rgba(25, 118, 210, 0.3);
             outline: none;
             -webkit-appearance: none;
         }
 
-        input[type="range"]::-webkit-slider-thumb {
+        .md-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--md-primary);
             cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            transition: all 0.2s;
         }
 
-        input[type="range"]::-moz-range-thumb {
+        .md-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+
+        .md-slider::-moz-range-thumb {
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--md-primary);
             cursor: pointer;
             border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* ========== 统计卡片 ========== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin: 16px;
+        }
+
+        .stat-card {
+            background: var(--md-surface);
+            padding: 16px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stat-title {
+            font-size: 12px;
+            color: var(--md-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 500;
+            color: var(--md-text-primary);
+        }
+
+        /* ========== 截图列表 ========== */
+        .screenshots-section {
+            background: var(--md-surface);
+            margin: 16px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .screenshots-header {
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--md-divider);
+        }
+
+        .screenshots-title {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .clear-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid var(--md-primary);
+            color: var(--md-primary);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1.25px;
+        }
+
+        .screenshots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 8px;
+            padding: 16px;
+        }
+
+        .screenshot-item {
+            position: relative;
+            aspect-ratio: 16/9;
+            border-radius: 4px;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+
+        .screenshot-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .screenshot-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .screenshot-time {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 4px 8px;
+            font-size: 10px;
+        }
+
+        .empty-state {
+            padding: 48px 16px;
+            text-align: center;
+            color: var(--md-text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
         }
 
         canvas {
             display: none;
         }
 
-        /* ========== PC端404页面样式 ========== */
+        /* ========== 404页面 ========== */
         #page404 {
             display: none;
             background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
@@ -260,36 +536,23 @@
             animation: float3 35s infinite linear;
         }
 
-        @keyframes float1 {
-            from { left: -100px; }
-            to { left: 110%; }
-        }
-
-        @keyframes float2 {
-            from { left: -150px; }
-            to { left: 110%; }
-        }
-
-        @keyframes float3 {
-            from { left: -120px; }
-            to { left: 110%; }
-        }
+        @keyframes float1 { from { left: -100px; } to { left: 110%; } }
+        @keyframes float2 { from { left: -150px; } to { left: 110%; } }
+        @keyframes float3 { from { left: -120px; } to { left: 110%; } }
 
         .container-404 {
             text-align: center;
+            padding: 20px;
             position: relative;
             z-index: 10;
-            padding: 20px;
         }
 
         .number-404 {
             font-size: 120px;
             font-weight: 800;
             color: #ff6b6b;
-            text-shadow: 4px 4px 0px #ffe66d, 8px 8px 0px rgba(0, 0, 0, 0.1);
-            letter-spacing: 10px;
+            text-shadow: 4px 4px 0px #ffe66d;
             animation: bounce 2s infinite;
-            display: inline-block;
         }
 
         @keyframes bounce {
@@ -330,13 +593,8 @@
             animation: blink 4s infinite;
         }
 
-        .eye-left {
-            left: 55px;
-        }
-
-        .eye-right {
-            right: 55px;
-        }
+        .eye-left { left: 55px; }
+        .eye-right { right: 55px; }
 
         @keyframes blink {
             0%, 48%, 52%, 100% { height: 30px; }
@@ -352,29 +610,13 @@
             animation: tear-fall 2s infinite;
         }
 
-        .tear-left {
-            left: 62px;
-            top: 95px;
-        }
-
-        .tear-right {
-            right: 62px;
-            top: 95px;
-            animation-delay: 0.5s;
-        }
+        .tear-left { left: 62px; top: 95px; }
+        .tear-right { right: 62px; top: 95px; animation-delay: 0.5s; }
 
         @keyframes tear-fall {
-            0% { 
-                opacity: 0;
-                transform: translateY(0) scale(1);
-            }
-            20% {
-                opacity: 1;
-            }
-            100% { 
-                opacity: 0;
-                transform: translateY(50px) scale(0.5);
-            }
+            0% { opacity: 0; transform: translateY(0); }
+            20% { opacity: 1; }
+            100% { opacity: 0; transform: translateY(50px); }
         }
 
         .mouth {
@@ -390,41 +632,39 @@
         }
 
         .message {
-            color: #333;
             margin-bottom: 30px;
         }
 
         .message h1 {
             font-size: 36px;
-            margin-bottom: 15px;
             color: #ff6b6b;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
         }
 
         .message p {
             font-size: 18px;
             color: #666;
-            line-height: 1.6;
             margin-bottom: 10px;
         }
 
-        .emoji {
-            font-size: 24px;
-            display: inline-block;
-            animation: wave 1s infinite;
+        .device-info {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            max-width: 500px;
         }
 
-        @keyframes wave {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(20deg); }
-            75% { transform: rotate(-20deg); }
+        .device-info h3 {
+            color: #ff6b6b;
+            margin-bottom: 15px;
         }
 
         .buttons {
             display: flex;
             gap: 15px;
             justify-content: center;
-            flex-wrap: wrap;
             margin-top: 30px;
         }
 
@@ -435,9 +675,6 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
@@ -446,180 +683,194 @@
             color: white;
         }
 
-        .btn-404-primary:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
-        }
-
-        .btn-404-secondary {
-            background: white;
-            color: #ff6b6b;
-        }
-
-        .btn-404-secondary:hover {
-            transform: translateY(-3px) scale(1.05);
-            background: #fff5f5;
-        }
-
-        .star {
-            position: absolute;
-            font-size: 24px;
-            animation: twinkle 1.5s infinite;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.3; transform: scale(0.8); }
-        }
-
-        .star1 { top: 15%; left: 15%; animation-delay: 0s; }
-        .star2 { top: 25%; right: 20%; animation-delay: 0.3s; }
-        .star3 { bottom: 20%; left: 10%; animation-delay: 0.6s; }
-        .star4 { bottom: 30%; right: 15%; animation-delay: 0.9s; }
-
-        .device-info {
-            margin-top: 40px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .device-info h3 {
-            color: #ff6b6b;
-            margin-bottom: 15px;
-            font-size: 20px;
-        }
-
-        .device-info p {
-            color: #666;
-            font-size: 15px;
-            line-height: 1.8;
-        }
-
-        .icon {
-            font-size: 48px;
-            margin-bottom: 15px;
-        }
-
-        /* ========== 响应式设计 ========== */
         @media (max-width: 768px) {
-            #mobileApp {
-                padding: 0;
-            }
-            
-            .container {
-                border-radius: 0;
-                max-width: 100%;
-                min-height: 100vh;
-            }
-
-            .number-404 {
-                font-size: 80px;
-            }
-
-            .sad-face {
-                width: 150px;
-                height: 150px;
-            }
-
-            .face-circle {
-                width: 150px;
-                height: 150px;
-            }
-
-            .eye {
-                width: 15px;
-                height: 22px;
-                top: 50px;
-            }
-
-            .eye-left {
-                left: 40px;
-            }
-
-            .eye-right {
-                right: 40px;
-            }
-
-            .tear-left {
-                left: 45px;
-                top: 70px;
-            }
-
-            .tear-right {
-                right: 45px;
-                top: 70px;
-            }
-
-            .mouth {
-                width: 60px;
-                height: 30px;
-                bottom: 35px;
-            }
-
-            .message h1 {
-                font-size: 28px;
-            }
-
-            .message p {
-                font-size: 16px;
-            }
-
-            .buttons {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .btn-404 {
-                width: 100%;
+            .stats-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <!-- 移动端摄像头应用 -->
+    <!-- 移动端应用 -->
     <div id="mobileApp">
-        <div class="container">
-            <div class="header">
-                <h1>📸 智能运动检测</h1>
-                <p>实时监测镜头前的物体运动</p>
+        <!-- Material 顶部应用栏 -->
+        <div class="app-bar">
+            <div class="app-bar-content">
+                <span>📸</span>
+                <h1>智能运动检测</h1>
             </div>
+        </div>
 
-            <div class="video-container">
-                <video id="video" autoplay playsinline></video>
-                <div class="motion-indicator">
-                    <div class="motion-dot" id="motionDot"></div>
-                    <span id="motionStatus">就绪</span>
+        <div class="content-container">
+            <!-- 视频卡片 -->
+            <div class="video-card">
+                <div class="video-container">
+                    <video id="video" autoplay playsinline></video>
+                    
+                    <!-- 状态指示 -->
+                    <div class="status-chip">
+                        <div class="status-indicator" id="statusIndicator"></div>
+                        <span id="statusText">就绪</span>
+                    </div>
+
+                    <!-- FAB 按钮组 -->
+                    <div class="fab-container">
+                        <button class="fab secondary" id="switchCameraBtn" title="切换摄像头">
+                            🔄
+                        </button>
+                    </div>
+                </div>
+
+                <div class="button-container">
+                    <button class="md-button primary" id="startBtn">启动摄像头</button>
                 </div>
             </div>
 
-            <div class="controls">
-                <button class="btn btn-primary" id="startBtn">启动摄像头</button>
+            <!-- 统计卡片 -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-title">运动检测</div>
+                    <div class="stat-value" id="motionCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">运动强度</div>
+                    <div class="stat-value" id="motionLevel">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">截图数量</div>
+                    <div class="stat-value" id="screenshotCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">当前摄像头</div>
+                    <div class="stat-value" id="currentCamera">后置</div>
+                </div>
+            </div>
+
+            <!-- 检测设置 -->
+            <div class="detection-settings">
+                <div class="settings-header">检测设置</div>
                 
-                <div class="sensitivity-control">
-                    <div class="sensitivity-label">
-                        <span>灵敏度</span>
-                        <span id="sensitivityValue">50</span>
+                <div class="list-item">
+                    <div class="list-item-text">
+                        <div class="list-item-title">运动检测</div>
+                        <div class="list-item-subtitle">检测镜头前的物体运动</div>
                     </div>
-                    <input type="range" id="sensitivity" min="10" max="90" value="50">
+                    <label class="md-switch">
+                        <input type="checkbox" id="motionDetectionToggle" checked>
+                        <span class="switch-track">
+                            <span class="switch-thumb"></span>
+                        </span>
+                    </label>
                 </div>
 
-                <div class="stats">
-                    <div class="stat-row">
-                        <span class="stat-label">检测状态</span>
-                        <span class="stat-value" id="statusText">未启动</span>
+                <div class="list-item">
+                    <div class="list-item-text">
+                        <div class="list-item-title">自动截图</div>
+                        <div class="list-item-subtitle">检测到运动时自动保存截图</div>
                     </div>
-                    <div class="stat-row">
-                        <span class="stat-label">运动检测次数</span>
-                        <span class="stat-value" id="motionCount">0</span>
+                    <label class="md-switch">
+                        <input type="checkbox" id="autoScreenshotToggle">
+                        <span class="switch-track">
+                            <span class="switch-thumb"></span>
+                        </span>
+                    </label>
+                </div>
+
+                <div class="list-item">
+                    <div class="list-item-text">
+                        <div class="list-item-title">持续监控模式</div>
+                        <div class="list-item-subtitle">长时间运动时持续记录</div>
                     </div>
-                    <div class="stat-row">
-                        <span class="stat-label">运动强度</span>
-                        <span class="stat-value" id="motionLevel">0%</span>
+                    <label class="md-switch">
+                        <input type="checkbox" id="continuousMode">
+                        <span class="switch-track">
+                            <span class="switch-thumb"></span>
+                        </span>
+                    </label>
+                </div>
+
+                <div class="list-item">
+                    <div class="list-item-text">
+                        <div class="list-item-title">震动反馈</div>
+                        <div class="list-item-subtitle">检测到运动时震动提醒</div>
+                    </div>
+                    <label class="md-switch">
+                        <input type="checkbox" id="vibrationToggle" checked>
+                        <span class="switch-track">
+                            <span class="switch-thumb"></span>
+                        </span>
+                    </label>
+                </div>
+
+                <div class="list-item">
+                    <div class="list-item-text">
+                        <div class="list-item-title">区域检测</div>
+                        <div class="list-item-subtitle">仅检测画面中心区域</div>
+                    </div>
+                    <label class="md-switch">
+                        <input type="checkbox" id="centerOnlyToggle">
+                        <span class="switch-track">
+                            <span class="switch-thumb"></span>
+                        </span>
+                    </label>
+                </div>
+
+                <!-- 灵敏度滑块 -->
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span class="slider-title">检测灵敏度</span>
+                        <span class="slider-value" id="sensitivityValue">50</span>
+                    </div>
+                    <input type="range" class="md-slider" id="sensitivity" min="10" max="90" value="50">
+                </div>
+
+                <!-- 阈值滑块 -->
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span class="slider-title">运动阈值</span>
+                        <span class="slider-value" id="thresholdValue">50</span>
+                    </div>
+                    <input type="range" class="md-slider" id="threshold" min="10" max="90" value="50">
+                </div>
+
+                <!-- 检测频率 -->
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span class="slider-title">检测频率 (帧/秒)</span>
+                        <span class="slider-value" id="fpsValue">10</span>
+                    </div>
+                    <input type="range" class="md-slider" id="fpsSlider" min="5" max="30" value="10">
+                </div>
+
+                <!-- 最小运动持续时间 -->
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span class="slider-title">最小持续时间 (ms)</span>
+                        <span class="slider-value" id="durationValue">500</span>
+                    </div>
+                    <input type="range" class="md-slider" id="durationSlider" min="100" max="2000" step="100" value="500">
+                </div>
+
+                <!-- 冷却时间 -->
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span class="slider-title">截图间隔 (秒)</span>
+                        <span class="slider-value" id="cooldownValue">3</span>
+                    </div>
+                    <input type="range" class="md-slider" id="cooldownSlider" min="1" max="10" value="3">
+                </div>
+            </div>
+
+            <!-- 截图列表 -->
+            <div class="screenshots-section">
+                <div class="screenshots-header">
+                    <span class="screenshots-title">运动截图</span>
+                    <button class="clear-btn" id="clearScreenshots">清除全部</button>
+                </div>
+                <div class="screenshots-grid" id="screenshotsGrid">
+                    <div class="empty-state">
+                        <div class="empty-icon">📷</div>
+                        <div>检测到运动时会自动保存截图</div>
                     </div>
                 </div>
             </div>
@@ -632,15 +883,9 @@
         <div class="cloud cloud2"></div>
         <div class="cloud cloud3"></div>
 
-        <div class="star star1">✨</div>
-        <div class="star star2">⭐</div>
-        <div class="star star3">💫</div>
-        <div class="star star4">✨</div>
-
         <div class="container-404">
             <div class="number-404">404</div>
-
-            <div class="sad-face" id="sadFace">
+            <div class="sad-face">
                 <div class="face-circle">
                     <div class="eye eye-left"></div>
                     <div class="eye eye-right"></div>
@@ -649,26 +894,16 @@
                     <div class="mouth"></div>
                 </div>
             </div>
-
             <div class="message">
-                <h1>哎呀！页面走丢了 <span class="emoji">🙈</span></h1>
+                <h1>哎呀！页面走丢了 🙈</h1>
                 <p>这个页面好像去度假了，还没回来呢~</p>
-                <p>或许它正在某个角落吃着小零食 🍪</p>
             </div>
-
             <div class="device-info">
-                <div class="icon">💻❌📱✅</div>
                 <h3>温馨提示</h3>
-                <p>
-                    <strong>此应用仅支持移动设备使用！</strong><br>
-                    检测到您正在使用PC端访问，该应用需要使用移动设备的摄像头功能。<br><br>
-                    <strong>请使用手机或平板电脑访问此页面</strong>，即可体验智能运动检测功能！
-                </p>
+                <p><strong>此应用仅支持移动设备使用！</strong><br>请使用手机或平板电脑访问此页面。</p>
             </div>
-
             <div class="buttons">
-                <button class="btn-404 btn-404-secondary" onclick="history.back()">🔙 返回上页</button>
-                <button class="btn-404 btn-404-primary" onclick="location.reload()">🔄 刷新试试</button>
+                <button class="btn-404 btn-404-primary" onclick="location.reload()">刷新试试</button>
             </div>
         </div>
     </div>
@@ -676,52 +911,116 @@
     <canvas id="canvas"></canvas>
 
     <script>
-        // ========== 设备检测与页面切换 ==========
         function isMobileDevice() {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
-                   ('ontouchstart' in window) || 
-                   (navigator.maxTouchPoints > 0);
+                   ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
         }
 
-        // 根据设备类型显示对应页面
         if (isMobileDevice() || window.innerWidth <= 768) {
             document.getElementById('mobileApp').classList.add('active');
             initMobileApp();
         } else {
             document.getElementById('page404').classList.add('active');
-            init404Page();
         }
 
-        // ========== 移动端摄像头应用逻辑 ==========
         function initMobileApp() {
             const video = document.getElementById('video');
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
             const startBtn = document.getElementById('startBtn');
-            const motionDot = document.getElementById('motionDot');
-            const motionStatus = document.getElementById('motionStatus');
+            const switchCameraBtn = document.getElementById('switchCameraBtn');
+            const statusIndicator = document.getElementById('statusIndicator');
             const statusText = document.getElementById('statusText');
             const motionCountEl = document.getElementById('motionCount');
             const motionLevelEl = document.getElementById('motionLevel');
+            const screenshotCountEl = document.getElementById('screenshotCount');
+            const currentCameraEl = document.getElementById('currentCamera');
             const sensitivitySlider = document.getElementById('sensitivity');
             const sensitivityValue = document.getElementById('sensitivityValue');
+            const thresholdSlider = document.getElementById('threshold');
+            const thresholdValue = document.getElementById('thresholdValue');
+            const fpsSlider = document.getElementById('fpsSlider');
+            const fpsValue = document.getElementById('fpsValue');
+            const durationSlider = document.getElementById('durationSlider');
+            const durationValue = document.getElementById('durationValue');
+            const cooldownSlider = document.getElementById('cooldownSlider');
+            const cooldownValue = document.getElementById('cooldownValue');
+            const motionDetectionToggle = document.getElementById('motionDetectionToggle');
+            const autoScreenshotToggle = document.getElementById('autoScreenshotToggle');
+            const continuousMode = document.getElementById('continuousMode');
+            const vibrationToggle = document.getElementById('vibrationToggle');
+            const centerOnlyToggle = document.getElementById('centerOnlyToggle');
+            const screenshotsGrid = document.getElementById('screenshotsGrid');
+            const clearScreenshots = document.getElementById('clearScreenshots');
 
             let stream = null;
+            let videoTrack = null;
             let isDetecting = false;
             let previousFrame = null;
             let motionCount = 0;
+            let screenshotCount = 0;
             let sensitivity = 50;
+            let threshold = 50;
+            let detectionFps = 10;
+            let minDuration = 500;
+            let cooldownTime = 3000;
+            let currentFacingMode = 'environment';
+            let lastScreenshotTime = 0;
+            let motionStartTime = 0;
+            let isInMotion = false;
+            let screenshots = [];
 
+            // 滑块事件
             sensitivitySlider.addEventListener('input', (e) => {
                 sensitivity = e.target.value;
                 sensitivityValue.textContent = sensitivity;
             });
 
+            thresholdSlider.addEventListener('input', (e) => {
+                threshold = e.target.value;
+                thresholdValue.textContent = threshold;
+            });
+
+            fpsSlider.addEventListener('input', (e) => {
+                detectionFps = e.target.value;
+                fpsValue.textContent = detectionFps;
+            });
+
+            durationSlider.addEventListener('input', (e) => {
+                minDuration = e.target.value;
+                durationValue.textContent = minDuration;
+            });
+
+            cooldownSlider.addEventListener('input', (e) => {
+                cooldownTime = e.target.value * 1000;
+                cooldownValue.textContent = e.target.value;
+            });
+
+            // 启动/停止
             startBtn.addEventListener('click', async () => {
                 if (!isDetecting) {
                     await startCamera();
                 } else {
-                    stopCamera();
+                    await stopCamera();
+                }
+            });
+
+            // 切换摄像头
+            switchCameraBtn.addEventListener('click', async () => {
+                if (!isDetecting) return;
+                currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
+                currentCameraEl.textContent = currentFacingMode === 'environment' ? '后置' : '前置';
+                await stopCamera();
+                await startCamera();
+            });
+
+            // 清除截图
+            clearScreenshots.addEventListener('click', () => {
+                if (confirm('确定要清除所有截图吗？')) {
+                    screenshots = [];
+                    screenshotCount = 0;
+                    screenshotCountEl.textContent = '0';
+                    updateScreenshotsGrid();
                 }
             });
 
@@ -732,13 +1031,14 @@
 
                     stream = await navigator.mediaDevices.getUserMedia({
                         video: {
-                            facingMode: 'environment',
-                            width: { ideal: 640 },
-                            height: { ideal: 480 }
+                            facingMode: currentFacingMode,
+                            width: { ideal: 1280 },
+                            height: { ideal: 720 }
                         },
                         audio: false
                     });
 
+                    videoTrack = stream.getVideoTracks()[0];
                     video.srcObject = stream;
                     
                     video.addEventListener('loadedmetadata', () => {
@@ -751,69 +1051,102 @@
                         startBtn.textContent = '停止检测';
                         startBtn.disabled = false;
                         statusText.textContent = '运行中';
-                        motionStatus.textContent = '监测中';
+                        switchCameraBtn.disabled = false;
                         detectMotion();
                     });
 
                 } catch (error) {
-                    console.error('摄像头启动失败:', error);
-                    alert('无法访问摄像头，请确保已授予权限。\n错误: ' + error.message);
+                    alert('无法访问摄像头: ' + error.message);
                     startBtn.disabled = false;
                     startBtn.textContent = '启动摄像头';
                 }
             }
 
-            function stopCamera() {
+            async function stopCamera() {
                 if (stream) {
                     stream.getTracks().forEach(track => track.stop());
                     video.srcObject = null;
                     stream = null;
+                    videoTrack = null;
                 }
                 isDetecting = false;
                 previousFrame = null;
                 startBtn.textContent = '启动摄像头';
                 statusText.textContent = '已停止';
-                motionStatus.textContent = '就绪';
-                motionDot.classList.remove('detecting');
+                statusIndicator.classList.remove('motion');
+                switchCameraBtn.disabled = true;
             }
 
             function detectMotion() {
                 if (!isDetecting) return;
 
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                const currentFrame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const interval = 1000 / detectionFps;
 
-                if (previousFrame) {
-                    const motion = calculateMotion(currentFrame, previousFrame);
-                    const threshold = (100 - sensitivity) * 30;
-                    
-                    if (motion > threshold) {
-                        motionDetected(motion);
-                    } else {
-                        noMotionDetected();
+                setTimeout(() => {
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    const currentFrame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+                    if (previousFrame && motionDetectionToggle.checked) {
+                        const motion = calculateMotion(currentFrame, previousFrame);
+                        const thresholdValue = (100 - threshold) * 30;
+                        const now = Date.now();
+                        
+                        if (motion > thresholdValue) {
+                            if (!isInMotion) {
+                                motionStartTime = now;
+                                isInMotion = true;
+                            }
+
+                            const motionDuration = now - motionStartTime;
+                            
+                            if (motionDuration >= minDuration) {
+                                motionDetected(motion);
+                                
+                                // 自动截图
+                                if (autoScreenshotToggle.checked) {
+                                    const timeSinceLastShot = now - lastScreenshotTime;
+                                    if (timeSinceLastShot >= cooldownTime || continuousMode.checked) {
+                                        takeScreenshot();
+                                        lastScreenshotTime = now;
+                                    }
+                                }
+                            }
+                        } else {
+                            isInMotion = false;
+                            noMotionDetected();
+                        }
+
+                        const percentage = Math.min(100, Math.round((motion / thresholdValue) * 100));
+                        motionLevelEl.textContent = percentage + '%';
                     }
 
-                    const percentage = Math.min(100, Math.round((motion / threshold) * 100));
-                    motionLevelEl.textContent = percentage + '%';
-                }
-
-                previousFrame = currentFrame;
-                requestAnimationFrame(detectMotion);
+                    previousFrame = currentFrame;
+                    detectMotion();
+                }, interval);
             }
 
             function calculateMotion(current, previous) {
                 let motionPixels = 0;
-                const pixelThreshold = 30;
+                const pixelThreshold = (100 - sensitivity) * 0.5 + 10;
+                const centerOnly = centerOnlyToggle.checked;
+                
+                const startX = centerOnly ? Math.floor(canvas.width * 0.25) : 0;
+                const endX = centerOnly ? Math.floor(canvas.width * 0.75) : canvas.width;
+                const startY = centerOnly ? Math.floor(canvas.height * 0.25) : 0;
+                const endY = centerOnly ? Math.floor(canvas.height * 0.75) : canvas.height;
 
-                for (let i = 0; i < current.data.length; i += 16) {
-                    const rDiff = Math.abs(current.data[i] - previous.data[i]);
-                    const gDiff = Math.abs(current.data[i + 1] - previous.data[i + 1]);
-                    const bDiff = Math.abs(current.data[i + 2] - previous.data[i + 2]);
-                    
-                    const diff = (rDiff + gDiff + bDiff) / 3;
+                for (let y = startY; y < endY; y += 4) {
+                    for (let x = startX; x < endX; x += 4) {
+                        const i = (y * canvas.width + x) * 4;
+                        const rDiff = Math.abs(current.data[i] - previous.data[i]);
+                        const gDiff = Math.abs(current.data[i + 1] - previous.data[i + 1]);
+                        const bDiff = Math.abs(current.data[i + 2] - previous.data[i + 2]);
+                        
+                        const diff = (rDiff + gDiff + bDiff) / 3;
 
-                    if (diff > pixelThreshold) {
-                        motionPixels++;
+                        if (diff > pixelThreshold) {
+                            motionPixels++;
+                        }
                     }
                 }
 
@@ -821,76 +1154,63 @@
             }
 
             function motionDetected(intensity) {
-                motionDot.classList.add('detecting');
-                motionStatus.textContent = '检测到运动!';
+                statusIndicator.classList.add('motion');
+                statusText.textContent = '检测到运动';
                 motionCount++;
                 motionCountEl.textContent = motionCount;
 
-                if ('vibrate' in navigator) {
+                if (vibrationToggle.checked && 'vibrate' in navigator) {
                     navigator.vibrate(50);
                 }
             }
 
             function noMotionDetected() {
-                motionDot.classList.remove('detecting');
-                motionStatus.textContent = '监测中';
+                statusIndicator.classList.remove('motion');
+                statusText.textContent = '监测中';
+            }
+
+            function takeScreenshot() {
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const time = new Date().toLocaleTimeString('zh-CN');
+                    
+                    screenshots.unshift({ url, time });
+                    screenshotCount++;
+                    screenshotCountEl.textContent = screenshotCount;
+                    
+                    // 限制最多保存50张
+                    if (screenshots.length > 50) {
+                        const removed = screenshots.pop();
+                        URL.revokeObjectURL(removed.url);
+                    }
+                    
+                    updateScreenshotsGrid();
+                }, 'image/jpeg', 0.85);
+            }
+
+            function updateScreenshotsGrid() {
+                if (screenshots.length === 0) {
+                    screenshotsGrid.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">📷</div>
+                            <div>检测到运动时会自动保存截图</div>
+                        </div>
+                    `;
+                } else {
+                    screenshotsGrid.innerHTML = screenshots.map(shot => `
+                        <div class="screenshot-item" onclick="window.open('${shot.url}', '_blank')">
+                            <img src="${shot.url}" alt="截图">
+                            <div class="screenshot-time">${shot.time}</div>
+                        </div>
+                    `).join('');
+                }
             }
 
             window.addEventListener('beforeunload', () => {
                 stopCamera();
-            });
-
-            document.addEventListener('visibilitychange', () => {
-                if (document.hidden && isDetecting) {
-                    stopCamera();
-                }
+                screenshots.forEach(shot => URL.revokeObjectURL(shot.url));
             });
         }
-
-        // ========== 404页面交互逻辑 ==========
-        function init404Page() {
-            document.addEventListener('mousemove', (e) => {
-                const face = document.getElementById('sadFace');
-                if (face) {
-                    const rect = face.getBoundingClientRect();
-                    const centerX = rect.left + rect.width / 2;
-                    const centerY = rect.top + rect.height / 2;
-                    
-                    const angleX = (e.clientY - centerY) / 30;
-                    const angleY = (centerX - e.clientX) / 30;
-                    
-                    face.style.transform = `rotateX(${angleX}deg) rotateY(${angleY}deg)`;
-                }
-            });
-
-            const sadFace = document.getElementById('sadFace');
-            if (sadFace) {
-                sadFace.addEventListener('click', function() {
-                    this.style.animation = 'none';
-                    setTimeout(() => {
-                        this.style.animation = 'shake 3s infinite ease-in-out';
-                    }, 10);
-                });
-            }
-        }
-
-        // 监听窗口大小变化，动态切换页面
-        window.addEventListener('resize', () => {
-            const mobileApp = document.getElementById('mobileApp');
-            const page404 = document.getElementById('page404');
-            
-            if (isMobileDevice() || window.innerWidth <= 768) {
-                if (!mobileApp.classList.contains('active')) {
-                    mobileApp.classList.add('active');
-                    page404.classList.remove('active');
-                }
-            } else {
-                if (!page404.classList.contains('active')) {
-                    page404.classList.add('active');
-                    mobileApp.classList.remove('active');
-                }
-            }
-        });
     </script>
 </body>
 </html>
