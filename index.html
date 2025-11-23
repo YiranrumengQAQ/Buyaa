@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D光线追踪 - 黑屋灯光场景</title>
+    <title>智能备忘录 - 多功能笔记应用</title>
     <style>
         * {
             margin: 0;
@@ -11,688 +11,1313 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --border-color: #475569;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
         body {
-            font-family: 'Microsoft YaHei', Arial, sans-serif;
-            overflow: hidden;
-            background: #000;
-            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-primary);
         }
 
         .container {
-            width: 100vw;
-            height: 100vh;
-            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--bg-primary);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-in;
         }
 
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-            cursor: grab;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        canvas:active {
-            cursor: grabbing;
-        }
-
-        .controls-panel {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(15, 15, 20, 0.92);
-            backdrop-filter: blur(12px);
+        /* 登录界面样式 */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             padding: 20px;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-            min-width: 280px;
-            max-height: 90vh;
-            overflow-y: auto;
         }
 
-        .panel-title {
-            font-size: 1.3rem;
-            font-weight: bold;
-            margin-bottom: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .login-box {
+            background: var(--bg-primary);
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .login-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .login-title {
+            font-size: 2em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .control-group {
-            margin-bottom: 18px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        .login-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
         }
 
-        .control-group:last-child {
-            border-bottom: none;
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 20px;
         }
 
-        .control-label {
-            display: block;
-            font-size: 0.9rem;
-            color: #aaa;
-            margin-bottom: 8px;
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2em;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 15px 50px 15px 50px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 1.2em;
+            color: var(--text-secondary);
+            transition: color 0.3s;
+        }
+
+        .toggle-password:hover {
+            color: var(--primary-color);
+        }
+
+        .password-strength {
+            margin-top: 10px;
+            height: 4px;
+            background: var(--bg-card);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s;
+        }
+
+        .strength-weak { background: var(--danger-color); width: 33%; }
+        .strength-medium { background: var(--warning-color); width: 66%; }
+        .strength-strong { background: var(--success-color); width: 100%; }
+
+        .strength-text {
+            margin-top: 5px;
+            font-size: 0.85em;
+            color: var(--text-secondary);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .login-btn:active {
+            transform: scale(0.98);
+        }
+
+        .error-message {
+            background: var(--danger-color);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.9em;
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .password-tips {
+            margin-top: 20px;
+            padding: 15px;
+            background: var(--bg-card);
+            border-radius: 10px;
+            text-align: left;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+
+        .password-tips ul {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+        .password-tips li {
+            margin: 5px 0;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .control-value {
-            color: #667eea;
-            font-weight: bold;
+        .header-left {
+            text-align: left;
         }
 
-        input[type="range"] {
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1em;
+        }
+
+        .logout-btn {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            border-radius: 10px;
+            color: white;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: white;
+            color: var(--primary-color);
+        }
+
+        .toolbar {
+            background: var(--bg-secondary);
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .input-group {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        input, textarea, select {
             width: 100%;
-            height: 6px;
-            border-radius: 3px;
-            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
             outline: none;
-            -webkit-appearance: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
 
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.5);
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
         }
 
-        input[type="range"]::-moz-range-thumb {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            cursor: pointer;
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
             border: none;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.5);
-        }
-
-        input[type="color"] {
-            width: 100%;
-            height: 40px;
-            border: none;
-            border-radius: 8px;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
             cursor: pointer;
-            background: transparent;
-        }
-
-        .preset-colors {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
             gap: 8px;
-            margin-top: 8px;
         }
 
-        .preset-color {
-            width: 100%;
-            aspect-ratio: 1;
-            border-radius: 6px;
-            cursor: pointer;
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .filters {
+            background: var(--bg-secondary);
+            padding: 15px 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: var(--bg-card);
             border: 2px solid transparent;
-            transition: all 0.2s;
+            border-radius: 20px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
-        .preset-color:hover {
-            transform: scale(1.1);
-            border-color: rgba(255, 255, 255, 0.5);
+        .filter-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
         }
 
-        .info-panel {
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .notes-container {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .note-card {
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            padding: 20px;
+            border-left: 5px solid var(--primary-color);
+            transition: all 0.3s ease;
+            animation: slideIn 0.3s ease;
+            position: relative;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .note-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .note-card.priority-high {
+            border-left-color: var(--danger-color);
+        }
+
+        .note-card.priority-medium {
+            border-left-color: var(--warning-color);
+        }
+
+        .note-card.priority-low {
+            border-left-color: var(--success-color);
+        }
+
+        .note-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+
+        .note-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .note-category {
+            display: inline-block;
+            padding: 4px 12px;
+            background: var(--secondary-color);
+            border-radius: 15px;
+            font-size: 0.8em;
+            margin-bottom: 10px;
+        }
+
+        .note-content {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 15px;
+            word-wrap: break-word;
+        }
+
+        .note-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .note-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            font-size: 0.9em;
+            border-radius: 8px;
+        }
+
+        .stats-bar {
+            background: var(--bg-secondary);
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: var(--bg-card);
+            border-radius: 10px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: var(--success-color);
+            color: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            animation: slideInRight 0.3s ease;
+            z-index: 1000;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(400px); }
+            to { transform: translateX(0); }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .priority-badge {
             position: absolute;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(15, 15, 20, 0.92);
-            backdrop-filter: blur(12px);
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 0.85rem;
-            color: #aaa;
+            top: 10px;
+            right: 10px;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 0.75em;
+            font-weight: 600;
         }
+
+        .priority-high { background: var(--danger-color); }
+        .priority-medium { background: var(--warning-color); }
+        .priority-low { background: var(--success-color); }
 
         @media (max-width: 768px) {
-            .controls-panel {
-                top: 10px;
-                right: 10px;
-                min-width: 240px;
-                padding: 15px;
-                max-height: 85vh;
-            }
+            h1 { font-size: 1.8em; }
+            .notes-container { grid-template-columns: 1fr; }
+            .toolbar { flex-direction: column; }
+            .button-group { width: 100%; }
+            button { width: 100%; justify-content: center; }
+            .login-box { padding: 30px 20px; }
+            header { flex-direction: column; gap: 15px; text-align: center; }
+            .header-left { text-align: center; }
+        }
 
-            .info-panel {
-                bottom: 10px;
-                left: 10px;
-                font-size: 0.75rem;
-            }
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <canvas id="canvas3d"></canvas>
-
-        <div class="controls-panel">
-            <div class="panel-title">🎛️ 光照控制台</div>
-
-            <div class="control-group">
-                <label class="control-label">
-                    <span>灯光颜色</span>
-                </label>
-                <input type="color" id="lightColor" value="#ffdd66">
-                <div class="preset-colors">
-                    <div class="preset-color" style="background:#ffdd66" data-color="#ffdd66"></div>
-                    <div class="preset-color" style="background:#ff6666" data-color="#ff6666"></div>
-                    <div class="preset-color" style="background:#66ff66" data-color="#66ff66"></div>
-                    <div class="preset-color" style="background:#6666ff" data-color="#6666ff"></div>
-                    <div class="preset-color" style="background:#ff66ff" data-color="#ff66ff"></div>
-                </div>
+    <!-- 登录界面 -->
+    <div id="loginPage" class="login-container">
+        <div class="login-box">
+            <div class="login-icon">🔐</div>
+            <h2 class="login-title">智能备忘录</h2>
+            <p class="login-subtitle" id="loginSubtitle">首次使用，请设置密码</p>
+            
+            <div class="input-wrapper">
+                <span class="input-icon">🔑</span>
+                <input type="password" id="passwordInput" class="password-input" placeholder="输入密码..." />
+                <span class="toggle-password" onclick="togglePasswordVisibility('passwordInput', this)">👁️</span>
+            </div>
+            
+            <div id="confirmPasswordWrapper" class="input-wrapper">
+                <span class="input-icon">🔑</span>
+                <input type="password" id="confirmPasswordInput" class="password-input" placeholder="确认密码..." />
+                <span class="toggle-password" onclick="togglePasswordVisibility('confirmPasswordInput', this)">👁️</span>
             </div>
 
-            <div class="control-group">
-                <label class="control-label">
-                    <span>灯光强度</span>
-                    <span class="control-value" id="intensityValue">1.5</span>
-                </label>
-                <input type="range" id="lightIntensity" min="0" max="3" step="0.1" value="1.5">
+            <div id="passwordStrength" class="password-strength hidden">
+                <div class="strength-bar" id="strengthBar"></div>
             </div>
+            <div id="strengthText" class="strength-text"></div>
 
-            <div class="control-group">
-                <label class="control-label">
-                    <span>光锥角度</span>
-                    <span class="control-value" id="coneValue">45°</span>
-                </label>
-                <input type="range" id="coneAngle" min="15" max="90" step="1" value="45">
+            <button class="login-btn" onclick="handleAuth()" id="authButton">设置密码</button>
+            
+            <div id="errorMessage"></div>
+
+            <div id="passwordTips" class="password-tips">
+                <strong>🛡️ 密码安全提示：</strong>
+                <ul>
+                    <li>建议使用8位以上字符</li>
+                    <li>包含字母、数字和特殊符号更安全</li>
+                    <li>请牢记密码，忘记后无法找回</li>
+                    <li>密码保存在本地，数据完全私密</li>
+                </ul>
             </div>
-
-            <div class="control-group">
-                <label class="control-label">
-                    <span>地板反射率</span>
-                    <span class="control-value" id="reflectionValue">0.70</span>
-                </label>
-                <input type="range" id="floorReflection" min="0" max="1" step="0.01" value="0.70">
-            </div>
-
-            <div class="control-group">
-                <label class="control-label">
-                    <span>光锥密度</span>
-                    <span class="control-value" id="volumetricValue">0.40</span>
-                </label>
-                <input type="range" id="volumetricDensity" min="0" max="1" step="0.01" value="0.40">
-            </div>
-
-            <div class="control-group">
-                <label class="control-label">
-                    <span>环境光</span>
-                    <span class="control-value" id="ambientValue">0.05</span>
-                </label>
-                <input type="range" id="ambientLight" min="0" max="0.3" step="0.01" value="0.05">
-            </div>
-
-            <div class="control-group">
-                <label class="control-label">
-                    <span>相机距离</span>
-                    <span class="control-value" id="distanceValue">20</span>
-                </label>
-                <input type="range" id="cameraDistance" min="10" max="40" step="1" value="20">
-            </div>
-        </div>
-
-        <div class="info-panel">
-            🖱️ 拖拽旋转视角 | FPS: <span id="fps">60</span>
         </div>
     </div>
 
+    <!-- 主应用界面 -->
+    <div id="mainApp" class="hidden">
+        <div class="container">
+            <header>
+                <div class="header-left">
+                    <h1>📝 智能备忘录</h1>
+                    <p class="subtitle">功能强大 | 数据永久保存 | 密码保护</p>
+                </div>
+                <button class="logout-btn" onclick="logout()">🔓 退出登录</button>
+            </header>
+
+            <div class="toolbar">
+                <div class="input-group">
+                    <input type="text" id="noteTitle" placeholder="📌 输入标题..." />
+                </div>
+                <div class="input-group">
+                    <textarea id="noteContent" placeholder="✍️ 输入内容..."></textarea>
+                </div>
+                <div class="input-group">
+                    <select id="noteCategory">
+                        <option value="工作">💼 工作</option>
+                        <option value="学习">📚 学习</option>
+                        <option value="生活">🏠 生活</option>
+                        <option value="购物">🛒 购物</option>
+                        <option value="健康">💪 健康</option>
+                        <option value="旅行">✈️ 旅行</option>
+                        <option value="其他">📋 其他</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <select id="notePriority">
+                        <option value="low">低优先级</option>
+                        <option value="medium" selected>中优先级</option>
+                        <option value="high">高优先级</option>
+                    </select>
+                </div>
+                <div class="button-group">
+                    <button class="btn-primary" onclick="addNote()">➕ 添加备忘</button>
+                    <button class="btn-warning" onclick="exportNotes()">💾 导出数据</button>
+                    <button class="btn-success" onclick="importNotes()">📥 导入数据</button>
+                    <button class="btn-danger" onclick="changePassword()">🔐 修改密码</button>
+                </div>
+            </div>
+
+            <div class="filters">
+                <button class="filter-btn active" onclick="filterNotes('all')">全部</button>
+                <button class="filter-btn" onclick="filterNotes('工作')">💼 工作</button>
+                <button class="filter-btn" onclick="filterNotes('学习')">📚 学习</button>
+                <button class="filter-btn" onclick="filterNotes('生活')">🏠 生活</button>
+                <button class="filter-btn" onclick="filterNotes('购物')">🛒 购物</button>
+                <button class="filter-btn" onclick="filterNotes('健康')">💪 健康</button>
+                <button class="filter-btn" onclick="filterNotes('旅行')">✈️ 旅行</button>
+                <button class="filter-btn" onclick="filterNotes('其他')">📋 其他</button>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="🔍 搜索备忘录..." oninput="searchNotes()" />
+                </div>
+            </div>
+
+            <div class="notes-container" id="notesContainer">
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"/>
+                    </svg>
+                    <h2>还没有备忘录</h2>
+                    <p>点击上方"添加备忘"按钮创建您的第一条备忘录</p>
+                </div>
+            </div>
+
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalNotes">0</div>
+                    <div class="stat-label">总备忘数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="highPriority">0</div>
+                    <div class="stat-label">高优先级</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="mediumPriority">0</div>
+                    <div class="stat-label">中优先级</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="lowPriority">0</div>
+                    <div class="stat-label">低优先级</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑模态框 -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <h2>编辑备忘录</h2>
+            <input type="text" id="editTitle" placeholder="标题" style="margin-bottom: 10px;" />
+            <textarea id="editContent" placeholder="内容" style="margin-bottom: 10px;"></textarea>
+            <select id="editCategory" style="margin-bottom: 10px;">
+                <option value="工作">💼 工作</option>
+                <option value="学习">📚 学习</option>
+                <option value="生活">🏠 生活</option>
+                <option value="购物">🛒 购物</option>
+                <option value="健康">💪 健康</option>
+                <option value="旅行">✈️ 旅行</option>
+                <option value="其他">📋 其他</option>
+            </select>
+            <select id="editPriority" style="margin-bottom: 20px;">
+                <option value="low">低优先级</option>
+                <option value="medium">中优先级</option>
+                <option value="high">高优先级</option>
+            </select>
+            <div class="button-group">
+                <button class="btn-primary" onclick="saveEdit()">保存</button>
+                <button class="btn-secondary" onclick="closeModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 修改密码模态框 -->
+    <div class="modal" id="changePasswordModal">
+        <div class="modal-content">
+            <h2>修改密码</h2>
+            <div class="input-wrapper" style="margin-bottom: 15px;">
+                <input type="password" id="oldPassword" class="password-input" placeholder="输入旧密码..." />
+            </div>
+            <div class="input-wrapper" style="margin-bottom: 15px;">
+                <input type="password" id="newPassword" class="password-input" placeholder="输入新密码..." />
+            </div>
+            <div class="input-wrapper" style="margin-bottom: 15px;">
+                <input type="password" id="confirmNewPassword" class="password-input" placeholder="确认新密码..." />
+            </div>
+            <div class="button-group">
+                <button class="btn-primary" onclick="saveNewPassword()">保存</button>
+                <button class="btn-secondary" onclick="closeChangePasswordModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="handleFileImport(event)" />
+
     <script>
-        const canvas = document.getElementById('canvas3d');
-        const ctx = canvas.getContext('2d');
-
-        // 响应式设置
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-
-        // 3D向量类
-        class Vec3 {
-            constructor(x = 0, y = 0, z = 0) {
-                this.x = x;
-                this.y = y;
-                this.z = z;
-            }
-
-            add(v) {
-                return new Vec3(this.x + v.x, this.y + v.y, this.z + v.z);
-            }
-
-            sub(v) {
-                return new Vec3(this.x - v.x, this.y - v.y, this.z - v.z);
-            }
-
-            mul(s) {
-                return new Vec3(this.x * s, this.y * s, this.z * s);
-            }
-
-            dot(v) {
-                return this.x * v.x + this.y * v.y + this.z * v.z;
-            }
-
-            length() {
-                return Math.sqrt(this.dot(this));
-            }
-
-            normalize() {
-                const len = this.length();
-                return len > 0 ? this.mul(1 / len) : new Vec3();
-            }
-
-            reflect(n) {
-                return this.sub(n.mul(2 * this.dot(n)));
-            }
+        // ========== 密码加密和认证系统 ==========
+        
+        // SHA-256 哈希函数实现
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // 场景参数
-        let params = {
-            lightColor: [255, 221, 102],
-            lightIntensity: 1.5,
-            coneAngle: 45,
-            floorReflection: 0.70,
-            volumetricDensity: 0.40,
-            ambientLight: 0.05,
-            cameraDistance: 20,
-            cameraAngleX: 0.3,
-            cameraAngleY: 0
+        // 检查是否首次使用
+        function isFirstTime() {
+            return !localStorage.getItem('appPasswordHash');
+        }
+
+        // 设置密码
+        async function setPassword(password) {
+            const hash = await hashPassword(password);
+            localStorage.setItem('appPasswordHash', hash);
+        }
+
+        // 验证密码
+        async function verifyPassword(password) {
+            const hash = await hashPassword(password);
+            const storedHash = localStorage.getItem('appPasswordHash');
+            return hash === storedHash;
+        }
+
+        // 检查密码强度
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (password.length >= 12) strength++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+            if (/\d/.test(password)) strength++;
+            if (/[^a-zA-Z0-9]/.test(password)) strength++;
+
+            return strength;
+        }
+
+        // 更新密码强度显示
+        function updatePasswordStrength() {
+            const password = document.getElementById('passwordInput').value;
+            const strengthBar = document.getElementById('strengthBar');
+            const strengthText = document.getElementById('strengthText');
+            const strengthContainer = document.getElementById('passwordStrength');
+
+            if (!password || !isFirstTime()) {
+                strengthContainer.classList.add('hidden');
+                return;
+            }
+
+            strengthContainer.classList.remove('hidden');
+            const strength = checkPasswordStrength(password);
+
+            strengthBar.className = 'strength-bar';
+            if (strength <= 2) {
+                strengthBar.classList.add('strength-weak');
+                strengthText.textContent = '密码强度：弱';
+                strengthText.style.color = 'var(--danger-color)';
+            } else if (strength <= 4) {
+                strengthBar.classList.add('strength-medium');
+                strengthText.textContent = '密码强度：中';
+                strengthText.style.color = 'var(--warning-color)';
+            } else {
+                strengthBar.classList.add('strength-strong');
+                strengthText.textContent = '密码强度：强';
+                strengthText.style.color = 'var(--success-color)';
+            }
+        }
+
+        // 切换密码可见性
+        function togglePasswordVisibility(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                icon.textContent = '👁️';
+            }
+        }
+
+        // 处理登录/设置密码
+        async function handleAuth() {
+            const password = document.getElementById('passwordInput').value.trim();
+            const errorDiv = document.getElementById('errorMessage');
+
+            if (!password) {
+                showError('请输入密码！');
+                return;
+            }
+
+            if (isFirstTime()) {
+                // 首次设置密码
+                const confirmPassword = document.getElementById('confirmPasswordInput').value.trim();
+                
+                if (password.length < 6) {
+                    showError('密码长度至少6位！');
+                    return;
+                }
+
+                if (password !== confirmPassword) {
+                    showError('两次输入的密码不一致！');
+                    return;
+                }
+
+                await setPassword(password);
+                showToast('密码设置成功！');
+                enterApp();
+            } else {
+                // 验证密码
+                const isValid = await verifyPassword(password);
+                if (isValid) {
+                    showToast('登录成功！');
+                    enterApp();
+                } else {
+                    showError('密码错误，请重试！');
+                    document.getElementById('passwordInput').value = '';
+                }
+            }
+        }
+
+        // 显示错误消息
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.innerHTML = `<div class="error-message">${message}</div>`;
+            setTimeout(() => {
+                errorDiv.innerHTML = '';
+            }, 3000);
+        }
+
+        // 进入应用
+        function enterApp() {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            sessionStorage.setItem('authenticated', 'true');
+            renderNotes();
+            updateStats();
+        }
+
+        // 退出登录
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                sessionStorage.removeItem('authenticated');
+                document.getElementById('mainApp').classList.add('hidden');
+                document.getElementById('loginPage').classList.remove('hidden');
+                document.getElementById('passwordInput').value = '';
+                showToast('已退出登录');
+            }
+        }
+
+        // 修改密码
+        function changePassword() {
+            document.getElementById('changePasswordModal').style.display = 'flex';
+        }
+
+        // 保存新密码
+        async function saveNewPassword() {
+            const oldPassword = document.getElementById('oldPassword').value.trim();
+            const newPassword = document.getElementById('newPassword').value.trim();
+            const confirmNewPassword = document.getElementById('confirmNewPassword').value.trim();
+
+            if (!oldPassword || !newPassword || !confirmNewPassword) {
+                showToast('请填写所有字段！', 'error');
+                return;
+            }
+
+            const isValid = await verifyPassword(oldPassword);
+            if (!isValid) {
+                showToast('旧密码错误！', 'error');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                showToast('新密码长度至少6位！', 'error');
+                return;
+            }
+
+            if (newPassword !== confirmNewPassword) {
+                showToast('两次输入的新密码不一致！', 'error');
+                return;
+            }
+
+            await setPassword(newPassword);
+            closeChangePasswordModal();
+            showToast('密码修改成功！');
+            
+            // 清空输入框
+            document.getElementById('oldPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmNewPassword').value = '';
+        }
+
+        // 关闭修改密码模态框
+        function closeChangePasswordModal() {
+            document.getElementById('changePasswordModal').style.display = 'none';
+        }
+
+        // 初始化登录界面
+        function initLoginPage() {
+            const isFirst = isFirstTime();
+            const subtitle = document.getElementById('loginSubtitle');
+            const confirmWrapper = document.getElementById('confirmPasswordWrapper');
+            const authButton = document.getElementById('authButton');
+            const tipsDiv = document.getElementById('passwordTips');
+            const passwordInput = document.getElementById('passwordInput');
+
+            if (isFirst) {
+                subtitle.textContent = '首次使用，请设置密码';
+                confirmWrapper.classList.remove('hidden');
+                authButton.textContent = '设置密码';
+                tipsDiv.classList.remove('hidden');
+                passwordInput.addEventListener('input', updatePasswordStrength);
+            } else {
+                subtitle.textContent = '欢迎回来，请输入密码';
+                confirmWrapper.classList.add('hidden');
+                authButton.textContent = '登录';
+                tipsDiv.classList.add('hidden');
+            }
+
+            // 检查是否已登录
+            if (sessionStorage.getItem('authenticated') === 'true') {
+                enterApp();
+            }
+        }
+
+        // ========== 备忘录功能 ==========
+        
+        let notes = JSON.parse(localStorage.getItem('smartNotes')) || [];
+        let currentFilter = 'all';
+        let editingId = null;
+
+        // 初始化
+        window.onload = function() {
+            initLoginPage();
         };
 
-        // 光源位置（相对于房间中心）
-        const lightPos = new Vec3(0, 3, 0);
+        // 添加备忘录
+        function addNote() {
+            const title = document.getElementById('noteTitle').value.trim();
+            const content = document.getElementById('noteContent').value.trim();
+            const category = document.getElementById('noteCategory').value;
+            const priority = document.getElementById('notePriority').value;
 
-        // 控制面板事件
-        document.getElementById('lightColor').addEventListener('input', (e) => {
-            const hex = e.target.value.substring(1);
-            params.lightColor = [
-                parseInt(hex.substr(0, 2), 16),
-                parseInt(hex.substr(2, 2), 16),
-                parseInt(hex.substr(4, 2), 16)
-            ];
-        });
+            if (!title || !content) {
+                showToast('请填写标题和内容！', 'error');
+                return;
+            }
 
-        document.querySelectorAll('.preset-color').forEach(el => {
-            el.addEventListener('click', () => {
-                const color = el.dataset.color;
-                document.getElementById('lightColor').value = color;
-                const hex = color.substring(1);
-                params.lightColor = [
-                    parseInt(hex.substr(0, 2), 16),
-                    parseInt(hex.substr(2, 2), 16),
-                    parseInt(hex.substr(4, 2), 16)
-                ];
+            const note = {
+                id: Date.now(),
+                title,
+                content,
+                category,
+                priority,
+                createdAt: new Date().toLocaleString('zh-CN'),
+                updatedAt: new Date().toLocaleString('zh-CN')
+            };
+
+            notes.unshift(note);
+            saveToStorage();
+            renderNotes();
+            updateStats();
+
+            document.getElementById('noteTitle').value = '';
+            document.getElementById('noteContent').value = '';
+            
+            showToast('备忘录添加成功！');
+        }
+
+        // 保存到localStorage
+        function saveToStorage() {
+            localStorage.setItem('smartNotes', JSON.stringify(notes));
+        }
+
+        // 渲染备忘录
+        function renderNotes() {
+            const container = document.getElementById('notesContainer');
+            
+            let filteredNotes = notes;
+            if (currentFilter !== 'all') {
+                filteredNotes = notes.filter(note => note.category === currentFilter);
+            }
+
+            if (filteredNotes.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"/>
+                        </svg>
+                        <h2>没有找到备忘录</h2>
+                        <p>尝试切换分类或搜索其他关键词</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredNotes.map(note => `
+                <div class="note-card priority-${note.priority}">
+                    <span class="priority-badge priority-${note.priority}">
+                        ${note.priority === 'high' ? '高' : note.priority === 'medium' ? '中' : '低'}
+                    </span>
+                    <div class="note-header">
+                        <div>
+                            <div class="note-title">${escapeHtml(note.title)}</div>
+                            <span class="note-category">${note.category}</span>
+                        </div>
+                    </div>
+                    <div class="note-content">${escapeHtml(note.content)}</div>
+                    <div class="note-meta">
+                        <div>
+                            <div>创建：${note.createdAt}</div>
+                            ${note.updatedAt !== note.createdAt ? `<div>更新：${note.updatedAt}</div>` : ''}
+                        </div>
+                        <div class="note-actions">
+                            <button class="btn-primary action-btn" onclick="editNote(${note.id})">✏️ 编辑</button>
+                            <button class="btn-danger action-btn" onclick="deleteNote(${note.id})">🗑️ 删除</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 编辑备忘录
+        function editNote(id) {
+            const note = notes.find(n => n.id === id);
+            if (!note) return;
+
+            editingId = id;
+            document.getElementById('editTitle').value = note.title;
+            document.getElementById('editContent').value = note.content;
+            document.getElementById('editCategory').value = note.category;
+            document.getElementById('editPriority').value = note.priority;
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        // 保存编辑
+        function saveEdit() {
+            const note = notes.find(n => n.id === editingId);
+            if (!note) return;
+
+            note.title = document.getElementById('editTitle').value.trim();
+            note.content = document.getElementById('editContent').value.trim();
+            note.category = document.getElementById('editCategory').value;
+            note.priority = document.getElementById('editPriority').value;
+            note.updatedAt = new Date().toLocaleString('zh-CN');
+
+            if (!note.title || !note.content) {
+                showToast('标题和内容不能为空！', 'error');
+                return;
+            }
+
+            saveToStorage();
+            renderNotes();
+            updateStats();
+            closeModal();
+            showToast('备忘录更新成功！');
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
+            editingId = null;
+        }
+
+        // 删除备忘录
+        function deleteNote(id) {
+            if (!confirm('确定要删除这条备忘录吗？')) return;
+            
+            notes = notes.filter(note => note.id !== id);
+            saveToStorage();
+            renderNotes();
+            updateStats();
+            showToast('备忘录已删除！', 'warning');
+        }
+
+        // 筛选备忘录
+        function filterNotes(category) {
+            currentFilter = category;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
             });
-        });
-
-        document.getElementById('lightIntensity').addEventListener('input', (e) => {
-            params.lightIntensity = parseFloat(e.target.value);
-            document.getElementById('intensityValue').textContent = e.target.value;
-        });
-
-        document.getElementById('coneAngle').addEventListener('input', (e) => {
-            params.coneAngle = parseFloat(e.target.value);
-            document.getElementById('coneValue').textContent = e.target.value + '°';
-        });
-
-        document.getElementById('floorReflection').addEventListener('input', (e) => {
-            params.floorReflection = parseFloat(e.target.value);
-            document.getElementById('reflectionValue').textContent = e.target.value;
-        });
-
-        document.getElementById('volumetricDensity').addEventListener('input', (e) => {
-            params.volumetricDensity = parseFloat(e.target.value);
-            document.getElementById('volumetricValue').textContent = e.target.value;
-        });
-
-        document.getElementById('ambientLight').addEventListener('input', (e) => {
-            params.ambientLight = parseFloat(e.target.value);
-            document.getElementById('ambientValue').textContent = e.target.value;
-        });
-
-        document.getElementById('cameraDistance').addEventListener('input', (e) => {
-            params.cameraDistance = parseFloat(e.target.value);
-            document.getElementById('distanceValue').textContent = e.target.value;
-        });
-
-        // 鼠标拖拽控制
-        let isDragging = false;
-        let lastMouseX = 0;
-        let lastMouseY = 0;
-
-        canvas.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            lastMouseX = e.clientX;
-            lastMouseY = e.clientY;
-        });
-
-        canvas.addEventListener('mousemove', (e) => {
-            if (isDragging) {
-                const deltaX = e.clientX - lastMouseX;
-                const deltaY = e.clientY - lastMouseY;
-                params.cameraAngleY += deltaX * 0.005;
-                params.cameraAngleX += deltaY * 0.005;
-                params.cameraAngleX = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, params.cameraAngleX));
-                lastMouseX = e.clientX;
-                lastMouseY = e.clientY;
-            }
-        });
-
-        canvas.addEventListener('mouseup', () => {
-            isDragging = false;
-        });
-
-        canvas.addEventListener('mouseleave', () => {
-            isDragging = false;
-        });
-
-        // 触摸支持
-        canvas.addEventListener('touchstart', (e) => {
-            isDragging = true;
-            lastMouseX = e.touches[0].clientX;
-            lastMouseY = e.touches[0].clientY;
-        });
-
-        canvas.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            if (isDragging) {
-                const deltaX = e.touches[0].clientX - lastMouseX;
-                const deltaY = e.touches[0].clientY - lastMouseY;
-                params.cameraAngleY += deltaX * 0.005;
-                params.cameraAngleX += deltaY * 0.005;
-                params.cameraAngleX = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, params.cameraAngleX));
-                lastMouseX = e.touches[0].clientX;
-                lastMouseY = e.touches[0].clientY;
-            }
-        });
-
-        canvas.addEventListener('touchend', () => {
-            isDragging = false;
-        });
-
-        // 相机变换
-        function getCameraPosition() {
-            const dist = params.cameraDistance;
-            const x = dist * Math.cos(params.cameraAngleX) * Math.sin(params.cameraAngleY);
-            const y = dist * Math.sin(params.cameraAngleX);
-            const z = dist * Math.cos(params.cameraAngleX) * Math.cos(params.cameraAngleY);
-            return new Vec3(x, y, z);
+            event.target.classList.add('active');
+            
+            renderNotes();
         }
 
-        // 射线-平面相交
-        function rayPlaneIntersect(origin, dir, planeY) {
-            if (Math.abs(dir.y) < 0.001) return null;
-            const t = (planeY - origin.y) / dir.y;
-            if (t < 0) return null;
-            return origin.add(dir.mul(t));
-        }
+        // 搜索备忘录
+        function searchNotes() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase().trim();
+            const container = document.getElementById('notesContainer');
 
-        // 射线-球体相交
-        function raySphereIntersect(origin, dir, center, radius) {
-            const oc = origin.sub(center);
-            const a = dir.dot(dir);
-            const b = 2 * oc.dot(dir);
-            const c = oc.dot(oc) - radius * radius;
-            const discriminant = b * b - 4 * a * c;
-
-            if (discriminant < 0) return null;
-
-            const t = (-b - Math.sqrt(discriminant)) / (2 * a);
-            if (t > 0.001) {
-                const point = origin.add(dir.mul(t));
-                const normal = point.sub(center).normalize();
-                return { t, point, normal };
-            }
-            return null;
-        }
-
-        // 光锥检测
-        function isInLightCone(point) {
-            const toPoint = point.sub(lightPos).normalize();
-            const lightDir = new Vec3(0, -1, 0);
-            const angle = Math.acos(toPoint.dot(lightDir));
-            const maxAngle = (params.coneAngle * Math.PI) / 180;
-            return angle < maxAngle;
-        }
-
-        // 光照计算
-        function computeLighting(point, normal, viewDir) {
-            let color = [0, 0, 0];
-
-            // 环境光
-            for (let i = 0; i < 3; i++) {
-                color[i] = params.lightColor[i] * params.ambientLight;
+            if (!keyword) {
+                renderNotes();
+                return;
             }
 
-            // 检查是否在光锥内
-            if (!isInLightCone(point)) {
-                return color;
+            const filtered = notes.filter(note => 
+                note.title.toLowerCase().includes(keyword) ||
+                note.content.toLowerCase().includes(keyword) ||
+                note.category.includes(keyword)
+            );
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h2>没有找到匹配的备忘录</h2>
+                        <p>尝试使用其他关键词搜索</p>
+                    </div>
+                `;
+                return;
             }
 
-            // 计算光照
-            const lightDir = lightPos.sub(point).normalize();
-            const distance = lightPos.sub(point).length();
-            const attenuation = 1 / (1 + 0.05 * distance + 0.01 * distance * distance);
-
-            // 漫反射
-            const diffuse = Math.max(0, normal.dot(lightDir));
-
-            // 镜面反射
-            const reflectDir = lightDir.reflect(normal);
-            const specular = Math.pow(Math.max(0, viewDir.dot(reflectDir)), 64);
-
-            for (let i = 0; i < 3; i++) {
-                color[i] += params.lightColor[i] * params.lightIntensity * attenuation * 
-                           (diffuse * 0.7 + specular * 0.3);
-            }
-
-            return color;
+            container.innerHTML = filtered.map(note => `
+                <div class="note-card priority-${note.priority}">
+                    <span class="priority-badge priority-${note.priority}">
+                        ${note.priority === 'high' ? '高' : note.priority === 'medium' ? '中' : '低'}
+                    </span>
+                    <div class="note-header">
+                        <div>
+                            <div class="note-title">${escapeHtml(note.title)}</div>
+                            <span class="note-category">${note.category}</span>
+                        </div>
+                    </div>
+                    <div class="note-content">${escapeHtml(note.content)}</div>
+                    <div class="note-meta">
+                        <div>
+                            <div>创建：${note.createdAt}</div>
+                            ${note.updatedAt !== note.createdAt ? `<div>更新：${note.updatedAt}</div>` : ''}
+                        </div>
+                        <div class="note-actions">
+                            <button class="btn-primary action-btn" onclick="editNote(${note.id})">✏️ 编辑</button>
+                            <button class="btn-danger action-btn" onclick="deleteNote(${note.id})">🗑️ 删除</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        // 光线追踪
-        function traceRay(origin, dir, depth = 0) {
-            if (depth > 2) return [10, 10, 15];
+        // 导出数据
+        function exportNotes() {
+            if (notes.length === 0) {
+                showToast('没有可导出的数据！', 'error');
+                return;
+            }
 
-            let closestT = Infinity;
-            let closestColor = null;
+            const dataStr = JSON.stringify(notes, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `备忘录导出_${new Date().toLocaleDateString()}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            showToast('数据导出成功！');
+        }
 
-            // 地板
-            const floorHit = rayPlaneIntersect(origin, dir, -2);
-            if (floorHit && Math.abs(floorHit.x) < 8 && Math.abs(floorHit.z) < 8) {
-                const t = floorHit.sub(origin).length();
-                if (t < closestT) {
-                    closestT = t;
-                    const normal = new Vec3(0, 1, 0);
-                    const viewDir = origin.sub(floorHit).normalize();
-                    let color = computeLighting(floorHit, normal, viewDir);
+        // 导入数据
+        function importNotes() {
+            document.getElementById('fileInput').click();
+        }
 
-                    // 地板反射
-                    if (params.floorReflection > 0 && depth < 1) {
-                        const reflectDir = dir.reflect(normal);
-                        const reflectColor = traceRay(floorHit, reflectDir, depth + 1);
-                        for (let i = 0; i < 3; i++) {
-                            color[i] = color[i] * (1 - params.floorReflection) + 
-                                      reflectColor[i] * params.floorReflection;
-                        }
+        function handleFileImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedNotes = JSON.parse(e.target.result);
+                    if (!Array.isArray(importedNotes)) {
+                        throw new Error('Invalid format');
                     }
-
-                    // 地板棋盘格
-                    const checker = (Math.floor(floorHit.x) + Math.floor(floorHit.z)) % 2;
-                    const checkerFactor = checker === 0 ? 0.4 : 0.3;
-                    for (let i = 0; i < 3; i++) {
-                        color[i] *= checkerFactor;
+                    
+                    if (confirm(`确定要导入 ${importedNotes.length} 条备忘录吗？这将覆盖现有数据。`)) {
+                        notes = importedNotes;
+                        saveToStorage();
+                        renderNotes();
+                        updateStats();
+                        showToast('数据导入成功！');
                     }
-
-                    closestColor = color;
+                } catch (error) {
+                    showToast('导入失败，文件格式错误！', 'error');
                 }
-            }
-
-            // 灯泡
-            const lampHit = raySphereIntersect(origin, dir, lightPos, 0.4);
-            if (lampHit && lampHit.t < closestT) {
-                closestT = lampHit.t;
-                closestColor = params.lightColor.map(c => c * params.lightIntensity * 0.8);
-            }
-
-            // 墙壁
-            const walls = [
-                { plane: 'x', value: -8, color: [15, 15, 20] },
-                { plane: 'x', value: 8, color: [15, 15, 20] },
-                { plane: 'z', value: -8, color: [20, 15, 15] },
-                { plane: 'z', value: 8, color: [15, 20, 15] },
-                { plane: 'y', value: 8, color: [15, 15, 25] }
-            ];
-
-            for (const wall of walls) {
-                let hit = null;
-                let normal = null;
-
-                if (wall.plane === 'x') {
-                    if (Math.abs(dir.x) > 0.001) {
-                        const t = (wall.value - origin.x) / dir.x;
-                        if (t > 0.001) {
-                            const point = origin.add(dir.mul(t));
-                            if (Math.abs(point.y) < 10 && Math.abs(point.z) < 8) {
-                                hit = point;
-                                normal = new Vec3(wall.value > 0 ? -1 : 1, 0, 0);
-                            }
-                        }
-                    }
-                } else if (wall.plane === 'y') {
-                    if (Math.abs(dir.y) > 0.001) {
-                        const t = (wall.value - origin.y) / dir.y;
-                        if (t > 0.001) {
-                            const point = origin.add(dir.mul(t));
-                            if (Math.abs(point.x) < 8 && Math.abs(point.z) < 8) {
-                                hit = point;
-                                normal = new Vec3(0, -1, 0);
-                            }
-                        }
-                    }
-                } else if (wall.plane === 'z') {
-                    if (Math.abs(dir.z) > 0.001) {
-                        const t = (wall.value - origin.z) / dir.z;
-                        if (t > 0.001) {
-                            const point = origin.add(dir.mul(t));
-                            if (Math.abs(point.x) < 8 && Math.abs(point.y) < 10) {
-                                hit = point;
-                                normal = new Vec3(0, 0, wall.value > 0 ? -1 : 1);
-                            }
-                        }
-                    }
-                }
-
-                if (hit) {
-                    const t = hit.sub(origin).length();
-                    if (t < closestT) {
-                        closestT = t;
-                        const viewDir = origin.sub(hit).normalize();
-                        let color = computeLighting(hit, normal, viewDir);
-                        for (let i = 0; i < 3; i++) {
-                            color[i] = Math.max(color[i], wall.color[i] * params.ambientLight);
-                        }
-                        closestColor = color;
-                    }
-                }
-            }
-
-            // 体积光（光锥雾效）
-            if (closestT < Infinity && params.volumetricDensity > 0) {
-                const steps = 20;
-                let volumetric = 0;
-                for (let i = 0; i < steps; i++) {
-                    const t = (closestT * i) / steps;
-                    const samplePoint = origin.add(dir.mul(t));
-                    if (isInLightCone(samplePoint)) {
-                        const dist = samplePoint.sub(lightPos).length();
-                        volumetric += params.volumetricDensity / (1 + dist * dist * 0.05);
-                    }
-                }
-                volumetric /= steps;
-                for (let i = 0; i < 3; i++) {
-                    closestColor[i] += params.lightColor[i] * volumetric * params.lightIntensity * 15;
-                }
-            }
-
-            return closestColor || [10, 10, 15];
+            };
+            reader.readAsText(file);
+            event.target.value = '';
         }
 
-        // 渲染
-        function render() {
-            const width = canvas.width;
-            const height = canvas.height;
-            const imageData = ctx.createImageData(width, height);
-            const data = imageData.data;
-
-            const cameraPos = getCameraPosition();
-            const lookAt = new Vec3(0, 0, 0);
-            const forward = lookAt.sub(cameraPos).normalize();
-            const right = new Vec3(forward.z, 0, -forward.x).normalize();
-            const up = right.sub(new Vec3(forward.x, 0, forward.z)).mul(forward.y).add(new Vec3(0, 1, 0)).normalize();
-
-            const fov = Math.PI / 3;
-            const aspectRatio = width / height;
-            const scale = Math.tan(fov / 2);
-
-            // 自适应像素大小
-            const pixelSize = Math.max(1, Math.floor(Math.min(width, height) / 300));
-
-            for (let y = 0; y < height; y += pixelSize) {
-                for (let x = 0; x < width; x += pixelSize) {
-                    const ndcX = (2 * (x + 0.5) / width - 1) * aspectRatio * scale;
-                    const ndcY = (1 - 2 * (y + 0.5) / height) * scale;
-
-                    const dir = forward.add(right.mul(ndcX)).add(up.mul(ndcY)).normalize();
-                    const color = traceRay(cameraPos, dir);
-
-                    // 填充像素块
-                    for (let dy = 0; dy < pixelSize && y + dy < height; dy++) {
-                        for (let dx = 0; dx < pixelSize && x + dx < width; dx++) {
-                            const index = ((y + dy) * width + (x + dx)) * 4;
-                            data[index] = Math.min(255, color[0]);
-                            data[index + 1] = Math.min(255, color[1]);
-                            data[index + 2] = Math.min(255, color[2]);
-                            data[index + 3] = 255;
-                        }
-                    }
-                }
-            }
-
-            ctx.putImageData(imageData, 0, 0);
+        // 更新统计
+        function updateStats() {
+            document.getElementById('totalNotes').textContent = notes.length;
+            document.getElementById('highPriority').textContent = notes.filter(n => n.priority === 'high').length;
+            document.getElementById('mediumPriority').textContent = notes.filter(n => n.priority === 'medium').length;
+            document.getElementById('lowPriority').textContent = notes.filter(n => n.priority === 'low').length;
         }
 
-        // FPS计数
-        let frameCount = 0;
-        let lastTime = Date.now();
-
-        function animate() {
-            render();
-
-            frameCount++;
-            const currentTime = Date.now();
-            if (currentTime - lastTime >= 1000) {
-                document.getElementById('fps').textContent = frameCount;
-                frameCount = 0;
-                lastTime = currentTime;
+        // 显示提示
+        function showToast(message, type = 'success') {
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
             }
 
-            requestAnimationFrame(animate);
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            
+            if (type === 'error') {
+                toast.style.background = 'var(--danger-color)';
+            } else if (type === 'warning') {
+                toast.style.background = 'var(--warning-color)';
+            }
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
         }
 
-        animate();
+        // HTML转义
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            const editModal = document.getElementById('editModal');
+            const changePasswordModal = document.getElementById('changePasswordModal');
+            if (event.target === editModal) {
+                closeModal();
+            }
+            if (event.target === changePasswordModal) {
+                closeChangePasswordModal();
+            }
+        };
+
+        // 键盘快捷键
+        document.addEventListener('keydown', function(e) {
+            // Enter键登录/设置密码
+            if (e.key === 'Enter' && !document.getElementById('loginPage').classList.contains('hidden')) {
+                handleAuth();
+            }
+            // Ctrl/Cmd + Enter 快速添加
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && !document.getElementById('mainApp').classList.contains('hidden')) {
+                addNote();
+            }
+            // ESC 关闭模态框
+            if (e.key === 'Escape') {
+                closeModal();
+                closeChangePasswordModal();
+            }
+        });
     </script>
 </body>
 </html>
