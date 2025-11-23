@@ -2,1733 +2,1576 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>植物大战僵尸 - 官方图鉴</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>专业录像机</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: 'Microsoft YaHei', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            overflow-x: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #000;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
         }
 
-        /* 动画背景 */
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* 导航栏 */
-        nav {
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(10px);
-            padding: 1rem 2rem;
-            position: sticky;
+        /* PC端不支持提示 */
+        .desktop-warning {
+            display: none;
+            position: fixed;
             top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        nav ul {
-            list-style: none;
-            display: flex;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 10000;
             justify-content: center;
-            flex-wrap: wrap;
-            gap: 2rem;
-        }
-
-        nav a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 1.1rem;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-        }
-
-        nav a:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.1);
-        }
-
-        /* 标题区域 */
-        .hero {
-            text-align: center;
-            padding: 4rem 2rem;
+            align-items: center;
+            flex-direction: column;
             color: white;
-            animation: fadeInUp 1s ease;
+            padding: 40px;
+            text-align: center;
         }
 
-        .hero h1 {
-            font-size: 4rem;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-            margin-bottom: 1rem;
+        .desktop-warning-icon {
+            font-size: 120px;
+            margin-bottom: 30px;
             animation: float 3s ease-in-out infinite;
         }
 
-        .hero p {
-            font-size: 1.5rem;
-            opacity: 0.9;
+        .desktop-warning h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            font-weight: 700;
         }
 
-        /* 容器 */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        /* 卡片区域 */
-        .section {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 3rem;
-            margin-bottom: 3rem;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            animation: fadeInUp 0.8s ease;
-        }
-
-        .section h2 {
-            color: #5a67d8;
-            font-size: 2.5rem;
-            margin-bottom: 2rem;
-            border-bottom: 4px solid #5a67d8;
-            padding-bottom: 1rem;
-            display: inline-block;
-        }
-
-        /* 植物卡片网格 */
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 15px;
-            padding: 1.5rem;
-            color: white;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .card:hover {
-            transform: translateY(-10px) scale(1.05);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .card h3 {
-            font-size: 1.8rem;
-            margin-bottom: 0.5rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .card .subtitle {
-            font-size: 1rem;
-            opacity: 0.8;
-            margin-bottom: 1rem;
-        }
-
-        .card .stats {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-
-        .card .stat-item {
-            display: flex;
-            justify-content: space-between;
-            margin: 0.5rem 0;
-            font-size: 0.95rem;
-        }
-
-        .card .description {
-            font-size: 0.95rem;
+        .desktop-warning p {
+            font-size: 18px;
             line-height: 1.6;
-            margin-top: 1rem;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 1rem;
-            border-radius: 8px;
+            opacity: 0.9;
+            max-width: 600px;
         }
 
-        /* 特性标签 */
-        .tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .tag {
-            background: rgba(255, 255, 255, 0.3);
-            padding: 0.3rem 0.8rem;
+        .qr-placeholder {
+            width: 200px;
+            height: 200px;
+            background: white;
             border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: bold;
-        }
-
-        /* 游戏模式区域 */
-        .mode-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .mode-card {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            border-radius: 15px;
-            padding: 2rem;
-            color: white;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .mode-card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-        }
-
-        .mode-card h3 {
-            font-size: 1.8rem;
-            margin-bottom: 1rem;
-        }
-
-        /* 时间线 */
-        .timeline {
-            position: relative;
-            padding: 2rem 0;
-        }
-
-        .timeline-item {
-            display: flex;
-            gap: 2rem;
-            margin-bottom: 3rem;
-            animation: fadeInUp 0.8s ease;
-        }
-
-        .timeline-marker {
-            min-width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 50%;
+            margin: 30px auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 1.2rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            font-size: 14px;
+            color: #333;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
         }
 
-        .timeline-content {
-            flex: 1;
-            background: #f7fafc;
-            padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
         }
 
-        .timeline-content h3 {
-            color: #5a67d8;
-            margin-bottom: 0.5rem;
-        }
-
-        /* 表格样式 */
-        .data-table {
+        /* 移动端主界面 */
+        .mobile-app {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 2rem;
-            background: white;
-            border-radius: 10px;
+            height: 100%;
+            position: relative;
             overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
         }
 
-        .data-table thead {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        #videoPreview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: #000;
+        }
+
+        /* 顶部工具栏 */
+        .top-toolbar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: env(safe-area-inset-top, 20px) 20px 20px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 100;
+            transition: opacity 0.3s;
+        }
+
+        .top-toolbar.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .toolbar-left, .toolbar-right {
+            display: flex;
+            gap: 15px;
+        }
+
+        .icon-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 24px;
+            color: white;
+            user-select: none;
+        }
+
+        .icon-btn:active {
+            transform: scale(0.9);
+            background: rgba(255,255,255,0.4);
+        }
+
+        .icon-btn.active {
+            background: rgba(255,215,0,0.5);
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255,215,0,0.6);
+        }
+
+        .icon-btn.disabled {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* 录制信息显示 */
+        .recording-info {
+            position: absolute;
+            top: env(safe-area-inset-top, 80px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(220,20,60,0.9);
+            backdrop-filter: blur(10px);
+            padding: 12px 24px;
+            border-radius: 25px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 99;
+            box-shadow: 0 4px 20px rgba(220,20,60,0.4);
+        }
+
+        .recording-info.show {
+            display: flex;
+            animation: slideDown 0.4s ease-out;
+        }
+
+        .recording-dot {
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(0.8); }
+        }
+
+        .recording-time {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+            min-width: 80px;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        /* 底部控制栏 */
+        .bottom-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 30px 20px calc(env(safe-area-inset-bottom, 20px) + 30px);
+            background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+            transition: opacity 0.3s;
+        }
+
+        .bottom-controls.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* 录制按钮 */
+        .record-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: white;
+            border: 6px solid rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(255,255,255,0.3);
+        }
+
+        .record-btn::before {
+            content: '';
+            width: 60px;
+            height: 60px;
+            background: #dc143c;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .record-btn.recording::before {
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+        }
+
+        .record-btn.recording {
+            animation: recordPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes recordPulse {
+            0%, 100% { box-shadow: 0 4px 20px rgba(220,20,60,0.3); }
+            50% { box-shadow: 0 4px 40px rgba(220,20,60,0.8); }
+        }
+
+        .record-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* 视频列表按钮 */
+        .gallery-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gallery-btn:active {
+            transform: scale(0.95);
+        }
+
+        .video-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #dc143c;
+            color: white;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 12px;
+            font-weight: 700;
+            min-width: 20px;
+            text-align: center;
+            border: 2px solid #000;
+        }
+
+        /* 设置面板 */
+        .settings-panel {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(20,20,20,0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 30px 30px 0 0;
+            padding: 20px 20px calc(env(safe-area-inset-bottom, 20px) + 20px);
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 200;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .settings-panel.show {
+            transform: translateY(0);
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .settings-title {
+            font-size: 24px;
+            font-weight: 700;
             color: white;
         }
 
-        .data-table th, .data-table td {
-            padding: 1rem;
-            text-align: left;
+        .close-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 24px;
+            color: white;
+            transition: all 0.3s;
         }
 
-        .data-table tbody tr:nth-child(even) {
-            background: #f7fafc;
+        .close-btn:active {
+            transform: scale(0.9);
+            background: rgba(255,255,255,0.2);
         }
 
-        .data-table tbody tr:hover {
-            background: #e6fffa;
-            transition: all 0.3s ease;
+        .setting-item {
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
-        /* 响应式设计 */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
+        .setting-label {
+            font-size: 16px;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-            .hero p {
-                font-size: 1.2rem;
-            }
+        .setting-label-icon {
+            font-size: 20px;
+        }
 
-            nav ul {
-                flex-direction: column;
-                gap: 1rem;
-            }
+        .resolution-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
 
-            .card-grid {
-                grid-template-columns: 1fr;
-            }
+        .resolution-option {
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-weight: 600;
+        }
 
-            .section {
-                padding: 1.5rem;
-            }
+        .resolution-option.active {
+            background: rgba(103,126,234,0.3);
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(103,126,234,0.4);
+        }
 
-            .section h2 {
-                font-size: 2rem;
-            }
+        .resolution-option:active {
+            transform: scale(0.95);
+        }
 
-            .timeline-item {
-                flex-direction: column;
-            }
+        .resolution-label {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .resolution-desc {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        /* 视频库面板 */
+        .video-library {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            z-index: 300;
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .video-library.show {
+            transform: translateX(0);
+        }
+
+        .library-header {
+            padding: env(safe-area-inset-top, 20px) 20px 20px;
+            background: rgba(20,20,20,0.95);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .library-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .library-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .video-item {
+            position: relative;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            overflow: hidden;
+            aspect-ratio: 9/16;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .video-item:active {
+            transform: scale(0.98);
+        }
+
+        .video-thumbnail {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px;
+            background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+            color: white;
+            font-size: 12px;
+        }
+
+        .video-duration {
+            font-weight: 600;
+        }
+
+        .empty-library {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .empty-library-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-library-text {
+            font-size: 16px;
+        }
+
+        /* 视频播放器 */
+        .video-player {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            z-index: 400;
+            display: none;
+            flex-direction: column;
+        }
+
+        .video-player.show {
+            display: flex;
+        }
+
+        .player-header {
+            padding: env(safe-area-inset-top, 20px) 20px 20px;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .player-video {
+            flex: 1;
+            width: 100%;
+            object-fit: contain;
+        }
+
+        .player-controls {
+            padding: 20px 20px calc(env(safe-area-inset-bottom, 20px) + 20px);
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            gap: 30px;
         }
 
         /* 加载动画 */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .loading-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255,255,255,0.1);
             border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
-        /* 按钮样式 */
-        .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .loading-text {
             color: white;
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 50px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            margin-top: 20px;
+            font-size: 16px;
         }
 
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-        }
-
-        /* 页脚 */
-        footer {
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
+        /* 提示消息 */
+        .toast {
+            position: fixed;
+            bottom: calc(env(safe-area-inset-bottom, 20px) + 100px);
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 600;
+            opacity: 0;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            max-width: 80%;
             text-align: center;
-            padding: 2rem;
-            margin-top: 3rem;
         }
 
-        /* 能量条 */
-        .energy-bar {
-            height: 20px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 0.5rem 0;
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
         }
 
-        .energy-fill {
+        /* 高级功能指示器 */
+        .feature-indicators {
+            position: absolute;
+            top: env(safe-area-inset-top, 100px);
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 98;
+        }
+
+        .indicator {
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: white;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: all 0.3s;
+        }
+
+        .indicator.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .indicator-icon {
+            font-size: 14px;
+        }
+
+        /* 网格线 */
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 50;
+        }
+
+        .grid-overlay.show {
+            opacity: 1;
+        }
+
+        .grid-line {
+            position: absolute;
+            background: rgba(255,255,255,0.3);
+        }
+
+        .grid-line.vertical {
+            width: 1px;
             height: 100%;
-            background: linear-gradient(90deg, #4ade80 0%, #22c55e 100%);
-            transition: width 0.3s ease;
+            top: 0;
         }
 
-        /* 僵尸卡片样式 */
-        .zombie-card {
-            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+        .grid-line.horizontal {
+            height: 1px;
+            width: 100%;
+            left: 0;
         }
 
-        .plant-card {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        /* 缩放手势提示 */
+        .zoom-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 50%;
+            font-size: 24px;
+            font-weight: 700;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            z-index: 90;
+        }
+
+        .zoom-indicator.show {
+            opacity: 1;
+        }
+
+        /* 状态栏信息 */
+        .status-bar {
+            position: absolute;
+            top: calc(env(safe-area-inset-top, 20px) + 70px);
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 95;
+        }
+
+        .status-item {
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+            padding: 6px 12px;
+            border-radius: 15px;
+            color: white;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-icon {
+            font-size: 12px;
+        }
+
+        /* 滑动操作提示 */
+        .gesture-hint {
+            position: absolute;
+            bottom: calc(env(safe-area-inset-bottom, 20px) + 150px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 12px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 95;
+        }
+
+        .gesture-hint.show {
+            opacity: 1;
         }
     </style>
 </head>
 <body>
-    <!-- 导航栏 -->
-    <nav>
-        <ul>
-            <li><a href="#home">首页</a></li>
-            <li><a href="#plants">植物图鉴</a></li>
-            <li><a href="#zombies">僵尸图鉴</a></li>
-            <li><a href="#modes">游戏模式</a></li>
-            <li><a href="#strategy">策略攻略</a></li>
-            <li><a href="#timeline">版本历史</a></li>
-        </ul>
-    </nav>
-
-    <!-- 英雄区域 -->
-    <div class="hero" id="home">
-        <h1>🌻 植物大战僵尸 🧟</h1>
-        <p>保卫你的花园，击退僵尸大军！</p>
+    <!-- PC端不支持提示 -->
+    <div class="desktop-warning" id="desktopWarning">
+        <div class="desktop-warning-icon">📱</div>
+        <h1>请使用移动设备访问</h1>
+        <p>此应用专为移动设备优化，提供专业的摄像头录制功能。请使用手机或平板设备扫描下方二维码或直接访问本页面。</p>
+        <div class="qr-placeholder">扫描二维码访问</div>
+        <p style="margin-top: 20px; font-size: 14px; opacity: 0.7;">支持功能：前后摄像头切换 · 手电筒 · 多分辨率 · 缩放 · 网格线 · 专业录制</p>
     </div>
 
-    <div class="container">
-        <!-- 植物图鉴区域 -->
-        <section class="section" id="plants">
-            <h2>🌱 植物图鉴</h2>
-            
-            <div class="card-grid">
-                <!-- 豌豆射手 -->
-                <div class="card plant-card">
-                    <h3>豌豆射手</h3>
-                    <div class="subtitle">Peashooter</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>伤害:</span>
-                            <span>⭐⭐⭐</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>射速:</span>
-                            <span>中等</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>费用:</span>
-                            <span>100阳光</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>冷却:</span>
-                            <span>7.5秒</span>
-                        </div>
-                    </div>
-                    <div class="energy-bar">
-                        <div class="energy-fill" style="width: 60%;"></div>
-                    </div>
-                    <div class="description">
-                        豌豆射手是你的第一道防线，向来犯的僵尸射击豌豆。作为最基础的攻击植物，豌豆射手在快速生长的同时还能持续输出伤害。
-                    </div>
-                    <div class="tags">
-                        <span class="tag">基础植物</span>
-                        <span class="tag">远程攻击</span>
-                    </div>
-                </div>
+    <!-- 移动端主界面 -->
+    <div class="mobile-app" id="mobileApp">
+        <!-- 视频预览 -->
+        <video id="videoPreview" autoplay playsinline muted></video>
 
-                <!-- 向日葵 -->
-                <div class="card plant-card">
-                    <h3>向日葵</h3>
-                    <div class="subtitle">Sunflower</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>功能:</span>
-                            <span>生产阳光</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>产量:</span>
-                            <span>25阳光/24秒</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>费用:</span>
-                            <span>50阳光</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>冷却:</span>
-                            <span>7.5秒</span>
-                        </div>
-                    </div>
-                    <div class="energy-bar">
-                        <div class="energy-fill" style="width: 90%;"></div>
-                    </div>
-                    <div class="description">
-                        向日葵是经济的基础，它能产生额外的阳光资源。"实际上，我爱每一个人。"向日葵说。她甚至参加过园林管理专业的夜校课程。
-                    </div>
-                    <div class="tags">
-                        <span class="tag">经济植物</span>
-                        <span class="tag">必备</span>
-                    </div>
-                </div>
-
-                <!-- 寒冰射手 -->
-                <div class="card plant-card">
-                    <h3>寒冰射手</h3>
-                    <div class="subtitle">Snow Pea</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>伤害:</span>
-                            <span>⭐⭐⭐</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>特效:</span>
-                            <span>减速50%</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>费用:</span>
-                            <span>175阳光</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>冷却:</span>
-                            <span>7.5秒</span>
-                        </div>
-                    </div>
-                    <div class="energy-bar">
-                        <div class="energy-fill" style="width: 75%;"></div>
-                    </div>
-                    <div class="description">
-                        寒冰射手发射冰冻豌豆攻击敌人，并具有减速效果。人们经常告诉寒冰射手他们有多"酷"，或者要他"冷静点"。他们没有认识到的是——其实他只是不能控制自己。
-                    </div>
-                    <div class="tags">
-                        <span class="tag">控制</span>
-                        <span class="tag">减速</span>
-                    </div>
-                </div>
-
-                <!-- 樱桃炸弹 -->
-                <div class="card plant-card">
-                    <h3>樱桃炸弹</h3>
-                    <div class="subtitle">Cherry Bomb</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>伤害:</span>
-                            <span>⭐⭐⭐⭐⭐</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>范围:</span>
-                            <span>3×3区域</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>费用:</span>
-                            <span>150阳光</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>冷却:</span>
-                            <span>50秒</span>
-                        </div>
-                    </div>
-                    <div class="energy-bar">
-                        <div class="energy-fill" style="width: 100%;"></div>
-                    </div>
-                    <div class="description">
-                        樱桃炸弹能炸飞一定范围内的所有僵尸。"我要爆炸啦！"樱桃1号说。"不，我们要爆炸啦！"樱桃2号说。经过激烈的讨论后，它们一致同意：一起爆炸。
-                    </div>
-                    <div class="tags">
-                        <span class="tag">瞬时伤害</span>
-                        <span class="tag">范围攻击</span>
-                    </div>
-                </div>
-
-                <!-- 墙果 -->
-                <div class="card plant-card">
-                    <h3>墙果</h3>
-                    <div class="subtitle">Wall-nut</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>生命值:</span>
-                            <span>⭐⭐⭐⭐⭐</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>防御:</span>
-                            <span>4000点</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>费用:</span>
-                            <span>50阳光</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>冷却:</span>
-                            <span>30秒</span>
-                        </div>
-                    </div>
-                    <div class="energy-bar">
-                        <div class="energy-fill" style="width: 85%;"></div>
-                    </div>
-                    <div class="description">
-                        墙果具备坚硬的外壳，可用来保护其他植物。"人们问我，长时间地被僵尸啃来啃去是什么感觉。"墙果说，"由于触觉不发达，我能感受到的只是轻微的刺痛。"
-                    </div>
-                    <div class="tags">
-                        <span class="tag">防御</span>
-                        <span class="tag">高血量</span>
-                    </div>
-                </div>
-
-                <!-- 土豆雷 -->
-                <div class="card plant-card">
-                    <h3>土豆雷</h3>
-                    <div class="subtitle">Potato Mine</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>伤害:</span>
-                            <span>⭐⭐⭐⭐⭐</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>准备时间:</span>
-                            <span>15秒</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>费用:</span>
-                            <span>25阳光</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>冷却:</span>
-                            <span>30秒</span>
-                        </div>
-                    </div>
-                    <div class="energy-bar">
-                        <div class="energy-fill" style="width: 70%;"></div>
-                    </div>
-                    <div class="description">
-                        土豆雷可以埋伏地下并炸飞第一个接近的僵尸。需要时间准备武装。土豆雷说："也许他们会注意到我，也许不会。"但他确信：什么也逃不过他的眼睛。
-                    </div>
-                    <div class="tags">
-                        <span class="tag">延迟生效</span>
-                        <span class="tag">一次性</span>
-                    </div>
-                </div>
-
-                <!-- 食人花 -->
-                <div class="card plant-card">
-                    <h3>食人花</h3>
-                    <div class="subtitle">Chomper</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>伤害:</span>
-                            <span>⭐⭐⭐⭐⭐</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>攻击方式:</span>
-                            <span>吞噬</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>费用:</span>
-                            <span>150阳光</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>咀嚼时间:</span>
-                            <span>42秒</span>
-                        </div>
-                    </div>
-                    <div class="energy-bar">
-                        <div class="energy-fill" style="width: 65%;"></div>
-                    </div>
-                    <div class="description">
-                        食人花能够一口吞掉僵尸，但咀嚼时自己很容易受到攻击。食人花已经知道它在植物界不受欢迎，但它不在乎。它有自己的生活方式，不需要被理解。
-                    </div>
-                    <div class="tags">
-                        <span class="tag">近战</span>
-                        <span class="tag">秒杀</span>
-                    </div>
-                </div>
-
-                <!-- 双重射手 -->
-                <div class="card plant-card">
-                    <h3>双重射手</h3>
-                    <div class="subtitle">Repeater</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>伤害:</span>
-                            <span>⭐⭐⭐⭐</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>射速:</span>
-                            <span>2发/次</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>费用:</span>
-                            <span>200阳光</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>冷却:</span>
-                            <span>7.5秒</span>
-                        </div>
-                    </div>
-                    <div class="energy-bar">
-                        <div class="energy-fill" style="width: 80%;"></div>
-                    </div>
-                    <div class="description">
-                        双重射手可以一次发射两颗豌豆。双重射手很凶猛，他不会让你失望。那是因为他的哥哥在服役期间消失了，他发誓要找到他，无论付出什么代价。
-                    </div>
-                    <div class="tags">
-                        <span class="tag">高伤害</span>
-                        <span class="tag">双倍射击</span>
-                    </div>
-                </div>
-
-                <!-- 火炬树桩 -->
-                <div class="card plant-card">
-                    <h3>火炬树桩</h3>
-                    <div class="subtitle">Torchwood</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>功能:</span>
-                            <span>豌豆增强</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>增幅:</span>
-                            <span>伤害×2</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>费用:</span>
-                            <span>175阳光</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>冷却:</span>
-                            <span>30秒</span>
-                        </div>
-                    </div>
-                    <div class="energy-bar">
-                        <div class="energy-fill" style="width: 88%;"></div>
-                    </div>
-                    <div class="description">
-                        火炬树桩可以把经过的豌豆变成火球，造成双倍伤害，并能解除寒冰豌豆的减速效果。火炬树桩在小区里很受欢迎，他的光芒能点亮夜晚的派对。
-                    </div>
-                    <div class="tags">
-                        <span class="tag">辅助</span>
-                        <span class="tag">增益</span>
-                    </div>
-                </div>
-
-                <!-- 大蒜 -->
-                <div class="card plant-card">
-                    <h3>大蒜</h3>
-                    <div class="subtitle">Garlic</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>功能:</span>
-                            <span>转移路线</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>生命值:</span>
-                            <span>400点</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>费用:</span>
-                            <span>50阳光</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>冷却:</span>
-                            <span>7.5秒</span>
-                        </div>
-                    </div>
-                    <div class="energy-bar">
-                        <div class="energy-fill" style="width: 55%;"></div>
-                    </div>
-                    <div class="description">
-                        大蒜能迫使僵尸改变前进路线。大蒜的气味是如此强烈，以至于僵尸会自动绕道而行。它知道自己不受欢迎，但它已经习以为常。
-                    </div>
-                    <div class="tags">
-                        <span class="tag">路径控制</span>
-                        <span class="tag">策略</span>
-                    </div>
-                </div>
-
-                <!-- 南瓜头 -->
-                <div class="card plant-card">
-                    <h3>南瓜头</h3>
-                    <div class="subtitle">Pumpkin</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>生命值:</span>
-                            <span>⭐⭐⭐⭐</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>防御:</span>
-                            <span>4000点</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>费用:</span>
-                            <span>125阳光</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>特性:</span>
-                            <span>可套植物</span>
-                        </div>
-                    </div>
-                    <div class="energy-bar">
-                        <div class="energy-fill" style="width: 78%;"></div>
-                    </div>
-                    <div class="description">
-                        南瓜头可以保护被套住的植物。它可以种在其他植物上面，为它们提供额外的防护。万圣节是南瓜头一年中最忙碌的日子。
-                    </div>
-                    <div class="tags">
-                        <span class="tag">防御</span>
-                        <span class="tag">套装</span>
-                    </div>
-                </div>
-
-                <!-- 三线射手 -->
-                <div class="card plant-card">
-                    <h3>三线射手</h3>
-                    <div class="subtitle">Threepeater</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>伤害:</span>
-                            <span>⭐⭐⭐⭐</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>射击线:</span>
-                            <span>3条</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>费用:</span>
-                            <span>325阳光</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>冷却:</span>
-                            <span>7.5秒</span>
-                        </div>
-                    </div>
-                    <div class="energy-bar">
-                        <div class="energy-fill" style="width: 92%;"></div>
-                    </div>
-                    <div class="description">
-                        三线射手可以同时向三条线射击豌豆。三线射手是植物军团的精英战士，一个顶三个，效率极高。它喜欢说："团队合作让梦想成真。"
-                    </div>
-                    <div class="tags">
-                        <span class="tag">多线攻击</span>
-                        <span class="tag">高效</span>
-                    </div>
-                </div>
-
-                <!-- 玉米投手 -->
-                <div class="card plant-card">
-                    <h3>玉米投手</h3>
-                    <div class="subtitle">Kernel-pult</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>伤害:</span>
-                            <span>⭐⭐⭐</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>特效:</span>
-                            <span>概率眩晕</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>费用:</span>
-                            <span>100阳光</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>冷却:</span>
-                            <span>7.5秒</span>
-                        </div>
-                    </div>
-                    <div class="energy-bar">
-                        <div class="energy-fill" style="width: 68%;"></div>
-                    </div>
-                    <div class="description">
-                        玉米投手投掷玉米粒和黄油攻击僵尸，黄油可以暂时定住目标。它有25%的概率投掷黄油，造成眩晕效果。玉米投手认为运气也是实力的一部分。
-                    </div>
-                    <div class="tags">
-                        <span class="tag">控制</span>
-                        <span class="tag">概率眩晕</span>
-                    </div>
-                </div>
-
-                <!-- 西瓜投手 -->
-                <div class="card plant-card">
-                    <h3>西瓜投手</h3>
-                    <div class="subtitle">Melon-pult</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>伤害:</span>
-                            <span>⭐⭐⭐⭐</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>攻击方式:</span>
-                            <span>溅射伤害</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>费用:</span>
-                            <span>300阳光</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>冷却:</span>
-                            <span>7.5秒</span>
-                        </div>
-                    </div>
-                    <div class="energy-bar">
-                        <div class="energy-fill" style="width: 95%;"></div>
-                    </div>
-                    <div class="description">
-                        西瓜投手投掷西瓜造成重度伤害，并有溅射效果。它是攻击性植物中的王者，西瓜投掷出的西瓜能对周围僵尸造成范围伤害。
-                    </div>
-                    <div class="tags">
-                        <span class="tag">范围伤害</span>
-                        <span class="tag">高伤害</span>
-                    </div>
-                </div>
-
-                <!-- 磁力菇 -->
-                <div class="card plant-card">
-                    <h3>磁力菇</h3>
-                    <div class="subtitle">Magnet-shroom</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>功能:</span>
-                            <span>移除金属</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>范围:</span>
-                            <span>周围3格</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>费用:</span>
-                            <span>100阳光</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>冷却:</span>
-                            <span>15秒</span>
-                        </div>
-                    </div>
-                    <div class="energy-bar">
-                        <div class="energy-fill" style="width: 72%;"></div>
-                    </div>
-                    <div class="description">
-                        磁力菇可以移除僵尸身上的金属物品，如头盔、铁桶、梯子等。磁力菇学过物理，深知磁场的力量。它专门克制重装僵尸。
-                    </div>
-                    <div class="tags">
-                        <span class="tag">功能性</span>
-                        <span class="tag">去除装备</span>
-                    </div>
-                </div>
-
-                <!-- 玉米加农炮 -->
-                <div class="card plant-card">
-                    <h3>玉米加农炮</h3>
-                    <div class="subtitle">Cob Cannon</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>伤害:</span>
-                            <span>⭐⭐⭐⭐⭐</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>范围:</span>
-                            <span>3×3区域</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>费用:</span>
-                            <span>500阳光</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>冷却:</span>
-                            <span>36秒</span>
-                        </div>
-                    </div>
-                    <div class="energy-bar">
-                        <div class="energy-fill" style="width: 100%;"></div>
-                    </div>
-                    <div class="description">
-                        玉米加农炮是终极武器，发射强力玉米导弹攻击指定区域。需要两个玉米投手合成。这是植物军团的大杀器，可以瞬间清空一片区域的僵尸。
-                    </div>
-                    <div class="tags">
-                        <span class="tag">终极武器</span>
-                        <span class="tag">范围伤害</span>
-                        <span class="tag">手动释放</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 僵尸图鉴区域 -->
-        <section class="section" id="zombies">
-            <h2>🧟 僵尸图鉴</h2>
-            
-            <div class="card-grid">
-                <!-- 普通僵尸 -->
-                <div class="card zombie-card">
-                    <h3>普通僵尸</h3>
-                    <div class="subtitle">Zombie</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>生命值:</span>
-                            <span>⭐⭐</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>速度:</span>
-                            <span>慢</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>特点:</span>
-                            <span>最基础敌人</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>韧性:</span>
-                            <span>200点</span>
-                        </div>
-                    </div>
-                    <div class="description">
-                        最常见的僵尸类型，缓慢但坚定地向你的房子前进。这是僵尸大军的主力，虽然实力不强，但数量庞大。
-                    </div>
-                    <div class="tags">
-                        <span class="tag">基础</span>
-                        <span class="tag">低威胁</span>
-                    </div>
-                </div>
-
-                <!-- 路障僵尸 -->
-                <div class="card zombie-card">
-                    <h3>路障僵尸</h3>
-                    <div class="subtitle">Conehead Zombie</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>生命值:</span>
-                            <span>⭐⭐⭐</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>速度:</span>
-                            <span>慢</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>护甲:</span>
-                            <span>370点</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>韧性:</span>
-                            <span>570点</span>
-                        </div>
-                    </div>
-                    <div class="description">
-                        头戴路障的僵尸，比普通僵尸更加坚韧。路障为它提供了额外的保护，需要更多火力才能击败。
-                    </div>
-                    <div class="tags">
-                        <span class="tag">护甲</span>
-                        <span class="tag">中等威胁</span>
-                    </div>
-                </div>
-
-                <!-- 铁桶僵尸 -->
-                <div class="card zombie-card">
-                    <h3>铁桶僵尸</h3>
-                    <div class="subtitle">Buckethead Zombie</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>生命值:</span>
-                            <span>⭐⭐⭐⭐</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>速度:</span>
-                            <span>慢</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>护甲:</span>
-                            <span>1100点</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>韧性:</span>
-                            <span>1300点</span>
-                        </div>
-                    </div>
-                    <div class="description">
-                        头戴铁桶的僵尸，拥有极高的防御力。铁桶提供了强大的护甲，是前期的噩梦。建议使用高伤害植物或磁力菇对付。
-                    </div>
-                    <div class="tags">
-                        <span class="tag">重甲</span>
-                        <span class="tag">高威胁</span>
-                    </div>
-                </div>
-
-                <!-- 撑杆僵尸 -->
-                <div class="card zombie-card">
-                    <h3>撑杆僵尸</h3>
-                    <div class="subtitle">Pole Vaulting Zombie</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>生命值:</span>
-                            <span>⭐⭐</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>速度:</span>
-                            <span>快→慢</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>特殊能力:</span>
-                            <span>跳跃</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>韧性:</span>
-                            <span>500点</span>
-                        </div>
-                    </div>
-                    <div class="description">
-                        使用撑杆跳过第一个植物的僵尸。速度快，能绕过前排防御。失去撑杆后变成普通僵尸。墙果对它无效！
-                    </div>
-                    <div class="tags">
-                        <span class="tag">跳跃</span>
-                        <span class="tag">快速</span>
-                    </div>
-                </div>
-
-                <!-- 读报僵尸 -->
-                <div class="card zombie-card">
-                    <h3>读报僵尸</h3>
-                    <div class="subtitle">Newspaper Zombie</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>生命值:</span>
-                            <span>⭐⭐⭐</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>速度:</span>
-                            <span>慢→快</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>护甲:</span>
-                            <span>150点</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>特性:</span>
-                            <span>愤怒加速</span>
-                        </div>
-                    </div>
-                    <div class="description">
-                        手持报纸的僵尸，报纸被打烂后会愤怒并加速。失去报纸后速度翻倍，变得更加危险。尽量在它愤怒前消灭！
-                    </div>
-                    <div class="tags">
-                        <span class="tag">二段式</span>
-                        <span class="tag">狂暴</span>
-                    </div>
-                </div>
-
-                <!-- 铁栅门僵尸 -->
-                <div class="card zombie-card">
-                    <h3>铁栅门僵尸</h3>
-                    <div class="subtitle">Screen Door Zombie</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>生命值:</span>
-                            <span>⭐⭐⭐⭐</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>速度:</span>
-                            <span>慢</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>护甲:</span>
-                            <span>1100点</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>弱点:</span>
-                            <span>磁力菇</span>
-                        </div>
-                    </div>
-                    <div class="description">
-                        手持铁栅门的僵尸,拥有很高的防御。铁栅门可以被磁力菇移除。大喷菇和杨桃等攻击可以绕过铁栅门造成伤害。
-                    </div>
-                    <div class="tags">
-                        <span class="tag">盾牌</span>
-                        <span class="tag">高防御</span>
-                    </div>
-                </div>
-
-                <!-- 橄榄球僵尸 -->
-                <div class="card zombie-card">
-                    <h3>橄榄球僵尸</h3>
-                    <div class="subtitle">Football Zombie</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>生命值:</span>
-                            <span>⭐⭐⭐⭐⭐</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>速度:</span>
-                            <span>快</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>护甲:</span>
-                            <span>1400点</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>韧性:</span>
-                            <span>1600点</span>
-                        </div>
-                    </div>
-                    <div class="description">
-                        移动速度快且防御力高的僵尸。身穿橄榄球装备，是最危险的常规僵尸之一。需要集中火力和控制技能才能有效应对。
-                    </div>
-                    <div class="tags">
-                        <span class="tag">快速</span>
-                        <span class="tag">重甲</span>
-                        <span class="tag">极危险</span>
-                    </div>
-                </div>
-
-                <!-- 潜水僵尸 -->
-                <div class="card zombie-card">
-                    <h3>潜水僵尸</h3>
-                    <div class="subtitle">Snorkel Zombie</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>生命值:</span>
-                            <span>⭐⭐</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>速度:</span>
-                            <span>慢</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>特殊能力:</span>
-                            <span>潜水</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>韧性:</span>
-                            <span>270点</span>
-                        </div>
-                    </div>
-                    <div class="description">
-                        在水池关卡出现，可以潜入水下躲避攻击。只有在水池中才能潜水。水生植物如缠绕水草能有效克制它。
-                    </div>
-                    <div class="tags">
-                        <span class="tag">水生</span>
-                        <span class="tag">潜水</span>
-                    </div>
-                </div>
-
-                <!-- 雪橇僵尸小队 -->
-                <div class="card zombie-card">
-                    <h3>雪橇僵尸小队</h3>
-                    <div class="subtitle">Zomboni</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>生命值:</span>
-                            <span>⭐⭐⭐⭐</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>速度:</span>
-                            <span>中等</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>特殊能力:</span>
-                            <span>铺冰道</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>韧性:</span>
-                            <span>1300点</span>
-                        </div>
-                    </div>
-                    <div class="description">
-                        驾驶制冰车的僵尸，会碾压植物并留下冰道。冰道上会出现雪橇僵尸小队。火爆辣椒或玉米加农炮可以快速消灭它。
-                    </div>
-                    <div class="tags">
-                        <span class="tag">载具</span>
-                        <span class="tag">碾压</span>
-                    </div>
-                </div>
-
-                <!-- 跳跳僵尸 -->
-                <div class="card zombie-card">
-                    <h3>跳跳僵尸</h3>
-                    <div class="subtitle">Pogo Zombie</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>生命值:</span>
-                            <span>⭐⭐⭐</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>速度:</span>
-                            <span>快</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>特殊能力:</span>
-                            <span>连续跳跃</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>韧性:</span>
-                            <span>500点</span>
-                        </div>
-                    </div>
-                    <div class="description">
-                        使用弹跳杆不断跳跃的僵尸，可以跳过大部分植物。磁力菇可以移除它的弹跳杆。高坚果可以阻挡它的跳跃。
-                    </div>
-                    <div class="tags">
-                        <span class="tag">跳跃</span>
-                        <span class="tag">快速</span>
-                    </div>
-                </div>
-
-                <!-- 小鬼僵尸 -->
-                <div class="card zombie-card">
-                    <h3>小鬼僵尸</h3>
-                    <div class="subtitle">Imp</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>生命值:</span>
-                            <span>⭐</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>速度:</span>
-                            <span>快</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>出现方式:</span>
-                            <span>被投掷</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>韧性:</span>
-                            <span>170点</span>
-                        </div>
-                    </div>
-                    <div class="description">
-                        由巨人僵尸投掷到后方的小型僵尸。体型小但速度快，通常会被投到植物后方，造成后排威胁。
-                    </div>
-                    <div class="tags">
-                        <span class="tag">小型</span>
-                        <span class="tag">快速</span>
-                    </div>
-                </div>
-
-                <!-- 巨人僵尸 -->
-                <div class="card zombie-card">
-                    <h3>巨人僵尸</h3>
-                    <div class="subtitle">Gargantuar</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>生命值:</span>
-                            <span>⭐⭐⭐⭐⭐</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>速度:</span>
-                            <span>慢</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>攻击:</span>
-                            <span>砸碎植物</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>韧性:</span>
-                            <span>3000点</span>
-                        </div>
-                    </div>
-                    <div class="description">
-                        最强大的僵尸，拥有超高生命值。会砸碎植物并投掷小鬼僵尸。只有樱桃炸弹、玉米加农炮等高伤害植物才能快速击败。
-                    </div>
-                    <div class="tags">
-                        <span class="tag">BOSS级</span>
-                        <span class="tag">极高血量</span>
-                        <span class="tag">毁灭性</span>
-                    </div>
-                </div>
-
-                <!-- 僵王博士 -->
-                <div class="card zombie-card">
-                    <h3>僵王博士</h3>
-                    <div class="subtitle">Dr. Zomboss</div>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span>生命值:</span>
-                            <span>⭐⭐⭐⭐⭐</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>类型:</span>
-                            <span>最终BOSS</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>特殊能力:</span>
-                            <span>多种攻击</span>
-                        </div>
-                        <div class="stat-item">
-                            <span>韧性:</span>
-                            <span>60000点</span>
-                        </div>
-                    </div>
-                    <div class="description">
-                        最终BOSS，驾驶巨型机器人。会释放火球、冰球、压扁植物、投掷僵尸等多种攻击。只有冰冻植物和火爆植物能对其造成有效伤害。
-                    </div>
-                    <div class="tags">
-                        <span class="tag">终极BOSS</span>
-                        <span class="tag">机械</span>
-                        <span class="tag">多技能</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 游戏模式 -->
-        <section class="section" id="modes">
-            <h2>🎮 游戏模式</h2>
-            
-            <div class="mode-grid">
-                <div class="mode-card">
-                    <h3>🏡 冒险模式</h3>
-                    <p>主线剧情模式，共50个关卡，逐步解锁新植物和新挑战。从白天草地到夜晚屋顶，体验完整的植物大战僵尸旅程。</p>
-                </div>
-                
-                <div class="mode-card">
-                    <h3>🎯 迷你游戏</h3>
-                    <p>包含保龄球、坚果保龄球、老虎机等20多种趣味小游戏。每种游戏都有独特的玩法和挑战，测试你的策略和反应能力。</p>
-                </div>
-                
-                <div class="mode-card">
-                    <h3>🧩 解谜模式</h3>
-                    <p>分为"我是僵尸"和"看门人"两大类。在"我是僵尸"中操控僵尸攻击植物，在"看门人"中用有限植物守护阵地。</p>
-                </div>
-                
-                <div class="mode-card">
-                    <h3>🏆 生存模式</h3>
-                    <p>最具挑战性的模式，分为普通和无尽两种。需要在连续的僵尸浪潮中坚持生存，特别是无尽生存模式，考验极限策略。</p>
-                </div>
-                
-                <div class="mode-card">
-                    <h3>🌸 禅境花园</h3>
-                    <p>休闲种植模式，培育各种植物并获得金币。可以购买各种装饰和音乐，打造专属花园，享受宁静的游戏时光。</p>
-                </div>
-                
-                <div class="mode-card">
-                    <h3>⚔️ 对战模式</h3>
-                    <p>玩家对抗模式，一方布置植物防御,另一方选择僵尸进攻。考验双方的策略和即时应变能力，充满竞技性。</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- 策略攻略 -->
-        <section class="section" id="strategy">
-            <h2>📚 策略攻略</h2>
-            
-            <div class="timeline">
-                <div class="timeline-item">
-                    <div class="timeline-marker">1</div>
-                    <div class="timeline-content">
-                        <h3>前期经济建设</h3>
-                        <p>开局优先种植2-3排向日葵确保阳光供应。前期用豌豆射手配合土豆雷防御，阳光充足后再升级为双重射手或寒冰射手。经济是胜利的基础，不要急于进攻。</p>
-                    </div>
-                </div>
-                
-                <div class="timeline-item">
-                    <div class="timeline-marker">2</div>
-                    <div class="timeline-content">
-                        <h3>防线层次搭配</h3>
-                        <p>建议采用"前减速、中输出、后经济"的三层防线。第一列用寒冰射手减速,中间用双重射手或西瓜投手高伤害输出,后排补充向日葵和功能性植物。墙果要放在关键位置保护输出。</p>
-                    </div>
-                </div>
-                
-                <div class="timeline-item">
-                    <div class="timeline-marker">3</div>
-                    <div class="timeline-content">
-                        <h3>应对特殊僵尸</h3>
-                        <p>针对不同僵尸使用专门克制植物:磁力菇对付铁桶僵尸和橄榄球僵尸,大蒜和高坚果阻挡跳跃类僵尸,水生植物处理潜水僵尸。了解敌人弱点是关键。</p>
-                    </div>
-                </div>
-                
-                <div class="timeline-item">
-                    <div class="timeline-marker">4</div>
-                    <div class="timeline-content">
-                        <h3>应急植物准备</h3>
-                        <p>始终保留樱桃炸弹、火爆辣椒等应急植物。当巨人僵尸出现或防线被突破时,及时使用瞬间消灭植物挽回局势。玉米加农炮是后期的终极武器,合理布局能大幅提高胜率。</p>
-                    </div>
-                </div>
-                
-                <div class="timeline-item">
-                    <div class="timeline-marker">5</div>
-                    <div class="timeline-content">
-                        <h3>无尽模式阵型</h3>
-                        <p>无尽生存推荐"八炮流"或"冰瓜流"阵型。核心是玉米加农炮+冰瓜投手+南瓜头的组合,配合咖啡豆和能量豆实现持续高输出。需要精确的操作节奏和植物摆放位置。</p>
-                    </div>
-                </div>
-            </div>
-
-            <h3 style="margin-top: 3rem; color: #5a67d8; font-size: 2rem;">植物搭配推荐</h3>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>场景</th>
-                        <th>推荐植物组合</th>
-                        <th>核心策略</th>
-                        <th>难度</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>白天草地</td>
-                        <td>向日葵、豌豆射手、寒冰射手、墙果、土豆雷</td>
-                        <td>标准防御阵型,减速+输出</td>
-                        <td>⭐</td>
-                    </tr>
-                    <tr>
-                        <td>夜晚关卡</td>
-                        <td>向日葵、大喷菇、小喷菇、墙果、咖啡豆</td>
-                        <td>免费蘑菇流,配合咖啡豆</td>
-                        <td>⭐⭐</td>
-                    </tr>
-                    <tr>
-                        <td>水池关卡</td>
-                        <td>荷叶、睡莲、双重射手、缠绕水草、高坚果</td>
-                        <td>水陆两栖防御,控制潜水僵尸</td>
-                        <td>⭐⭐⭐</td>
-                    </tr>
-                    <tr>
-                        <td>浓雾关卡</td>
-                        <td>三叶草、火炬树桩、豌豆射手、灯笼草</td>
-                        <td>破雾+照明,保持视野</td>
-                        <td>⭐⭐⭐</td>
-                    </tr>
-                    <tr>
-                        <td>屋顶关卡</td>
-                        <td>卷心菜投手、玉米投手、西瓜投手、花盆、大蒜</td>
-                        <td>投掷类植物为主,应对斜坡</td>
-                        <td>⭐⭐⭐⭐</td>
-                    </tr>
-                    <tr>
-                        <td>无尽生存</td>
-                        <td>玉米加农炮、冰瓜投手、南瓜头、咖啡豆、能量豆</td>
-                        <td>八炮阵型,极限输出</td>
-                        <td>⭐⭐⭐⭐⭐</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <!-- 版本历史 -->
-        <section class="section" id="timeline">
-            <h2>📅 版本历史</h2>
-            
-            <div class="timeline">
-                <div class="timeline-item">
-                    <div class="timeline-marker">2009</div>
-                    <div class="timeline-content">
-                        <h3>初代发布</h3>
-                        <p>植物大战僵尸首次发布于Windows和Mac平台,由PopCap Games开发。游戏以独特的塔防玩法和幽默风格迅速风靡全球,成为经典之作。</p>
-                    </div>
-                </div>
-                
-                <div class="timeline-item">
-                    <div class="timeline-marker">2010</div>
-                    <div class="timeline-content">
-                        <h3>移动平台登陆</h3>
-                        <p>游戏移植到iOS和Android平台,进一步扩大玩家群体。触摸屏操作带来全新游戏体验,移动版本增加了独特的关卡和挑战。</p>
-                    </div>
-                </div>
-                
-                <div class="timeline-item">
-                    <div class="timeline-marker">2013</div>
-                    <div class="timeline-content">
-                        <h3>植物大战僵尸2</h3>
-                        <p>续作发布,引入时空旅行概念。玩家可以前往古埃及、海盗港湾、狂野西部等不同时代,体验全新植物和僵尸,游戏内容大幅扩充。</p>
-                    </div>
-                </div>
-                
-                <div class="timeline-item">
-                    <div class="timeline-marker">2016</div>
-                    <div class="timeline-content">
-                        <h3>花园战争系列</h3>
-                        <p>推出第三人称射击游戏《植物大战僵尸:花园战争》,将经典角色带入3D对战世界。玩家可以选择植物或僵尸阵营进行多人在线对战。</p>
-                    </div>
-                </div>
-                
-                <div class="timeline-item">
-                    <div class="timeline-marker">2019</div>
-                    <div class="timeline-content">
-                        <h3>植物大战僵尸3</h3>
-                        <p>第三代作品开启测试,采用全新3D画风和竖屏设计。游戏机制进行了大幅改革,引入了全新的战斗系统和养成玩法。</p>
-                    </div>
-                </div>
-                
-                <div class="timeline-item">
-                    <div class="timeline-marker">2024</div>
-                    <div class="timeline-content">
-                        <h3>重制版与更新</h3>
-                        <p>经典版本持续更新,加入新植物、新僵尸和新模式。社区创作的MOD和玩法层出不穷,游戏生命力依然旺盛,影响力遍及全球。</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 数据统计 -->
-        <section class="section">
-            <h2>📊 游戏数据统计</h2>
-            
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>项目</th>
-                        <th>数量</th>
-                        <th>说明</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>植物种类</td>
-                        <td>49种</td>
-                        <td>包含基础植物、升级植物和特殊植物</td>
-                    </tr>
-                    <tr>
-                        <td>僵尸类型</td>
-                        <td>26种</td>
-                        <td>从普通僵尸到BOSS级别的僵王博士</td>
-                    </tr>
-                    <tr>
-                        <td>冒险关卡</td>
-                        <td>50关</td>
-                        <td>5大场景,每场景10关</td>
-                    </tr>
-                    <tr>
-                        <td>迷你游戏</td>
-                        <td>20+种</td>
-                        <td>包含保龄球、坚果保龄球、老虎机等</td>
-                    </tr>
-                    <tr>
-                        <td>生存模式</td>
-                        <td>10+种</td>
-                        <td>分为白天、夜晚、泳池、浓雾、屋顶</td>
-                    </tr>
-                    <tr>
-                        <td>成就数量</td>
-                        <td>20个</td>
-                        <td>完成特定任务解锁成就</td>
-                    </tr>
-                    <tr>
-                        <td>禅境花园</td>
-                        <td>4个</td>
-                        <td>白天花园、夜晚花园、水生花园、蘑菇花园</td>
-                    </tr>
-                    <tr>
-                        <td>全球玩家</td>
-                        <td>数亿</td>
-                        <td>跨平台累计玩家数</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <!-- 小贴士 -->
-        <section class="section">
-            <h2>💡 高级技巧与秘籍</h2>
-            
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem;">
-                <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 2rem; border-radius: 15px; color: white;">
-                    <h3 style="margin-bottom: 1rem;">🎯 阳光管理</h3>
-                    <p>前期向日葵数量决定后期实力。建议在第一波僵尸来临前种植至少5-6朵向日葵。双子向日葵虽然贵,但产量是普通向日葵的2倍,性价比更高。</p>
-                </div>
-                
-                <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 2rem; border-radius: 15px; color: white;">
-                    <h3 style="margin-bottom: 1rem;">⚡ 瞬间植物时机</h3>
-                    <p>樱桃炸弹和火爆辣椒等瞬间植物不要乱用。在巨人僵尸出现、防线即将崩溃或僵尸大量聚集时使用效果最佳。合理使用能扭转战局。</p>
-                </div>
-                
-                <div style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); padding: 2rem; border-radius: 15px; color: white;">
-                    <h3 style="margin-bottom: 1rem;">🛡️ 分层防御</h3>
-                    <p>不要把所有植物都堆在一起。前排用减速植物和墙果,中间用高伤害输出,后排放经济和辅助植物。这样可以最大化防御效率。</p>
-                </div>
-                
-                <div style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); padding: 2rem; border-radius: 15px; color: white;">
-                    <h3 style="margin-bottom: 1rem;">🎲 植物升级优先级</h3>
-                    <p>优先升级攻击植物而非防御植物。双重射手、西瓜投手等高伤害植物能更快清理僵尸。墙果可以用南瓜头套装增强,无需急于升级。</p>
-                </div>
-                
-                <div style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); padding: 2rem; border-radius: 15px; color: black;">
-                    <h3 style="margin-bottom: 1rem;">🌟 组合技巧</h3>
-                    <p>火炬树桩+双重射手=高伤害火球流;寒冰射手+西瓜投手=减速+范围伤害;磁力菇+高坚果=克制重装僵尸。组合运用威力倍增!</p>
-                </div>
-                
-                <div style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); padding: 2rem; border-radius: 15px; color: black;">
-                    <h3 style="margin-bottom: 1rem;">🏆 无尽模式生存</h3>
-                    <p>无尽模式需要玉米加农炮阵型。推荐"八炮流":8个玉米加农炮+冰瓜投手减速+南瓜头保护。掌握炮击节奏是无尽模式的关键。</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- 互动按钮 -->
-        <div style="text-align: center; margin: 3rem 0;">
-            <button class="btn" onclick="alert('开始你的植物大战僵尸之旅吧!')">🎮 开始游戏</button>
-            <button class="btn" style="margin-left: 1rem; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);" onclick="alert('更多攻略即将上线!')">📖 查看更多攻略</button>
+        <!-- 网格线 -->
+        <div class="grid-overlay" id="gridOverlay">
+            <div class="grid-line vertical" style="left: 33.33%"></div>
+            <div class="grid-line vertical" style="left: 66.66%"></div>
+            <div class="grid-line horizontal" style="top: 33.33%"></div>
+            <div class="grid-line horizontal" style="top: 66.66%"></div>
         </div>
-    </div>
 
-    <!-- 页脚 -->
-    <footer>
-        <p>🌻 Plants vs. Zombies - 保卫你的花园! 🧟</p>
-        <p style="margin-top: 1rem; opacity: 0.8;">© 2009-2024 PopCap Games | EA | 仅供学习交流使用</p>
-        <p style="margin-top: 0.5rem; font-size: 0.9rem;">本页面为粉丝制作的非官方介绍页面</p>
-    </footer>
+        <!-- 缩放指示器 -->
+        <div class="zoom-indicator" id="zoomIndicator">1.0x</div>
+
+        <!-- 手势提示 -->
+        <div class="gesture-hint" id="gestureHint">上下滑动调节曝光 · 双指缩放</div>
+
+        <!-- 顶部工具栏 -->
+        <div class="top-toolbar" id="topToolbar">
+            <div class="toolbar-left">
+                <div class="icon-btn" id="flashBtn" title="闪光灯">💡</div>
+                <div class="icon-btn" id="gridBtn" title="网格线">⊞</div>
+            </div>
+            <div class="toolbar-right">
+                <div class="icon-btn" id="settingsBtn" title="设置">⚙️</div>
+                <div class="icon-btn" id="flipBtn" title="翻转摄像头">🔄</div>
+            </div>
+        </div>
+
+        <!-- 状态栏 -->
+        <div class="status-bar" id="statusBar">
+            <div class="status-item">
+                <span class="status-icon">🎥</span>
+                <span id="resolutionStatus">1080p</span>
+            </div>
+            <div class="status-item">
+                <span class="status-icon">🔋</span>
+                <span id="batteryStatus">--</span>
+            </div>
+        </div>
+
+        <!-- 功能指示器 -->
+        <div class="feature-indicators" id="featureIndicators">
+            <div class="indicator">
+                <span class="indicator-icon">✨</span>
+                <span>AI防抖</span>
+            </div>
+        </div>
+
+        <!-- 录制信息 -->
+        <div class="recording-info" id="recordingInfo">
+            <div class="recording-dot"></div>
+            <div class="recording-time" id="recordingTime">00:00</div>
+        </div>
+
+        <!-- 底部控制栏 -->
+        <div class="bottom-controls" id="bottomControls">
+            <div class="gallery-btn" id="galleryBtn">
+                🎬
+                <div class="video-count" id="videoCount">0</div>
+            </div>
+            <div class="record-btn" id="recordBtn"></div>
+            <div class="icon-btn" id="micBtn" title="麦克风">🎤</div>
+        </div>
+
+        <!-- 设置面板 -->
+        <div class="settings-panel" id="settingsPanel">
+            <div class="settings-header">
+                <div class="settings-title">录制设置</div>
+                <div class="close-btn" id="closeSettings">✕</div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-label">
+                    <span class="setting-label-icon">🎬</span>
+                    <span>视频分辨率</span>
+                </div>
+                <div class="resolution-grid">
+                    <div class="resolution-option" data-resolution="4k">
+                        <div class="resolution-label">4K</div>
+                        <div class="resolution-desc">3840×2160</div>
+                    </div>
+                    <div class="resolution-option active" data-resolution="1080p">
+                        <div class="resolution-label">1080p</div>
+                        <div class="resolution-desc">1920×1080</div>
+                    </div>
+                    <div class="resolution-option" data-resolution="720p">
+                        <div class="resolution-label">720p</div>
+                        <div class="resolution-desc">1280×720</div>
+                    </div>
+                    <div class="resolution-option" data-resolution="480p">
+                        <div class="resolution-label">480p</div>
+                        <div class="resolution-desc">854×480</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-label">
+                    <span class="setting-label-icon">🎞️</span>
+                    <span>帧率</span>
+                </div>
+                <div class="resolution-grid">
+                    <div class="resolution-option" data-fps="60">
+                        <div class="resolution-label">60 FPS</div>
+                        <div class="resolution-desc">流畅</div>
+                    </div>
+                    <div class="resolution-option active" data-fps="30">
+                        <div class="resolution-label">30 FPS</div>
+                        <div class="resolution-desc">标准</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-label">
+                    <span class="setting-label-icon">💾</span>
+                    <span>视频格式</span>
+                </div>
+                <div class="resolution-grid">
+                    <div class="resolution-option active" data-format="webm">
+                        <div class="resolution-label">WebM</div>
+                        <div class="resolution-desc">推荐</div>
+                    </div>
+                    <div class="resolution-option" data-format="mp4">
+                        <div class="resolution-label">MP4</div>
+                        <div class="resolution-desc">兼容性好</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 视频库面板 -->
+        <div class="video-library" id="videoLibrary">
+            <div class="library-header">
+                <div class="library-title">我的视频</div>
+                <div class="close-btn" id="closeLibrary">✕</div>
+            </div>
+            <div class="library-content">
+                <div class="video-grid" id="videoGrid">
+                    <!-- 视频项将动态添加 -->
+                </div>
+                <div class="empty-library" id="emptyLibrary">
+                    <div class="empty-library-icon">🎥</div>
+                    <div class="empty-library-text">还没有录制任何视频<br>点击录制按钮开始创作</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 视频播放器 -->
+        <div class="video-player" id="videoPlayer">
+            <div class="player-header">
+                <div class="close-btn" id="closePlayer">←</div>
+                <div class="icon-btn" id="deleteBtn">🗑️</div>
+            </div>
+            <video id="playerVideo" controls playsinline class="player-video"></video>
+            <div class="player-controls">
+                <div class="icon-btn" id="shareBtn">📤</div>
+                <div class="icon-btn" id="downloadBtn">💾</div>
+            </div>
+        </div>
+
+        <!-- 加载动画 -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="spinner"></div>
+            <div class="loading-text" id="loadingText">初始化摄像头...</div>
+        </div>
+
+        <!-- 提示消息 -->
+        <div class="toast" id="toast"></div>
+    </div>
 
     <script>
-        // 平滑滚动
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
+        // 全局变量
+        let stream = null;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let isRecording = false;
+        let recordingStartTime = 0;
+        let recordingTimer = null;
+        let facingMode = 'environment'; // 默认后置摄像头
+        let currentResolution = { width: 1920, height: 1080 };
+        let currentFPS = 30;
+        let currentFormat = 'webm';
+        let flashEnabled = false;
+        let gridEnabled = false;
+        let micEnabled = true;
+        let savedVideos = [];
+        let currentZoom = 1;
+        let maxZoom = 1;
+        let startDistance = 0;
+        let lastY = 0;
+
+        // 检测设备类型
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                   (window.innerWidth <= 768 && 'ontouchstart' in window);
+        }
+
+        // 初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!isMobileDevice()) {
+                document.getElementById('desktopWarning').style.display = 'flex';
+                document.getElementById('mobileApp').style.display = 'none';
+                return;
+            }
+
+            initializeApp();
+        });
+
+        async function initializeApp() {
+            showLoading('初始化摄像头...');
+
+            try {
+                await startCamera();
+                loadSavedVideos();
+                setupEventListeners();
+                updateBatteryStatus();
+                hideLoading();
+                showToast('摄像头已就绪');
+
+                // 显示手势提示
+                setTimeout(() => {
+                    const hint = document.getElementById('gestureHint');
+                    hint.classList.add('show');
+                    setTimeout(() => hint.classList.remove('show'), 3000);
+                }, 1000);
+            } catch (error) {
+                hideLoading();
+                showToast('无法访问摄像头: ' + error.message);
+                console.error('Camera error:', error);
+            }
+        }
+
+        // 启动摄像头
+        async function startCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+
+            const constraints = {
+                video: {
+                    facingMode: facingMode,
+                    width: { ideal: currentResolution.width },
+                    height: { ideal: currentResolution.height },
+                    frameRate: { ideal: currentFPS }
+                },
+                audio: micEnabled
+            };
+
+            try {
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
+                const videoPreview = document.getElementById('videoPreview');
+                videoPreview.srcObject = stream;
+
+                // 获取视频轨道的能力
+                const videoTrack = stream.getVideoTracks()[0];
+                const capabilities = videoTrack.getCapabilities();
+
+                // 设置缩放范围
+                if (capabilities.zoom) {
+                    maxZoom = capabilities.zoom.max;
+                }
+
+                // 尝试启用闪光灯（如果之前已启用）
+                if (flashEnabled && capabilities.torch) {
+                    await videoTrack.applyConstraints({
+                        advanced: [{ torch: true }]
                     });
                 }
+
+                updateResolutionStatus();
+            } catch (error) {
+                throw new Error('无法访问摄像头: ' + error.message);
+            }
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 录制按钮
+            document.getElementById('recordBtn').addEventListener('click', toggleRecording);
+
+            // 翻转摄像头
+            document.getElementById('flipBtn').addEventListener('click', flipCamera);
+
+            // 闪光灯
+            document.getElementById('flashBtn').addEventListener('click', toggleFlash);
+
+            // 网格线
+            document.getElementById('gridBtn').addEventListener('click', toggleGrid);
+
+            // 麦克风
+            document.getElementById('micBtn').addEventListener('click', toggleMic);
+
+            // 设置按钮
+            document.getElementById('settingsBtn').addEventListener('click', () => {
+                document.getElementById('settingsPanel').classList.add('show');
             });
-        });
 
-        // 卡片点击交互
-        document.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('click', function() {
-                this.style.transform = this.style.transform === 'scale(1.1)' ? 'scale(1)' : 'scale(1.1)';
+            document.getElementById('closeSettings').addEventListener('click', () => {
+                document.getElementById('settingsPanel').classList.remove('show');
             });
-        });
 
-        // 动态能量条动画
-        window.addEventListener('load', () => {
-            const energyBars = document.querySelectorAll('.energy-fill');
-            energyBars.forEach((bar, index) => {
-                setTimeout(() => {
-                    bar.style.transition = 'width 1.5s ease';
-                }, index * 100);
+            // 视频库
+            document.getElementById('galleryBtn').addEventListener('click', () => {
+                document.getElementById('videoLibrary').classList.add('show');
+                renderVideoGrid();
             });
-        });
 
-        // 页面滚动时的动画效果
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -100px 0px'
-        };
+            document.getElementById('closeLibrary').addEventListener('click', () => {
+                document.getElementById('videoLibrary').classList.remove('show');
+            });
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.animation = 'fadeInUp 0.8s ease forwards';
+            // 播放器
+            document.getElementById('closePlayer').addEventListener('click', () => {
+                document.getElementById('videoPlayer').classList.remove('show');
+                document.getElementById('playerVideo').pause();
+            });
+
+            document.getElementById('downloadBtn').addEventListener('click', downloadCurrentVideo);
+            document.getElementById('deleteBtn').addEventListener('click', deleteCurrentVideo);
+
+            // 分辨率选项
+            document.querySelectorAll('.resolution-option[data-resolution]').forEach(option => {
+                option.addEventListener('click', async () => {
+                    if (isRecording) {
+                        showToast('录制中无法更改分辨率');
+                        return;
+                    }
+
+                    document.querySelectorAll('.resolution-option[data-resolution]').forEach(o => 
+                        o.classList.remove('active'));
+                    option.classList.add('active');
+
+                    const resolution = option.dataset.resolution;
+                    switch(resolution) {
+                        case '4k':
+                            currentResolution = { width: 3840, height: 2160 };
+                            break;
+                        case '1080p':
+                            currentResolution = { width: 1920, height: 1080 };
+                            break;
+                        case '720p':
+                            currentResolution = { width: 1280, height: 720 };
+                            break;
+                        case '480p':
+                            currentResolution = { width: 854, height: 480 };
+                            break;
+                    }
+
+                    showLoading('切换分辨率...');
+                    await startCamera();
+                    hideLoading();
+                    showToast('分辨率已更改为 ' + resolution);
+                });
+            });
+
+            // 帧率选项
+            document.querySelectorAll('.resolution-option[data-fps]').forEach(option => {
+                option.addEventListener('click', async () => {
+                    if (isRecording) {
+                        showToast('录制中无法更改帧率');
+                        return;
+                    }
+
+                    document.querySelectorAll('.resolution-option[data-fps]').forEach(o => 
+                        o.classList.remove('active'));
+                    option.classList.add('active');
+
+                    currentFPS = parseInt(option.dataset.fps);
+                    showLoading('切换帧率...');
+                    await startCamera();
+                    hideLoading();
+                    showToast('帧率已更改为 ' + currentFPS + ' FPS');
+                });
+            });
+
+            // 格式选项
+            document.querySelectorAll('.resolution-option[data-format]').forEach(option => {
+                option.addEventListener('click', () => {
+                    document.querySelectorAll('.resolution-option[data-format]').forEach(o => 
+                        o.classList.remove('active'));
+                    option.classList.add('active');
+                    currentFormat = option.dataset.format;
+                    showToast('格式已更改为 ' + currentFormat.toUpperCase());
+                });
+            });
+
+            // 触摸手势
+            setupTouchGestures();
+        }
+
+        // 设置触摸手势
+        function setupTouchGestures() {
+            const videoPreview = document.getElementById('videoPreview');
+
+            // 双指缩放
+            videoPreview.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 2) {
+                    startDistance = getDistance(e.touches[0], e.touches[1]);
+                } else if (e.touches.length === 1) {
+                    lastY = e.touches[0].clientY;
                 }
             });
-        }, observerOptions);
 
-        document.querySelectorAll('.section, .timeline-item').forEach(el => {
-            observer.observe(el);
-        });
+            videoPreview.addEventListener('touchmove', async (e) => {
+                e.preventDefault();
 
-        // 添加键盘快捷键
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowUp') {
-                window.scrollBy({ top: -100, behavior: 'smooth' });
-            } else if (e.key === 'ArrowDown') {
-                window.scrollBy({ top: 100, behavior: 'smooth' });
+                if (e.touches.length === 2 && maxZoom > 1) {
+                    // 缩放
+                    const currentDistance = getDistance(e.touches[0], e.touches[1]);
+                    const scale = currentDistance / startDistance;
+                    const newZoom = Math.min(Math.max(currentZoom * scale, 1), maxZoom);
+
+                    await applyZoom(newZoom);
+                    showZoomIndicator(newZoom);
+                    startDistance = currentDistance;
+                } else if (e.touches.length === 1) {
+                    // 上下滑动调节曝光（这里仅作演示）
+                    const currentY = e.touches[0].clientY;
+                    const deltaY = lastY - currentY;
+                    lastY = currentY;
+                }
+            });
+
+            videoPreview.addEventListener('touchend', () => {
+                hideZoomIndicator();
+            });
+        }
+
+        // 获取两点距离
+        function getDistance(touch1, touch2) {
+            const dx = touch1.clientX - touch2.clientX;
+            const dy = touch1.clientY - touch2.clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        // 应用缩放
+        async function applyZoom(zoom) {
+            currentZoom = zoom;
+            const videoTrack = stream.getVideoTracks()[0];
+            const capabilities = videoTrack.getCapabilities();
+
+            if (capabilities.zoom) {
+                try {
+                    await videoTrack.applyConstraints({
+                        advanced: [{ zoom: zoom }]
+                    });
+                } catch (error) {
+                    console.error('Zoom error:', error);
+                }
+            }
+        }
+
+        // 显示缩放指示器
+        function showZoomIndicator(zoom) {
+            const indicator = document.getElementById('zoomIndicator');
+            indicator.textContent = zoom.toFixed(1) + 'x';
+            indicator.classList.add('show');
+        }
+
+        // 隐藏缩放指示器
+        function hideZoomIndicator() {
+            setTimeout(() => {
+                document.getElementById('zoomIndicator').classList.remove('show');
+            }, 500);
+        }
+
+        // 切换录制
+        async function toggleRecording() {
+            if (!isRecording) {
+                await startRecording();
+            } else {
+                await stopRecording();
+            }
+        }
+
+        // 开始录制
+        async function startRecording() {
+            recordedChunks = [];
+
+            const mimeType = currentFormat === 'webm' 
+                ? 'video/webm;codecs=vp9,opus' 
+                : 'video/mp4';
+
+            const options = {
+                mimeType: MediaRecorder.isTypeSupported(mimeType) ? mimeType : 'video/webm',
+                videoBitsPerSecond: 5000000
+            };
+
+            try {
+                mediaRecorder = new MediaRecorder(stream, options);
+
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        recordedChunks.push(event.data);
+                    }
+                };
+
+                mediaRecorder.onstop = saveRecording;
+
+                mediaRecorder.start(100);
+                isRecording = true;
+                recordingStartTime = Date.now();
+
+                // 更新UI
+                document.getElementById('recordBtn').classList.add('recording');
+                document.getElementById('recordingInfo').classList.add('show');
+                document.getElementById('flipBtn').classList.add('disabled');
+                document.getElementById('settingsBtn').classList.add('disabled');
+
+                // 启动计时器
+                recordingTimer = setInterval(updateRecordingTime, 100);
+
+                showToast('开始录制');
+            } catch (error) {
+                showToast('录制失败: ' + error.message);
+                console.error('Recording error:', error);
+            }
+        }
+
+        // 停止录制
+        async function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                isRecording = false;
+                clearInterval(recordingTimer);
+
+                // 更新UI
+                document.getElementById('recordBtn').classList.remove('recording');
+                document.getElementById('recordingInfo').classList.remove('show');
+                document.getElementById('flipBtn').classList.remove('disabled');
+                document.getElementById('settingsBtn').classList.remove('disabled');
+
+                showToast('录制已停止');
+            }
+        }
+
+        // 保存录制
+        function saveRecording() {
+            if (recordedChunks.length === 0) {
+                showToast('没有录制内容');
+                return;
+            }
+
+            const blob = new Blob(recordedChunks, {
+                type: currentFormat === 'webm' ? 'video/webm' : 'video/mp4'
+            });
+
+            const video = {
+                id: Date.now(),
+                blob: blob,
+                url: URL.createObjectURL(blob),
+                duration: Date.now() - recordingStartTime,
+                timestamp: new Date().toLocaleString('zh-CN'),
+                size: blob.size
+            };
+
+            savedVideos.unshift(video);
+            updateVideoCount();
+            showToast('视频已保存');
+        }
+
+        // 翻转摄像头
+        async function flipCamera() {
+            if (isRecording) {
+                showToast('录制中无法切换摄像头');
+                return;
+            }
+
+            facingMode = facingMode === 'environment' ? 'user' : 'environment';
+            flashEnabled = false;
+            document.getElementById('flashBtn').classList.remove('active');
+
+            showLoading('切换摄像头...');
+            await startCamera();
+            hideLoading();
+
+            const cameraName = facingMode === 'environment' ? '后置摄像头' : '前置摄像头';
+            showToast('已切换到' + cameraName);
+        }
+
+        // 切换闪光灯
+        async function toggleFlash() {
+            const videoTrack = stream.getVideoTracks()[0];
+            const capabilities = videoTrack.getCapabilities();
+
+            if (!capabilities.torch) {
+                showToast('当前摄像头不支持闪光灯');
+                return;
+            }
+
+            flashEnabled = !flashEnabled;
+
+            try {
+                await videoTrack.applyConstraints({
+                    advanced: [{ torch: flashEnabled }]
+                });
+
+                document.getElementById('flashBtn').classList.toggle('active', flashEnabled);
+                showToast(flashEnabled ? '闪光灯已开启' : '闪光灯已关闭');
+            } catch (error) {
+                showToast('闪光灯切换失败');
+                console.error('Flash error:', error);
+            }
+        }
+
+        // 切换网格线
+        function toggleGrid() {
+            gridEnabled = !gridEnabled;
+            document.getElementById('gridOverlay').classList.toggle('show', gridEnabled);
+            document.getElementById('gridBtn').classList.toggle('active', gridEnabled);
+            showToast(gridEnabled ? '网格线已开启' : '网格线已关闭');
+        }
+
+        // 切换麦克风
+        async function toggleMic() {
+            if (isRecording) {
+                showToast('录制中无法切换麦克风');
+                return;
+            }
+
+            micEnabled = !micEnabled;
+            document.getElementById('micBtn').classList.toggle('active', !micEnabled);
+
+            showLoading('切换麦克风...');
+            await startCamera();
+            hideLoading();
+
+            showToast(micEnabled ? '麦克风已开启' : '麦克风已关闭');
+        }
+
+        // 更新录制时间
+        function updateRecordingTime() {
+            const elapsed = Date.now() - recordingStartTime;
+            const minutes = Math.floor(elapsed / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+            document.getElementById('recordingTime').textContent = 
+                String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+        }
+
+        // 更新分辨率状态
+        function updateResolutionStatus() {
+            const resMap = {
+                '3840': '4K',
+                '1920': '1080p',
+                '1280': '720p',
+                '854': '480p'
+            };
+            document.getElementById('resolutionStatus').textContent = 
+                resMap[currentResolution.width] || currentResolution.width + 'p';
+        }
+
+        // 更新电池状态
+        async function updateBatteryStatus() {
+            if ('getBattery' in navigator) {
+                try {
+                    const battery = await navigator.getBattery();
+                    const updateBattery = () => {
+                        const level = Math.round(battery.level * 100);
+                        document.getElementById('batteryStatus').textContent = level + '%';
+                    };
+                    updateBattery();
+                    battery.addEventListener('levelchange', updateBattery);
+                } catch (error) {
+                    document.getElementById('batteryStatus').textContent = 'N/A';
+                }
+            }
+        }
+
+        // 加载已保存的视频
+        function loadSavedVideos() {
+            // 从localStorage加载（实际应用中可能需要使用IndexedDB）
+            updateVideoCount();
+        }
+
+        // 更新视频数量
+        function updateVideoCount() {
+            const count = savedVideos.length;
+            document.getElementById('videoCount').textContent = count;
+            document.getElementById('videoCount').style.display = count > 0 ? 'block' : 'none';
+
+            if (count === 0) {
+                document.getElementById('emptyLibrary').style.display = 'block';
+            } else {
+                document.getElementById('emptyLibrary').style.display = 'none';
+            }
+        }
+
+        // 渲染视频网格
+        function renderVideoGrid() {
+            const grid = document.getElementById('videoGrid');
+            grid.innerHTML = '';
+
+            savedVideos.forEach(video => {
+                const item = document.createElement('div');
+                item.className = 'video-item';
+                item.onclick = () => playVideo(video);
+
+                const thumbnail = document.createElement('video');
+                thumbnail.src = video.url;
+                thumbnail.className = 'video-thumbnail';
+                thumbnail.muted = true;
+                thumbnail.preload = 'metadata';
+
+                const overlay = document.createElement('div');
+                overlay.className = 'video-overlay';
+
+                const duration = Math.floor(video.duration / 1000);
+                const mins = Math.floor(duration / 60);
+                const secs = duration % 60;
+
+                overlay.innerHTML = `
+                    <div class="video-duration">${mins}:${String(secs).padStart(2, '0')}</div>
+                    <div>${video.timestamp}</div>
+                `;
+
+                item.appendChild(thumbnail);
+                item.appendChild(overlay);
+                grid.appendChild(item);
+            });
+        }
+
+        // 播放视频
+        function playVideo(video) {
+            const player = document.getElementById('playerVideo');
+            player.src = video.url;
+            player.currentVideo = video;
+            document.getElementById('videoPlayer').classList.add('show');
+            player.play();
+        }
+
+        // 下载当前视频
+        function downloadCurrentVideo() {
+            const player = document.getElementById('playerVideo');
+            if (!player.currentVideo) return;
+
+            const a = document.createElement('a');
+            a.href = player.currentVideo.url;
+            a.download = `video_${player.currentVideo.id}.${currentFormat}`;
+            a.click();
+            showToast('视频已下载');
+        }
+
+        // 删除当前视频
+        function deleteCurrentVideo() {
+            const player = document.getElementById('playerVideo');
+            if (!player.currentVideo) return;
+
+            if (confirm('确定要删除这个视频吗？')) {
+                const index = savedVideos.findIndex(v => v.id === player.currentVideo.id);
+                if (index > -1) {
+                    URL.revokeObjectURL(savedVideos[index].url);
+                    savedVideos.splice(index, 1);
+                    updateVideoCount();
+                    document.getElementById('videoPlayer').classList.remove('show');
+                    renderVideoGrid();
+                    showToast('视频已删除');
+                }
+            }
+        }
+
+        // 显示加载动画
+        function showLoading(text) {
+            document.getElementById('loadingText').textContent = text;
+            document.getElementById('loadingOverlay').classList.add('show');
+        }
+
+        // 隐藏加载动画
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('show');
+        }
+
+        // 显示提示
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+
+        // 防止页面滚动
+        document.addEventListener('touchmove', (e) => {
+            if (e.target.closest('.settings-panel') || e.target.closest('.video-library')) {
+                return;
+            }
+            e.preventDefault();
+        }, { passive: false });
+
+        // 页面可见性变化
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && isRecording) {
+                // 页面隐藏时继续录制
+                console.log('继续后台录制');
             }
         });
-
-        console.log('🌻 欢迎来到植物大战僵尸世界! 🧟');
-        console.log('提示: 使用方向键可以快速滚动页面');
     </script>
 </body>
 </html>
